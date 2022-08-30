@@ -12,18 +12,16 @@ const initialState = {
 export const __PostMainRoom = createAsyncThunk(
   "postmainroom/postMainroom",
   async (payload, api) => {
-    
     try {
       const data = await axios.post(
         process.env.REACT_APP_SURVER + `/api/room`, payload,
-        // {
-        //   headers: {
-        //     authorization: `Bearer ${token}`,
-        //   },
-        // }
+        {
+          headers: {
+            authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsIm5pY2tuYW1lIjoidGVzdGp3IiwiaWF0IjoxNjYxNzgyNTYwLCJleHAiOjE2NjIzODczNjB9.jbttD-EURwRmwXgP7B-nVlo3Ol_Tqy6jU1F8ZNffvVo",
+          }
+        }
       );
-      
-      return api.fulfillWithValue(data.data);
+      console.log(data)
     } catch (e) {
       return api.rejectWithValue(e);
     }
@@ -46,5 +44,5 @@ const postMainRoomSilce = createSlice({
   },
 });
 
-export const {} = postMainRoomSilce.actions;
+export const { } = postMainRoomSilce.actions;
 export default postMainRoomSilce.reducer;

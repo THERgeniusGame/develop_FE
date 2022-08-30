@@ -15,12 +15,12 @@ export const __GetMainRoom = createAsyncThunk(
         try {
             const data = await axios.get(
                 process.env.REACT_APP_SURVER + `/api/room`,
-                // {
-                //     headers: {
-                //         authorization: `Bearer ${token}`,
-                //     },
-                // }
-            );
+                {
+                    headers: {
+                        authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsIm5pY2tuYW1lIjoidGVzdGp3IiwiaWF0IjoxNjYxNzgyNTYwLCJleHAiOjE2NjIzODczNjB9.jbttD-EURwRmwXgP7B-nVlo3Ol_Tqy6jU1F8ZNffvVo`,
+                    },
+                }
+            )
             return api.fulfillWithValue(data.data);
         } catch (e) {
             return api.rejectWithValue(e);
