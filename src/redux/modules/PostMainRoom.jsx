@@ -17,7 +17,7 @@ export const __PostMainRoom = createAsyncThunk(
         process.env.REACT_APP_SURVER + `/api/room`, payload,
         {
           headers: {
-            authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsIm5pY2tuYW1lIjoidGVzdGp3IiwiaWF0IjoxNjYxNzgyNTYwLCJleHAiOjE2NjIzODczNjB9.jbttD-EURwRmwXgP7B-nVlo3Ol_Tqy6jU1F8ZNffvVo",
+            authorization: process.env.REACT_APP_TOKENNAME + " "+process.env.REACT_APP_TOKEN,
           }
         }
       );
