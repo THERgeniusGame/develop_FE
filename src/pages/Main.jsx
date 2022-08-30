@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Pagenation"
 import { __GetMainRoom } from "../redux/modules/GetMainRoom"
 import { __PostMainRoom } from "../redux/modules/PostMainRoom"
 import { useSelector } from "react-redux/es/exports";
 import { useDispatch } from "react-redux";
-
-// import io from "socket.io-client";
 
 function Main() {
  
@@ -33,7 +29,6 @@ function Main() {
   const [roomsearch, setRoomsearch] = useState('')
   const [roompw, setRoompw] = useState('')
   const [checkpw, setCheckpw] = useState('')
-  const [roomId, setRoomId] = useState(0)
 
   // 모달 상태
   const [pwModal, setPwModal] = useState(false);
@@ -65,7 +60,6 @@ function Main() {
     }
   }
 
-  // const socket = io.connect(`/api/room/${roomId}`);
   useEffect(() => {
     dispatch(__GetMainRoom());
     if(rooms?.length === undefined) {

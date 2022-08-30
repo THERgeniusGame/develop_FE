@@ -3,7 +3,7 @@ import styled from "styled-components";
 import socketio from 'socket.io-client';
 import { useNavigate } from "react-router-dom";
 
-function Chat() {
+function Room() {
 
     const socket = socketio.connect('http://localhost:3000/api/room/random'); //백서버
     const navigate = useNavigate();
@@ -23,6 +23,10 @@ function Chat() {
     //     $("#chatLogs").append("<div>" + data.msg + " : from <strong>" + data.from.name + "</strong></div>");
     //   });
 
+    useEffect = () => {
+        
+    } 
+
     return (
         <div class="container">
             <h3>Socket.io Chat Example</h3>
@@ -38,4 +42,4 @@ function Chat() {
     );
 }
 
-export default Chat
+export default Room;

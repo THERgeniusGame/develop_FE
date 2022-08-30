@@ -1,11 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import io from "socket.io-client";
 
 const initialState = {
   data: [],
   isLoading: false, //
   error: null, //
 };
+
+
 
 // const token = localStorage.getItem("token");
 
@@ -17,11 +20,22 @@ export const __PostMainRoom = createAsyncThunk(
         process.env.REACT_APP_SURVER + `/api/room`, payload,
         {
           headers: {
-            authorization: process.env.REACT_APP_TOKENNAME + " "+process.env.REACT_APP_TOKEN,
+            authorization: process.env.REACT_APP_TOKENNAME + " " + process.env.REACT_APP_TOKEN,
           }
         }
-      );
-      console.log(data)
+      )
+      .then((res) => {
+        const roomId = res.data.data.roomId;
+        const socket = io.connect(process.env.REACT_APP_SURVER + `/api/room/${roomId}`);
+        socket.emit("join", `${roomId}`, (e) => {
+          if(e) {
+            alert("게임방 생성에 실패했습니다.")
+            console.log(e)
+          }
+        })
+        window.location.replace(`/api/room/${roomId}`)
+      })
+      return api.fulfillWithValue(data);
     } catch (e) {
       return api.rejectWithValue(e);
     }
