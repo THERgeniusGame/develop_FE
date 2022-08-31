@@ -3,19 +3,22 @@ import styled from "styled-components";
 import socketio from 'socket.io-client';
 import { useParams } from "react-router-dom";
 
+const socket = socketio.connect(process.env.REACT_APP_SURVER); //백서버
+
 function Room() {
     const params = useParams();
     const roomId = +params.roomId;
     const room = roomId;
-    const socket = socketio.connect(process.env.REACT_APP_SURVER); //백서버
 
-    //토큰주고 get으로 받기
+    const token = process.env.REACT_APP_TOKEN;
+
+    //토큰주고 emit으로 받기 토큰, 룸 번호
     const [userId, setUserId] = useState('');
     const [nickname, setNickname] = useState('게스트');
     const [masterNickname, setMasterNickname] = useState('방장');
 
     //채팅
-    const [chat, setChat] = useState(''); // 새로운 채팅
+    const [chat, setChat] = useState(""); // 새로운 채팅
     const [list, setList] = useState([]); // 채팅 list
     const [users, setUsers] = useState(
         [
@@ -32,29 +35,35 @@ function Room() {
     const [ready, setReady] = useState(false); // 새로운 채팅
 
     useEffect(() => {
-        socket.emit("login", userId, nickname, room, () => { });
 
-        socket.on("login-msg", msg => {
-            setList(prev => prev.concat({ text: msg }));
+        socket.emit("login",
+            {
+                userId,
+                nickname,
+                room
+            }, () => {
+            }
+        );
+
+        socket.on("login", chat => {
+            setList(prev => prev.concat({ text: chat }));
         });
 
-        socket.on("users", users => {
-            setList(users);
+        // socket.on("users", users => {
+        //     setList(users);
+        // });
+
+        socket.on("chat", chat => {
+            setList(prev => prev.concat({ text: chat.msg }));
         });
 
-        socket.on("message", msg => {
-            setList(prev => prev.concat({ me: false, text: msg }));
-        });
-
-        socket.on("ready", result => {
-            setReady(result);
-        });
-
-    }, [socket]);
-
+        // socket.on("ready", result => {
+        //     setReady(result);
+        // });
+    }, []);
 
     // 페이지에 도착하면 
-    // get으로 토큰주고 userId, nickname, masternickname 받기
+    // emit으로 토큰주고 userId, nickname, masternickname 받기
     // login ? join? emit하기(userId, nickname, room)
     // on으로 로그인 msg받기 - nickname님이 입장하셨습니다.
     // on으로 users 목록 받기
@@ -130,7 +139,7 @@ function Room() {
                 <span>{roomId}번 방입니다.</span>
                 <ChatWrapCss>
                     {list.map((item, index) => (
-                        <p key={index} style={item.me ? {} : { textAlign: "right" }}>
+                        <p key={index}>
                             {item.text}
                         </p>
                     ))}
@@ -138,10 +147,8 @@ function Room() {
                 <form
                     onSubmit={e => {
                         e.preventDefault();
-                        socket.emit("message", userId, nickname, roomId, () => {
-                            setList(prev => prev.concat({ me: true, text: chat }));
-                            setChat("");
-                        });
+                        socket.emit("chat", { msg: chat });
+                        setChat("");
                     }}
                 >
                     <div>
@@ -162,6 +169,9 @@ const ChatWrapCss = styled.div`
     border: "1px solid";
     padding: 3px;
     height: 200px;
+    p {
+        height:5px;
+    }
 `
 
 const ChatBody = styled.div`

@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import io from "socket.io-client";
 
 const initialState = {
   data: [],

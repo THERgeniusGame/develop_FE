@@ -10,7 +10,7 @@ function Main() {
 
   const dispatch = useDispatch();
 
-  const rooms = useSelector((state) => state.getmainroom.data.data);
+  const rooms = useSelector((state) => state.getmainroom.data.roomsInfo);
   console.log(rooms)
   const [resp, setResp] = useState([])
 
