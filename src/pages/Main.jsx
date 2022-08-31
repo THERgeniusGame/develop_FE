@@ -7,16 +7,16 @@ import { useSelector } from "react-redux/es/exports";
 import { useDispatch } from "react-redux";
 
 function Main() {
- 
+
   const dispatch = useDispatch();
 
-  const rooms = useSelector((state) => state.getmainroom.data?.data);
-  
+  const rooms = useSelector((state) => state.getmainroom.data.data);
+  console.log(rooms)
   const [resp, setResp] = useState([])
 
   //페이지네이션
   const [total, setTotal] = useState(0);
-  const [limit] = useState(8);
+  const [limit] = useState(6);
   const [page, setPage] = useState(1);
   const indexOfLastPost = page * limit;
   const indexOfFirstPost = indexOfLastPost - limit;
@@ -52,26 +52,26 @@ function Main() {
     e.preventDefault();
     if (roomTitle === '') {
       alert("방 이름을 입력해주세요")
-    } else if (roomLock === true && roomPw === ''){
+    } else if (roomLock === true && roomPw === '') {
       alert("비밀번호를 입력해주세요")
-    } 
+    }
     else {
-      dispatch(__PostMainRoom({ roomTitle, roomCategory, roomLock, roomPw  }));
+      dispatch(__PostMainRoom({ roomTitle, roomCategory, roomLock, roomPw }));
     }
   }
 
   useEffect(() => {
     dispatch(__GetMainRoom());
-    if(rooms?.length === undefined) {
-      setTotal(0)
+    if (rooms?.length === undefined) {
+      setTotal(0);
     } else {
-      setTotal(rooms?.length)
+      setTotal(rooms?.length);
     }
-    setResp(rooms)
+    setResp(rooms);
   }, [rooms?.length]);
 
   return (
-    <>
+    <div style={{ "width": "900px", "margin": "auto" }}>
       <Roomsearch onSubmit={(e) => {
         e.preventDefault();
         if (roomsearch === '') {
@@ -149,15 +149,25 @@ function Main() {
             setRoomLock(false);
           }}>
             <MakeRoomModalBody onClick={(event) => { event.stopPropagation() }}  >
-              <div><span>방 이름 : </span><input onChange={(e) => { setRoomTitle(e.target.value) }} placeholder="방 이름을 입력해주세요" style={{ "textAlign": "center", "height": "30px", "width": "250px", "marginBottom": "5px" }}></input></div>
-              <div>{roomLock === true ? <>비밀번호 : <input onChange={(e) => { setRoomPw(e.target.value) }} placeholder="비밀번호를 입력해주세요" style={{ "textAlign": "center", "height": "30px", "width": "250px", "marginRight": "11px" }}></input></> : ''}</div>
-              <div style={{ "fontSize": "10px" }}>비밀번호 만들기<input onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }} type="checkbox"></input>
-                <span><button style={{ "cursor": "pointer", "margin": "10px", "width": "100px" }}>방 생성하기</button></span></div>
+              <div>
+                <span>방 이름 : </span>
+                <input onChange={(e) => { setRoomTitle(e.target.value) }} placeholder="방 이름을 입력해주세요" style={{ "textAlign": "center", "height": "30px", "width": "250px", "marginBottom": "5px" }}></input>
+              </div>
+              <div>{roomLock === true ?
+                <>비밀번호 : <input onChange={(e) => { setRoomPw(e.target.value) }} placeholder="비밀번호를 입력해주세요" style={{ "textAlign": "center", "height": "30px", "width": "250px", "marginRight": "11px" }}></input>
+                </> : ''}
+              </div>
+              <div style={{ "fontSize": "10px" }}>비밀번호 만들기
+                <input onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }} type="checkbox"></input>
+                <span>
+                  <button style={{ "cursor": "pointer", "margin": "10px", "width": "100px" }}>방 생성하기</button>
+                </span>
+              </div>
             </MakeRoomModalBody>
           </MakeRoomModal>
         </>) : ''
       }
-    </>
+    </div>
   );
 }
 
@@ -165,8 +175,8 @@ export default Main;
 
 let MainBody = styled.div`
  background-color: red;
- width: 1200px;
- height: 330px;
+ width: 900px;
+ height: 300px;
  margin: auto;
  display: flex;
  

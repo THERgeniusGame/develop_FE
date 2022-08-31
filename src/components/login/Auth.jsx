@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { serverUrl } from "../../serverurl";
 
-const Auth = () => {
+function Auth () {
     const navigate = useNavigate
 
     const [userEmail, setUserEmail] = useState("");

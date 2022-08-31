@@ -4,11 +4,10 @@ import io from "socket.io-client";
 
 const initialState = {
   data: [],
+  roomId:[],
   isLoading: false, //
   error: null, //
 };
-
-
 
 // const token = localStorage.getItem("token");
 
@@ -25,17 +24,11 @@ export const __PostMainRoom = createAsyncThunk(
         }
       )
       .then((res) => {
-        const roomId = res.data.data.roomId;
-        const socket = io.connect(process.env.REACT_APP_SURVER + `/api/room/${roomId}`);
-        socket.emit("join", `${roomId}`, (e) => {
-          if(e) {
-            alert("게임방 생성에 실패했습니다.")
-            console.log(e)
-          }
-        })
-        window.location.replace(`/api/room/${roomId}`)
+        if(res.data.success === true) {
+          const roomId = res.data.data.roomId
+          window.location.replace(`/room/${roomId}`)
+        }
       })
-      return api.fulfillWithValue(data);
     } catch (e) {
       return api.rejectWithValue(e);
     }
