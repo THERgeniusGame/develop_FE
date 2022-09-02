@@ -16,7 +16,7 @@ function Room() {
 
     const [userId, setUserId] = useState('');
     const [nickname, setNickname] = useState('');
-    const [masterNickname, setMasterNickname] = useState('방장');
+    const [masterNickname, setMasterNickname] = useState('');
     const [kicksocketId, setKicksocketId] = useState('');
     const [mysocketId, setMysocketId] = useState('');
 
@@ -35,23 +35,6 @@ function Room() {
     useEffect(scrollToBottom, [list]);
     useEffect(() => {
 
-        // socket.emit("login",
-        //     {
-        //         userId,
-        //         nickname,
-        //         room
-        //     }, () => {
-        //     }
-        // );
-
-        // socket.on("login", chat => {
-        //     setList(prev => prev.concat({ text: chat }));
-        // });
-
-        // socket.on("chat", chat => {
-        //     setList(prev => prev.concat({ text: chat.msg }));
-        // });
-
         socket.emit("login",
             {
                 token,
@@ -61,8 +44,7 @@ function Room() {
         );
 
         socket.on("login", login => {
-            console.log(login)
-            setList(prev => prev.concat({ text: login.nickname+"님이 입장하셨습니다." }));
+            setList(prev => prev.concat({ text: login.nickname + "님이 입장하셨습니다." }));
             setNickname(login.nickname);
             setMasterNickname(login.owner);
             setUserId(login.userId);
@@ -71,7 +53,7 @@ function Room() {
         });
 
         socket.on("chat", chat => {
-            setList(prev => prev.concat({ text: chat.nickname +" "+ chat.msg }));
+            setList(prev => prev.concat({ text: chat.nickname + " " + chat.msg }));
         });
 
         // socket.on("ready", ready => {
@@ -116,41 +98,43 @@ function Room() {
 
 
     return (
-        <div style={{ "backgroundColor": "black" }}>
+        <div style={{ height: "924px", width: "1340px" }}>
             <RoomBody>
                 {nickname === masterNickname ?
                     //방장 구역
                     <div>
                         <div>{masterNickname}님의 게임방
-                            <span>
-                                <button>게임시작</button>
+                            <span style={{ float: "right" }}>
+                                <button style={{ marginRight: "30px" }}>게임시작</button>
                                 <button onClick={() => { navigate("/") }}>나가기</button>
                             </span>
                         </div>
-                        <div>{masterNickname}
+                        <div style={{ marginTop: "150px", marginLeft: "100px", display:"flex", justifyContent:"space-around" }}>
+                            <span>{masterNickname}</span>
                             <span>방장</span>
                             <span>준비완료</span>
                         </div>
-                        <div>{users.filter((user) => user.nickname !== masterNickname)[0]?.nickname !== undefined ? users.filter((user) => user.nickname !== masterNickname)[0].nickname : ''}
-                            <span>
-                                <button>추방하기</button>
-                            </span>
-                            <span>{ready === true ? "준비완료" : "준비중"}</span>
+                        <div style={{ marginTop: "150px", marginLeft: "100px", display:"flex", justifyContent:"space-around" }}>{users.filter((user) => user.nickname !== masterNickname)[0]?.nickname !== undefined ? <>
+                            <span>{users.filter((user) => user.nickname !== masterNickname)[0].nickname}</span>
+                            <span>추방하기</span>
+                            <span>준비완료</span></> : ''}
                         </div>
                     </div> :
                     //게스트 구역
                     <div>
                         <div>{masterNickname}님의 게임방
-                            <span>
-                                <button>준비하기</button>
+                            <span style={{ float: "right" }}>
+                                <button style={{ marginRight: "30px" }}>준비하기</button>
                                 <button onClick={() => { navigate("/") }}>나가기</button>
                             </span>
                         </div>
-                        <div>{masterNickname}
+                        <div style={{ marginTop: "150px", marginLeft: "100px", display:"flex", justifyContent:"space-around" }}>
+                            <span>{masterNickname}</span>
                             <span>/방장/</span>
                             <span>준비완료</span>
                         </div>
-                        <div>{nickname}
+                        <div style={{ marginTop: "150px", marginLeft: "100px", display:"flex", justifyContent:"space-around" }}>
+                            <span>{nickname}</span>
                             <span>/나/</span>
                             <span>{ready === true ? "준비완료" : "준비중"}</span>
                         </div>
@@ -158,7 +142,7 @@ function Room() {
                 }
             </RoomBody>
             <ChatBody>
-                <span>{roomId}번 방입니다.</span>
+                <span style={{ backgroundColor: "white" }}>{roomId}번 방입니다.</span>
                 <ChatWrapCss>
                     {list.map((item, index) => (
                         <p key={index}>
@@ -172,16 +156,10 @@ function Room() {
                         e.preventDefault();
                         socket.emit("chat", { nickname, msg: chat });
                         setChat("");
-
-                        // e.preventDefault();
-                        // socket.emit("chat", { msg: chat });
-                        // setChat("");
                     }}
                 >
                     <div>
-                        <input placeholder="메세지를 입력해주세요." value={chat} onChange={e => setChat(e.target.value)} /><span>
-                            <button>전송</button>
-                        </span>
+                        <input placeholder="메세지를 입력해주세요." value={chat} onChange={e => setChat(e.target.value)} />
                     </div>
                 </form>
             </ChatBody >
@@ -191,33 +169,48 @@ function Room() {
 
 export default Room;
 
-const ChatWrapCss = styled.div`
-    overflow-y: scroll;
-    border: "1px solid";
-    padding: 3px;
-    height: 200px;
-    p {
-        height:5px;
+const RoomBody = styled.div`
+    width: 1140px;
+    height:689px;
+    margin: auto;
+    font-size: 36px;
+    font-weight: 548;
+    button {
+        border: 0px;
+        background-color: #D9D9D9;
+        font-size: 36px;
+        font-weight: 548;
+        width: 320px;
+        height: 80px;
     }
 `
 
 const ChatBody = styled.div`
-    width: 800px;
-    height: 200px;
-    background-color: red;
-    margin: auto;
+    width: 1040px;
+    height: 351px;
+    background-color: #D9D9D9;
+    margin: auto auto 0px auto;
     display: flex;
     flex-direction: column;
+    font-size: 36px;
+    font-weight: 548;
     input {
-        width: 749px;
-        height: 20px;
+        font-weight: 548;
+        font-size: 36px;
+        width: 1017px;
+        height: 60px;
+        background-color: #8F1F1F;
+        color: white;
+        padding: 10px;
     }
 `
 
-const RoomBody = styled.div`
-    width: 800px;
-    height: 350px;
-    background-color: yellow;
-    
-    margin: auto;
+const ChatWrapCss = styled.div`
+    overflow-y: scroll;
+    border: "1px solid";
+    padding: 3px;
+    height: 300px;
+    p {
+        height:5px;
+    }
 `

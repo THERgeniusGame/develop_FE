@@ -56,7 +56,7 @@ const Button = styled.button`
     transform: revert;
   }
   &[aria-current] {
-    background: deeppink;
+    background: #ff1491a3;
     font-weight: bold;
     cursor: revert;
     transform: revert;

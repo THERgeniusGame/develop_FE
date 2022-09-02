@@ -76,7 +76,7 @@ function Main() {
   }, [rooms?.length]);
 
   return (
-    <div style={{ "width": "1440px" }}>
+    <div style={{ "width": "1440px", "height":"924px" }}>
       <Roomsearch onSubmit={(e) => {
         e.preventDefault();
         if (roomsearch === '') {
@@ -186,9 +186,13 @@ let MainBody = styled.div`
  display: flex;
  
  flex-wrap: wrap;
- flex-direction: low;
  justify-content: center;
  align-items: center;
+
+ font-size:18px;
+ button {
+  font-size:18px;
+ }
 `
 
 let RoomSelect = styled.div`
@@ -209,8 +213,8 @@ let RoomSelect = styled.div`
 
 let MakeRoom = styled.div`
  background-color: #D9D9D9;
- width: 180px;
- height: 75px;
+ width: 424px;
+ height: 134px;
  margin: auto;
  border: solid 3px black;
  border-radius: 10px;
@@ -222,7 +226,7 @@ let MakeRoom = styled.div`
  }
  div {
   text-align: center;
-  font-size: 25px;
+  font-size: 36px;
   display: flex;
   margin: auto;
  }
@@ -233,8 +237,8 @@ let ChoosRock = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-
   button {
+    font-size:18px;
     :hover {
     background-color: yellow;
     cursor: pointer;
@@ -248,13 +252,15 @@ let Roomsearch = styled.form`
   align-items: center;
   justify-content: center;
   input {
-    width: 300px;
+    font-size:18px;
+    width: 400px;
     text-align: center;
     margin: 5px;
     padding: 5px
   }
 
   button {
+    font-size:18px;
     :hover {
     background-color: yellow;
     cursor: pointer;
