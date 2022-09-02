@@ -76,7 +76,7 @@ function Main() {
   }, [rooms?.length]);
 
   return (
-    <div style={{ "width": "1440px", "height":"924px" }}>
+    <div style={{ "width": "1440px", "height": "924px" }}>
       <Roomsearch onSubmit={(e) => {
         e.preventDefault();
         if (roomsearch === '') {
@@ -140,7 +140,7 @@ function Main() {
           }}>
             <PwModalBody onClick={(event) => { event.stopPropagation() }}  >
               <input onChange={(e) => { setCheckpw(e.target.value) }} placeholder="비밀번호 확인" style={{ "textAlign": "center", "height": "30px", "width": "300px" }}></input>
-              <button onClick={onclickHandle} style={{ "cursor": "pointer", "margin": "10px", "width": "100px" }}>입장하기</button>
+              <button onClick={onclickHandle} style={{ "cursor": "pointer", "margin": "10px", "width": "200px" }}>입장하기</button>
             </PwModalBody>
           </PwModal>
         </>) : ''
@@ -156,16 +156,17 @@ function Main() {
             <MakeRoomModalBody onClick={(event) => { event.stopPropagation() }}  >
               <div>
                 <span>방 이름 : </span>
-                <input onChange={(e) => { setRoomTitle(e.target.value) }} placeholder="방 이름을 입력해주세요" style={{ "textAlign": "center", "height": "30px", "width": "250px", "marginBottom": "5px" }}></input>
+                <input onChange={(e) => { setRoomTitle(e.target.value) }} placeholder="방 이름을 입력해주세요" style={{ "textAlign": "center", "height": "30px", "width": "400px", "marginBottom": "5px" }}></input>
               </div>
               <div>{roomLock === true ?
-                <>비밀번호 : <input onChange={(e) => { setRoomPw(e.target.value) }} placeholder="비밀번호를 입력해주세요" style={{ "textAlign": "center", "height": "30px", "width": "250px", "marginRight": "11px" }}></input>
+                <>비밀번호 : <input onChange={(e) => { setRoomPw(e.target.value) }} placeholder="비밀번호를 입력해주세요" style={{ "textAlign": "center", "height": "30px", "width": "400px", "marginRight": "18px" }}></input>
                 </> : ''}
               </div>
-              <div style={{ "fontSize": "10px" }}>비밀번호 만들기
-                <input onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }} type="checkbox"></input>
+              <div style={{ "fontSize": "20px", "color":"gray","display":"flex" }}>
+                <span style={{"marginTop":"15px"}}>비밀번호 만들기</span>
+                <span><input style={{"width":"30px", "display" : "flex", "marginTop":"10px"}} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }} type="checkbox"></input></span>
                 <span>
-                  <button style={{ "cursor": "pointer", "margin": "10px", "width": "100px" }}>방 생성하기</button>
+                  <button style={{ "cursor": "pointer", "margin": "10px", "width": "150px", "marginRight":"120px" }}>방 생성하기</button>
                 </span>
               </div>
             </MakeRoomModalBody>
@@ -179,17 +180,16 @@ function Main() {
 export default Main;
 
 let MainBody = styled.div`
- width: 900px;
+ width: 1000px;
  height: 500px;
  margin: auto;
- margin-top: 5px;
  display: flex;
- 
+ margin-top: 20px;
  flex-wrap: wrap;
  justify-content: center;
  align-items: center;
-
  font-size:18px;
+
  button {
   font-size:18px;
  }
@@ -200,9 +200,11 @@ let RoomSelect = styled.div`
  width: 424px;
  height: 134px;
  margin: auto;
+ margin-bottom: 30px;
  border: solid 3px black;
  border-radius: 10px;
  padding: 5px;
+
  button {
   :hover {
   background-color: yellow;
@@ -224,6 +226,7 @@ let MakeRoom = styled.div`
   background-color: yellow;
   cursor: pointer;
  }
+
  div {
   text-align: center;
   font-size: 36px;
@@ -237,8 +240,12 @@ let ChoosRock = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: center;
+
   button {
-    font-size:18px;
+    width: 150px;
+    height: 50px;
+    font-size:27px;
+    margin: 5px;
     :hover {
     background-color: yellow;
     cursor: pointer;
@@ -251,16 +258,20 @@ let Roomsearch = styled.form`
   flex-direction: row;
   align-items: center;
   justify-content: center;
+
   input {
-    font-size:18px;
-    width: 400px;
+    font-size:27px;
+    width: 550px;
+    height: 40px;
     text-align: center;
     margin: 5px;
     padding: 5px
   }
 
   button {
-    font-size:18px;
+    width: 150px;
+    height: 40px;
+    font-size:23px;
     :hover {
     background-color: yellow;
     cursor: pointer;
@@ -284,12 +295,30 @@ const PwModal = styled.div`
 const PwModalBody = styled.div`
     background-color: white;
     border-radius: 10px;
-    width: 400px;
-    height: 150px;
+    width: 600px;
+    height: 400px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
+    input {
+      font-size:27px;
+      width: 550px;
+      height: 40px;
+      text-align: center;
+      margin: 5px;
+      padding: 5px
+    }
+
+    button {
+      height: 40px;
+      font-size:23px;
+      :hover {
+      background-color: yellow;
+      cursor: pointer;
+              }
+    }
 `;
 
 const MakeRoomModal = styled.div`
@@ -308,10 +337,28 @@ const MakeRoomModal = styled.div`
 const MakeRoomModalBody = styled.form`
     background-color: white;
     border-radius: 10px;
-    width: 400px;
-    height: 200px;
+    width: 600px;
+    height: 400px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    font-size: 27px;
+
+    input {
+      font-size:27px;
+      height: 40px;
+      text-align: center;
+      padding: 5px
+    }
+
+    button {
+      width: 150px;
+      height: 40px;
+      font-size:23px;
+      :hover {
+      background-color: yellow;
+      cursor: pointer;
+            }
+    }
 `;

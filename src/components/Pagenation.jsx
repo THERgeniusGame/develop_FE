@@ -34,14 +34,14 @@ const Nav = styled.nav`
   justify-content: center;
   align-items: center;
   gap: 4px;
-  margin: 16px;
+  margin: 30px;
 `;
 
 const Button = styled.button`
   border: none;
   border-radius: 8px;
   padding: 8px;
-  margin: 0;
+  margin: 1px;
   background: black;
   color: white;
   font-size: 1rem;
