@@ -1,97 +1,119 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import socketio from 'socket.io-client';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const socket = socketio.connect(process.env.REACT_APP_SURVER); //백서버
 
 function Room() {
+    const navigate = useNavigate();
+
     const params = useParams();
     const roomId = +params.roomId;
     const room = roomId;
 
     const token = process.env.REACT_APP_TOKEN;
 
-    //토큰주고 emit으로 받기 토큰, 룸 번호
     const [userId, setUserId] = useState('');
-    const [nickname, setNickname] = useState('게스트');
+    const [nickname, setNickname] = useState('');
     const [masterNickname, setMasterNickname] = useState('방장');
+    const [kicksocketId, setKicksocketId] = useState('');
+    const [mysocketId, setMysocketId] = useState('');
 
     //채팅
     const [chat, setChat] = useState(""); // 새로운 채팅
     const [list, setList] = useState([]); // 채팅 list
-    const [users, setUsers] = useState(
-        [
-            {
-                nickname: "방장",
-            },
-            {
-                nickname: "게스트",
-            },
-        ]
-    ); // 유저 list
+    const [users, setUsers] = useState([]); // 유저 list
+    const messagesEndRef = useRef(null);
+    const scrollToBottom = () => {
+        messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+    }
 
     //진행
     const [ready, setReady] = useState(false); // 새로운 채팅
 
+    useEffect(scrollToBottom, [list]);
     useEffect(() => {
+
+        // socket.emit("login",
+        //     {
+        //         userId,
+        //         nickname,
+        //         room
+        //     }, () => {
+        //     }
+        // );
+
+        // socket.on("login", chat => {
+        //     setList(prev => prev.concat({ text: chat }));
+        // });
+
+        // socket.on("chat", chat => {
+        //     setList(prev => prev.concat({ text: chat.msg }));
+        // });
 
         socket.emit("login",
             {
-                userId,
-                nickname,
+                token,
                 room
             }, () => {
             }
         );
 
-        socket.on("login", chat => {
-            setList(prev => prev.concat({ text: chat }));
+        socket.on("login", login => {
+            console.log(login)
+            setList(prev => prev.concat({ text: login.nickname+"님이 입장하셨습니다." }));
+            setNickname(login.nickname);
+            setMasterNickname(login.owner);
+            setUserId(login.userId);
+            setMysocketId(login.socketId);
+            setUsers(login.userList);
         });
-
-        // socket.on("users", users => {
-        //     setList(users);
-        // });
 
         socket.on("chat", chat => {
-            setList(prev => prev.concat({ text: chat.msg }));
+            setList(prev => prev.concat({ text: chat.nickname +" "+ chat.msg }));
         });
 
-        // socket.on("ready", result => {
-        //     setReady(result);
+        // socket.on("ready", ready => {
+        //     // setList(prev => prev.concat({ text: chat.msg }));
+        //     console.log(ready);
         // });
+
+        // socket.on("gameInfo", gameInfo => {
+        //     // setList(prev => prev.concat({ text: chat.msg }));
+        //     console.log(gameInfo);
+        // });
+
+        // socket.on("disconnect", disconnect => {
+        //     // setList(prev => prev.concat({ text: chat.msg }));
+        //     console.log(disconnect);
+        // });
+
+        // socket.on("error", error => {
+        //     // setList(prev => prev.concat({ text: chat.msg }));
+        //     console.log(error);
+        // });
+
     }, []);
 
-    // 페이지에 도착하면 
-    // emit으로 토큰주고 userId, nickname, masternickname 받기
-    // login ? join? emit하기(userId, nickname, room)
-    // on으로 로그인 msg받기 - nickname님이 입장하셨습니다.
-    // on으로 users 목록 받기
-    // on으로 남이 주는 메세지 받기 
-    // on으로 ready(준비여부): true or false 받기
+    // socket.emit("kick", { socketId:kicksocketId });
+    // socket.emit("ready", { ready });
+    // socket.emit("gamestart", { gamestart:true });
+    // socket.emit("turnEnd", {
+    //     turnEnd:{
+    //             nickname,
+    //             socketId:mysocketId,
+    //             card:[],
+    //             battingCard,
+    //             batting,
+    //             turn,
+    //             money,
+    //             win:undifind,
+    //             round,
+    //                     }
+    //     });
+    // socket.emit("gameEnd", { gameEnd:true });
 
-    //메시지 보내기
-    // socket.emit("message", userId, nickname, roomId, () => {
-    //     setList(prev => prev.concat({ me: true, text: chat }));
-    //     setChat("");
-    // });
-
-    // 게임진행
-    // 준비여부(ready) emit하기 // 게스트만 emit 활성화
-    // socket.emit("ready", ready, userId, nickname, room, () => {
-    // setReady(!ready)
-    // });
-
-    // 추방하기() emit? // 호스트만 emit 활성화
-    // socket.emit("kick", kickname, userId, nickname, room, () => {
-    // });
-
-    // 나가기(방장의 경우 방 없애기) emit
-    // socket.emit("logout", userId, nickname, room, () => {
-    // window.location.replace("/") => 될 수 있으면 네비게이트로
-    // });
-
-    // 게임시작은 페이지 이동? => 모달
 
     return (
         <div style={{ "backgroundColor": "black" }}>
@@ -102,14 +124,14 @@ function Room() {
                         <div>{masterNickname}님의 게임방
                             <span>
                                 <button>게임시작</button>
-                                <button>나가기</button>
+                                <button onClick={() => { navigate("/") }}>나가기</button>
                             </span>
                         </div>
                         <div>{masterNickname}
                             <span>방장</span>
                             <span>준비완료</span>
                         </div>
-                        <div>{users.filter((user) => user.nickname !== masterNickname)[0].nickname !== undefined ? users.filter((user) => user.nickname !== masterNickname)[0].nickname : ''}
+                        <div>{users.filter((user) => user.nickname !== masterNickname)[0]?.nickname !== undefined ? users.filter((user) => user.nickname !== masterNickname)[0].nickname : ''}
                             <span>
                                 <button>추방하기</button>
                             </span>
@@ -121,7 +143,7 @@ function Room() {
                         <div>{masterNickname}님의 게임방
                             <span>
                                 <button>준비하기</button>
-                                <button>나가기</button>
+                                <button onClick={() => { navigate("/") }}>나가기</button>
                             </span>
                         </div>
                         <div>{masterNickname}
@@ -143,12 +165,17 @@ function Room() {
                             {item.text}
                         </p>
                     ))}
+                    <div ref={messagesEndRef} />
                 </ChatWrapCss>
                 <form
                     onSubmit={e => {
                         e.preventDefault();
-                        socket.emit("chat", { msg: chat });
+                        socket.emit("chat", { nickname, msg: chat });
                         setChat("");
+
+                        // e.preventDefault();
+                        // socket.emit("chat", { msg: chat });
+                        // setChat("");
                     }}
                 >
                     <div>

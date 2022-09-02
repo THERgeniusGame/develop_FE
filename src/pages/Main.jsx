@@ -5,8 +5,11 @@ import { __GetMainRoom } from "../redux/modules/GetMainRoom"
 import { __PostMainRoom } from "../redux/modules/PostMainRoom"
 import { useSelector } from "react-redux/es/exports";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 function Main() {
+
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
@@ -29,6 +32,7 @@ function Main() {
   const [roomsearch, setRoomsearch] = useState('')
   const [roompw, setRoompw] = useState('')
   const [checkpw, setCheckpw] = useState('')
+  const [roomId, setRoomId] = useState(0)
 
   // 모달 상태
   const [pwModal, setPwModal] = useState(false);
@@ -36,7 +40,8 @@ function Main() {
 
   const onclickHandle = () => {
     if (roompw === checkpw) {
-      alert("성공")
+      alert("성공");
+      navigate(`/room/${roomId}`)
     } else {
       alert("비밀번호가 틀립니다.")
     }
@@ -71,7 +76,7 @@ function Main() {
   }, [rooms?.length]);
 
   return (
-    <div style={{ "width": "900px", "margin": "auto" }}>
+    <div style={{ "width": "1440px" }}>
       <Roomsearch onSubmit={(e) => {
         e.preventDefault();
         if (roomsearch === '') {
@@ -97,11 +102,11 @@ function Main() {
             {room.currentUsers !== 2 ?
               <div>{room.roomLock === true ?
                 <>
-                  <button onClick={() => { setPwModal(true); setRoompw(room.roomPw); }}>입장하기</button>
+                  <button onClick={() => { setPwModal(true); setRoompw(room.roomPw); setRoomId(room.roomId); }}>입장하기</button>
                 </>
                 :
                 <>
-                  <button>입장하기</button>
+                  <button onClick={() => { navigate(`room/${room.roomId}`) }}>입장하기</button>
                 </>
               }
               </div>
@@ -174,10 +179,10 @@ function Main() {
 export default Main;
 
 let MainBody = styled.div`
- background-color: red;
  width: 900px;
- height: 300px;
+ height: 500px;
  margin: auto;
+ margin-top: 5px;
  display: flex;
  
  flex-wrap: wrap;
@@ -187,9 +192,9 @@ let MainBody = styled.div`
 `
 
 let RoomSelect = styled.div`
- background-color: yellow;
- width: 250px;
- height: 100px;
+ background-color: #D9D9D9;
+ width: 424px;
+ height: 134px;
  margin: auto;
  border: solid 3px black;
  border-radius: 10px;
@@ -203,9 +208,9 @@ let RoomSelect = styled.div`
 `
 
 let MakeRoom = styled.div`
- background-color: blue;
- width: 250px;
- height: 100px;
+ background-color: #D9D9D9;
+ width: 180px;
+ height: 75px;
  margin: auto;
  border: solid 3px black;
  border-radius: 10px;
@@ -242,7 +247,6 @@ let Roomsearch = styled.form`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-
   input {
     width: 300px;
     text-align: center;
