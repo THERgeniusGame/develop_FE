@@ -48,7 +48,6 @@ ex) Module/MainGetList
 ex) css 추가 수정
 
 # Library
-FE
 - axios	서버통신
 - redux-toolkit	상태관리, 미들웨어
 - styled-components	css 관리
@@ -58,13 +57,3 @@ FE
 - react-hook-form	로그인/ 회원가입 (리렌더링 수 ↓)
 - sweetalert2	alert css
 - dotenv	환경변수
-BE
-- cors	Request resource 제한
-- dotenv	환경변수 설정
-- sequelize	DB ORM
-- bcrypt	패스워드 암호화
-- joi	회원가입 정보 제한
-- jsonwebtoken	로그인 토큰 발급
-- nodemailer	회원 인증 및 비밀번호 찾기 메일링
-- socket.io	실시간 통신
-- ejs	html 파일
