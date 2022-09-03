@@ -1,12 +1,13 @@
-# 로그인, 회원가입 페이지 플로우차트
+# 플로우차트
+### 로그인, 회원가입 페이지 플로우차트
 ![실전프로젝트 로그인, 회원가입 플로우차트](https://user-images.githubusercontent.com/105829258/188279966-9a79c172-3aed-4349-9e74-686b543f86e5.png)
-# 메인 페이지 플로우차트
+### 메인 페이지 플로우차트
 ![실전프로젝트 메인화면 플로우차트](https://user-images.githubusercontent.com/105829258/188279975-0dfb068c-d54c-4874-a6cf-2657b245d656.png)
-# 룸 페이지 플로우차트
+### 룸 페이지 플로우차트
 ![실전프로젝트 게임룸 플로우차트](https://user-images.githubusercontent.com/105829258/188279979-86052684-3647-457e-a7e8-35c8a41d54a8.png)
-# 마이페이지 플로우차트
+### 마이페이지 플로우차트
 ![실전프로젝트 마이페이지 플로우차트](https://user-images.githubusercontent.com/105829258/188279983-f5bc8fe7-717c-4bed-8c41-81f2fc970f4d.png)
-# 랭킹 페이지 플로우차트
+### 랭킹 페이지 플로우차트
 ![실전프로젝트 랭킹 플로우차트](https://user-images.githubusercontent.com/105829258/188279984-f8c7810f-db5f-414b-aaca-5ca0696e8142.png)
 
 # Code Convention
