@@ -1,70 +1,50 @@
-# Getting Started with Create React App
+# Code Convention
+- 서비스 url : lowercase - ex) /main/room
+- 변수 및 함수명 : 카멜케이스 - ex) roomList
+- 컴포넌트명 : 앞글자 대문자인 카멜케이스 - ex) LoginPage
+- 파일명 : 카멜케이스 - ex) SignUp
+- 폴더명 : 카멜케이스 - ex) SignUp
+- 모듈명 : 카멜케이스 및 요청 위치와 요청 종류 가져오는 값 - ex) MainGetList
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Git Flow
+#브랜치 구조
+- main
+    - dev
+         - jongone
+               /main
+               , room
+         - hakyung
+               /login
+               , signup
+    - release
 
-## Available Scripts
+#각 브랜치의 역할
+- main : 오류가 정말 없는 깔끔한 상태. dev브랜치를 고칠 수 없을 때, 사용할 백업 브랜치
+- dev : 오류가 없는 깔끔한 상태
+- release : 배포용 사용자 서비스 이용에 문제가 없는 상태
+- 개인브랜치 : 개인작업
 
-In the project directory, you can run:
+#commit message 규칙
+1. create/update/add/fix 등으로 무슨 행동을 했는지 알린다
+create - ex) create Login Page
+update - ex) update Login Page
+add - ex) add SignUp Page
+fix - ex) fix Login Page
+2. 파일의 기능과 파일의 이름을 적는다.
+ex) Module/MainGetList
+3. 추가적인 설명 기입
+ex) css 추가 수정
 
-### `yarn start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+# Library
+- axios	서버통신
+- redux-toolkit	상태관리, 미들웨어
+- styled-components	css 관리
+- json-server	백엔드 서버와의 연결 전 사용
+- jwt	jwt 토큰 사용
+- socket.io-client	실시간 반영
+- react-hook-form	로그인/ 회원가입 (리렌더링 수 ↓)
+- sweetalert2	alert css
+- dotenv	환경변수
+1. REACT_APP_SURVER
+2. REACT_APP_TOKEN
+3. REACT_APP_TOKKENNAME
