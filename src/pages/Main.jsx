@@ -14,7 +14,7 @@ function Main() {
   const dispatch = useDispatch();
 
   const rooms = useSelector((state) => state.getmainroom.data.roomsInfo);
-  console.log(rooms)
+  
   const [resp, setResp] = useState([])
 
   //페이지네이션
@@ -185,6 +185,7 @@ let MainBody = styled.div`
  margin: auto;
  display: flex;
  margin-top: 20px;
+
  flex-wrap: wrap;
  justify-content: center;
  align-items: center;
