@@ -16,9 +16,9 @@ function Room() {
 
     const [userId, setUserId] = useState('');
     //닉네임
-    const [mynickname, setNickname] = useState('11');
-    const [ownerNickname, setOwnerNickname] = useState('11');
-    const [guestNIckname, setGuestNIckname] = useState('');
+    const [mynickname, setNickname] = useState('owner');
+    const [ownerNickname, setOwnerNickname] = useState('owner');
+    const [guestNIckname, setGuestNIckname] = useState('guest');
 
     //소켓아이디
     const [mysocketId, setMysocketId] = useState('');
@@ -36,8 +36,10 @@ function Room() {
 
     //진행
     const [ready, setReady] = useState(false); // 새로운 채팅
-    const [gamestart, setGamestart] = useState(true); // 게임시작 여부
-    const [round, setRound] = useState(1); // 게임시작 여부
+    const [gamestart, setGamestart] = useState(false); // 게임시작 여부
+    const [round, setRound] = useState(1); // 라운드 
+    const [turn, setTurn] = useState(true); // 턴 여부
+    const [middleView, setMiddleView] = useState(true); // 중간부분 뷰 여부
 
     useEffect(scrollToBottom, [list]);
     useEffect(() => {
@@ -66,6 +68,7 @@ function Room() {
         });
 
         socket.on("chat", chat => {
+            // let timer = setTimeout(()=>{setList(prev => prev.concat({ text: chat.nickname + " " + chat.msg }))}, 2000);
             setList(prev => prev.concat({ text: chat.nickname + " " + chat.msg }));
         });
 
@@ -80,12 +83,12 @@ function Room() {
         //     setRound(gameInfo.gameInfo.round);
         // });
 
-        socket.on("disconnect", disconnect => {
-            console.log(disconnect);
-            if (disconnect !== undefined) {
-                navigate("/")
-            }
-        });
+        // socket.on("disconnect", disconnect => {
+        //     console.log(disconnect);
+        //     if (disconnect !== undefined) {
+        //         navigate("/")
+        //     }
+        // });
 
         socket.on("error", error => {
             console.log(error.error.code);
@@ -106,7 +109,7 @@ function Room() {
     //         round,
     //     }
     // });
-
+    // let timer = setTimeout(()=>{setList(prev => prev.concat({ text: chat.nickname + " " + chat.msg }))}, 2000);
     return (
         <>
             {gamestart === false ?
@@ -114,7 +117,7 @@ function Room() {
                 <div style={{ height: "924px", width: "1340px" }}>
                     <RoomBody>
                         {mynickname === ownerNickname ?
-                            //방장 구역
+                            //호스트 구역
                             <div>
                                 <div>{ownerNickname}님의 게임방
                                     <span style={{ float: "right" }}>
@@ -179,11 +182,155 @@ function Room() {
                 </div> :
                 //게임방
                 mynickname === ownerNickname ?
-                    <div style={{ height: "924px", width: "1340px", backgroundColor:"red" }}>
+                    <div style={{ height: "1024px", width: "1440px" }}>
                         {/* //호스트뷰 */}
+                        <div style={{ height: "125px", width: "1041px", backgroundColor: "#D9D9D9", margin: "auto", display: "flex", fontSize: "36px" }}>
+                            <div style={{ marginLeft: "100px" }}>
+                                <div>
+                                    {guestNIckname}
+                                </div>
+                                <div>
+                                    코인
+                                </div>
+                            </div>
+                            <div style={{ textAlign: "center", margin: "auto" }}>
+                                VS
+                            </div>
+                            <div style={{ marginRight: "100px", textAlign: "right" }}>
+                                <div>
+                                    {mynickname}
+                                </div>
+                                <div>
+                                    코인
+                                </div>
+                            </div>
+                        </div>
+                        {/* guest */}
+                        <div style={{ height: "125px", width: "941px", margin: "auto", marginTop: "40px", display: "flex", justifyContent: "flex-end" }}>
+                            <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto", marginRight: "7px" }}>
+
+                            </div>
+                        </div>
+                        <div style={{ height: "125px", width: "941px", margin: "10px auto 20px auto", display: "flex" }}>
+                            <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto", marginLeft: "7px" }}>
+
+                            </div>
+                        </div>
+                        {/* 중간구역 */}
+                        {turn === true && middleView === true ?
+                            // {/* 배팅 뷰 */}
+                            <div style={{ height: "190px", width: "897px", backgroundColor: "#D9D9D9", margin: "auto", fontSize: "36px", display: "flex", justifyContent: "space-between", lineHeight: "180px" }}>
+                                <div style={{ display: "flex" }}>
+                                    <input style={{ height: "33px", width: "146px", padding: "5px", border: "0px", marginTop: "70px", marginLeft: "100px" }}></input>개 배팅
+                                </div>
+                                <div style={{ marginRight: "100px" }}>
+                                    나가기
+                                </div>
+                            </div> : ''}
+                        {turn === false && middleView === true ?
+                            // {/* 기다릴 때 뷰 */}
+                            <div style={{ height: "190px", width: "897px", backgroundColor: "#D9D9D9", margin: "auto", fontSize: "50px", display: "flex", justifyContent: "space-between", lineHeight: "180px", margin: "auto" }}>
+                                <span style={{ display: "flex", margin: "auto" }}>상대가 배팅하는 중입니다</span>
+                            </div> : ''}
+                        {/* 결과 뷰 */}
+                        {middleView === false ? <div style={{ height: "190px", width: "897px", backgroundColor: "#D9D9D9", margin: "auto", fontSize: "36px", display: "flex", justifyContent: "space-between", lineHeight: "180px" }}>
+                            0라운드 승리 {mynickname}!!
+                        </div> : ''}
+                        {/* owner */}
+                        <div style={{ height: "125px", width: "941px", margin: "20px auto 10px auto", display: "flex" }}>
+                            <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto", marginLeft: "7px" }}>
+
+                            </div>
+                        </div>
+                        <div style={{ height: "125px", width: "941px", margin: "auto auto 49px auto", display: "flex" }}>
+                            <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto 7px auto auto" }}>
+
+                            </div>
+                        </div>
+                        {/* 마지막구역 */}
+                        <div style={{ height: "60px", width: "1041px", margin: "auto", fontSize: "36px", display: "flex", justifyContent: "space-between" }}>
+                            <div>
+                                {mynickname}
+                            </div>
+                            <div>
+                                나가기
+                            </div>
+                        </div>
                     </div> :
-                    <div style={{ height: "924px", width: "1340px", backgroundColor:"yellow" }}>
+                    <div style={{ height: "1024px", width: "1440px" }}>
                         {/* //게스트뷰 */}
+                        <div style={{ height: "125px", width: "1041px", backgroundColor: "#D9D9D9", margin: "auto", display: "flex", fontSize: "36px" }}>
+                            <div style={{ marginLeft: "100px" }}>
+                                <div>
+                                    {ownerNickname}
+                                </div>
+                                <div>
+                                    코인
+                                </div>
+                            </div>
+                            <div style={{ textAlign: "center", margin: "auto" }}>
+                                VS
+                            </div>
+                            <div style={{ marginRight: "100px", textAlign: "right" }}>
+                                <div>
+                                    {mynickname}
+                                </div>
+                                <div>
+                                    코인
+                                </div>
+                            </div>
+                        </div>
+                        {/* owner */}
+                        <div style={{ height: "125px", width: "941px", margin: "auto", marginTop: "40px", display: "flex", justifyContent: "flex-end" }}>
+                            <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto", marginRight: "7px" }}>
+
+                            </div>
+                        </div>
+                        <div style={{ height: "125px", width: "941px", margin: "10px auto 20px auto", display: "flex" }}>
+                            <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto", marginLeft: "7px" }}>
+
+                            </div>
+                        </div>
+                        {/* 중간구역 */}
+                        {turn === true && middleView === true ?
+                            // {/* 배팅 뷰 */}
+                            <div style={{ height: "190px", width: "897px", backgroundColor: "#D9D9D9", margin: "auto", fontSize: "36px", display: "flex", justifyContent: "space-between", lineHeight: "180px" }}>
+                                <div style={{ display: "flex" }}>
+                                    <input style={{ height: "33px", width: "146px", padding: "5px", border: "0px", marginTop: "70px", marginLeft: "100px" }}></input>개 배팅
+                                </div>
+                                <div style={{ marginRight: "100px" }}>
+                                    나가기
+                                </div>
+                            </div> : ''}
+                        {turn === false && middleView === true ?
+                            // {/* 기다릴 때 뷰 */}
+                            <div style={{ height: "190px", width: "897px", backgroundColor: "#D9D9D9", margin: "auto", fontSize: "50px", display: "flex", justifyContent: "space-between", lineHeight: "180px", margin: "auto" }}>
+                                <span style={{ display: "flex", margin: "auto" }}>상대가 배팅하는 중입니다</span>
+                            </div> : ''}
+                        {/* 결과 뷰 */}
+                        {middleView === false ? <div style={{ height: "190px", width: "897px", backgroundColor: "#D9D9D9", margin: "auto", fontSize: "36px", display: "flex", justifyContent: "space-between", lineHeight: "180px" }}>
+                            0라운드 승리 {mynickname}!!
+                        </div> : ''}
+                        {/* guest */}
+                        <div style={{ height: "125px", width: "941px", margin: "20px auto 10px auto", display: "flex" }}>
+                            <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto", marginLeft: "7px" }}>
+
+                            </div>
+                        </div>
+                        <div style={{ height: "125px", width: "941px", margin: "auto auto 49px auto", display: "flex" }}>
+                            <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto 7px auto auto" }}>
+
+                            </div>
+                        </div>
+                        {/* 마지막구역 */}
+                        <div style={{ height: "60px", width: "1041px", margin: "auto", fontSize: "36px", display: "flex", justifyContent: "space-between" }}>
+                            <div>
+                                {mynickname}
+                            </div>
+                            <div>
+                                나가기
+                            </div>
+                        </div>
                     </div>}
         </>
     );
