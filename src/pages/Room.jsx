@@ -3,6 +3,10 @@ import styled from "styled-components";
 import socketio from 'socket.io-client';
 import { useParams, useNavigate } from "react-router-dom";
 
+//이미지
+import White from "../shared/image/CardWhite.png";
+import Black from "../shared/image/CardBlack.png";
+
 const socket = socketio.connect(process.env.REACT_APP_SURVER); //백서버
 
 function Room() {
@@ -16,9 +20,9 @@ function Room() {
 
     const [userId, setUserId] = useState('');
     //닉네임
-    const [mynickname, setNickname] = useState('owner');
-    const [ownerNickname, setOwnerNickname] = useState('owner');
-    const [guestNIckname, setGuestNIckname] = useState('guest');
+    const [mynickname, setNickname] = useState('');
+    const [ownerNickname, setOwnerNickname] = useState('');
+    const [guestNIckname, setGuestNIckname] = useState('');
 
     //소켓아이디
     const [mysocketId, setMysocketId] = useState('');
@@ -40,6 +44,8 @@ function Room() {
     const [round, setRound] = useState(1); // 라운드 
     const [turn, setTurn] = useState(true); // 턴 여부
     const [middleView, setMiddleView] = useState(true); // 중간부분 뷰 여부
+    const [test, setTest] = useState(false);
+    const [gameEnd, setGameEnd] = useState(false);
 
     useEffect(scrollToBottom, [list]);
     useEffect(() => {
@@ -56,8 +62,8 @@ function Room() {
             setList(prev => prev.concat({ text: login.nickname + "님이 입장하셨습니다." })); //입장 알림
             setUsers(login.userList); //유저 목록
 
-            // setNickname(login.nickname); //나의 닉네임
-            // setOwnerNickname(login.owner); //방장 닉네임
+            setNickname(login.nickname); //나의 닉네임
+            setOwnerNickname(login.owner); //방장 닉네임
             setGuestNIckname(login.userList.filter((user) => user.nickname !== ownerNickname)[0]?.nickname); //게스트 닉네임
 
             setMysocketId(login.socketId); //나의 소켓 아이디
@@ -94,6 +100,18 @@ function Room() {
             console.log(error.error.code);
         });
 
+        //게임정보의 게임스타트가 true면 으로 수정하기
+        if (test === true) {
+            const timer1 = setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 5초전..." })) }, 1000);
+            const timer2 = setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 4초전..." })) }, 2000);
+            const timer3 = setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 3초전..." })) }, 3000);
+            const timer4 = setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 2초전..." })) }, 4000);
+            const timer5 = setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 1초전..." })) }, 5000);
+            const timer6 = setTimeout(() => { setGamestart(true) }, 6000);
+        }
+
+
+        //게임정보의 게임종료가 트루면, 모달 true / 결과 닫기 누르면 gameEnd false, 게임스타트 false
     }, []);
 
     // socket.emit("turnEnd", {
@@ -125,14 +143,14 @@ function Room() {
                                         <button onClick={() => { navigate("/") }}>나가기</button>
                                     </span>
                                 </div>
-                                <div style={{ marginTop: "150px", marginLeft: "100px", display: "flex", justifyContent: "space-around" }}>
-                                    <span>{ownerNickname}</span>
-                                    <span>방장</span>
+                                <div style={{ marginTop: "150px", marginLeft: "100px", display: "flex" }}>
+                                    <span style={{ width: "420px", overflowX: "hidden", textAlign: "center" }}>{ownerNickname}</span>
+                                    <span style={{ width: "300px" }}>방장</span>
                                     <span>준비완료</span>
                                 </div>
-                                <div style={{ marginTop: "150px", marginLeft: "100px", display: "flex", justifyContent: "space-around" }}>{users.filter((user) => user.nickname !== ownerNickname)[0]?.nickname !== undefined ? <>
-                                    <span>{users.filter((user) => user.nickname !== ownerNickname)[0]?.nickname}</span>
-                                    <span onClick={() => { socket.emit("kick", { socketId: guestsoketId }) }}>추방하기</span>
+                                <div style={{ marginTop: "150px", marginLeft: "100px", display: "flex" }}>{users.filter((user) => user.nickname !== ownerNickname)[0]?.nickname !== undefined ? <>
+                                    <span style={{ width: "420px", overflowX: "hidden", textAlign: "center" }}>{users.filter((user) => user.nickname !== ownerNickname)[0]?.nickname}</span>
+                                    <Kick style={{ width: "300px" }}><span onClick={() => { socket.emit("kick", { socketId: guestsoketId }) }}>추방하기</span></Kick>
                                     <span>준비완료</span></> : ''}
                                 </div>
                             </div> :
@@ -144,14 +162,14 @@ function Room() {
                                         <button onClick={() => { navigate("/") }}>나가기</button>
                                     </span>
                                 </div>
-                                <div style={{ marginTop: "150px", marginLeft: "100px", display: "flex", justifyContent: "space-around" }}>
-                                    <span>{ownerNickname}</span>
-                                    <span>/방장/</span>
+                                <div style={{ marginTop: "150px", marginLeft: "100px", display: "flex" }}>
+                                    <span style={{ width: "420px", overflowX: "hidden", textAlign: "center" }}>{ownerNickname}</span>
+                                    <span style={{ width: "300px" }}>방장</span>
                                     <span>준비완료</span>
                                 </div>
-                                <div style={{ marginTop: "150px", marginLeft: "100px", display: "flex", justifyContent: "space-around" }}>
-                                    <span>{mynickname}</span>
-                                    <span>/나/</span>
+                                <div style={{ marginTop: "150px", marginLeft: "100px", display: "flex" }}>
+                                    <span style={{ width: "420px", overflowX: "hidden", textAlign: "center" }}>{mynickname}</span>
+                                    <span style={{ width: "300px" }} onClick={() => { socket.emit("kick", { socketId: guestsoketId }) }}>나</span>
                                     <span>{ready === true ? "준비완료" : "준비중"}</span>
                                 </div>
                             </div>
@@ -207,14 +225,14 @@ function Room() {
                         </div>
                         {/* guest */}
                         <div style={{ height: "125px", width: "941px", margin: "auto", marginTop: "40px", display: "flex", justifyContent: "flex-end" }}>
-                            <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto", marginRight: "7px" }}>
+                            <Card style={{ height: "117.12px", width: "80px", display: "flex", margin: "auto", marginRight: "7px", backgroundImage: 'url(' + Black + ')' }}>
 
-                            </div>
+                            </Card>
                         </div>
                         <div style={{ height: "125px", width: "941px", margin: "10px auto 20px auto", display: "flex" }}>
-                            <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto", marginLeft: "7px" }}>
+                            <Card style={{ height: "117.12px", width: "80px", display: "flex", margin: "auto", marginLeft: "7px", backgroundImage: 'url(' + Black + ')' }}>
 
-                            </div>
+                            </Card>
                         </div>
                         {/* 중간구역 */}
                         {turn === true && middleView === true ?
@@ -238,14 +256,14 @@ function Room() {
                         </div> : ''}
                         {/* owner */}
                         <div style={{ height: "125px", width: "941px", margin: "20px auto 10px auto", display: "flex" }}>
-                            <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto", marginLeft: "7px" }}>
+                            <Card style={{ height: "117.12px", width: "80px", display: "flex", margin: "auto", marginLeft: "7px", backgroundImage: 'url(' + Black + ')' }}>
 
-                            </div>
+                            </Card>
                         </div>
                         <div style={{ height: "125px", width: "941px", margin: "auto auto 49px auto", display: "flex" }}>
-                            <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto 7px auto auto" }}>
+                            <Card style={{ height: "117.12px", width: "80px", display: "flex", margin: "auto 7px auto auto", backgroundImage: 'url(' + Black + ')' }}>
 
-                            </div>
+                            </Card>
                         </div>
                         {/* 마지막구역 */}
                         <div style={{ height: "60px", width: "1041px", margin: "auto", fontSize: "36px", display: "flex", justifyContent: "space-between" }}>
@@ -282,14 +300,14 @@ function Room() {
                         </div>
                         {/* owner */}
                         <div style={{ height: "125px", width: "941px", margin: "auto", marginTop: "40px", display: "flex", justifyContent: "flex-end" }}>
-                            <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto", marginRight: "7px" }}>
+                            <Card style={{ height: "117.12px", width: "80px", display: "flex", margin: "auto", marginRight: "7px", backgroundImage: 'url(' + Black + ')' }}>
 
-                            </div>
+                            </Card>
                         </div>
                         <div style={{ height: "125px", width: "941px", margin: "10px auto 20px auto", display: "flex" }}>
-                            <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto", marginLeft: "7px" }}>
+                            <Card style={{ height: "117.12px", width: "80px", display: "flex", margin: "auto", marginLeft: "7px", backgroundImage: 'url(' + Black + ')' }}>
 
-                            </div>
+                            </Card>
                         </div>
                         {/* 중간구역 */}
                         {turn === true && middleView === true ?
@@ -313,14 +331,14 @@ function Room() {
                         </div> : ''}
                         {/* guest */}
                         <div style={{ height: "125px", width: "941px", margin: "20px auto 10px auto", display: "flex" }}>
-                            <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto", marginLeft: "7px" }}>
+                            <Card style={{ height: "117.12px", width: "80px", display: "flex", margin: "auto", marginLeft: "7px", backgroundImage: 'url(' + Black + ')' }}>
 
-                            </div>
+                            </Card>
                         </div>
                         <div style={{ height: "125px", width: "941px", margin: "auto auto 49px auto", display: "flex" }}>
-                            <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto 7px auto auto" }}>
+                            <Card style={{ height: "117.12px", width: "80px", display: "flex", margin: "auto 7px auto auto", backgroundImage: 'url(' + Black + ')' }}>
 
-                            </div>
+                            </Card>
                         </div>
                         {/* 마지막구역 */}
                         <div style={{ height: "60px", width: "1041px", margin: "auto", fontSize: "36px", display: "flex", justifyContent: "space-between" }}>
@@ -332,6 +350,33 @@ function Room() {
                             </div>
                         </div>
                     </div>}
+
+
+            {/* 결과창 모달 */}
+            {
+                gameEnd === true ? (<>
+                    <EndModal>
+                        <div style={{ width: "1000px", height: "600px", backgroundColor: "white", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                            <div style={{ fontSize: "60px", marginBottom: "30px" }}>승자는 누구!</div>
+                            <div style={{ fontSize: "36px" }}>상대 카드</div>
+                            <div style={{ width: "941px", margin: "0px auto 10px auto", display: "flex" }}>
+                                <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto", marginLeft: "7px" }}>
+
+                                </div>
+                            </div>
+                            <div style={{ fontSize: "36px", marginTop: "50px" }}>나의 카드</div>
+                            <div style={{ width: "941px", margin: "0px auto 10px auto", display: "flex" }}>
+                                <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto", marginLeft: "7px" }}>
+
+                                </div>
+                            </div>
+                            <button onClick={() => { setGameEnd(false); setGamestart(false); }} style={{ fontSize: "26px", marginTop: "10px" }}>
+                                결과 닫기
+                            </button>
+                        </div>
+                    </EndModal>
+                </>) : ''
+            }
         </>
     );
 };
@@ -351,6 +396,10 @@ const RoomBody = styled.div`
         font-weight: 548;
         width: 320px;
         height: 80px;
+        :hover {
+        background-color: #BAB7B7;
+        cursor: pointer;
+            }
     }
 `
 
@@ -382,4 +431,29 @@ const ChatWrapCss = styled.div`
     p {
         height:5px;
     }
+`
+
+const Kick = styled.span`
+    span {
+        :hover{
+        cursor:pointer;
+    }
+    }
+`
+
+const EndModal = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
+
+const Card = styled.div`
+    background-size: cover;   
+    background-position: center; 
 `

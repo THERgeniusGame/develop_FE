@@ -7,6 +7,10 @@ import { useSelector } from "react-redux/es/exports";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
+import Loadingimg from "../shared/image/Loading.png";
+
+import Swal from 'sweetalert2'
+
 function Main() {
 
   const navigate = useNavigate();
@@ -14,7 +18,7 @@ function Main() {
   const dispatch = useDispatch();
 
   const rooms = useSelector((state) => state.getmainroom.data.roomsInfo);
-  
+  const Loading = useSelector((state) => state.getmainroom.isLoading);
   const [resp, setResp] = useState([])
 
   //페이지네이션
@@ -40,10 +44,9 @@ function Main() {
 
   const onclickHandle = () => {
     if (roompw === checkpw) {
-      alert("성공");
       navigate(`/room/${roomId}`)
     } else {
-      alert("비밀번호가 틀립니다.")
+      Swal.fire({title:'비밀번호가 다릅니다.', timer: 1500})
     }
   }
 
@@ -56,9 +59,9 @@ function Main() {
   const onsubmitHandle = (e) => {
     e.preventDefault();
     if (roomTitle === '') {
-      alert("방 이름을 입력해주세요")
+      Swal.fire({title:'방 이름을 입력해주세요.', timer: 1500})
     } else if (roomLock === true && roomPw === '') {
-      alert("비밀번호를 입력해주세요")
+      Swal.fire({title:'비밀번호를 입력해주세요.', timer: 1500})
     }
     else {
       dispatch(__PostMainRoom({ roomTitle, roomCategory, roomLock, roomPw }));
@@ -76,104 +79,108 @@ function Main() {
   }, [rooms?.length]);
 
   return (
-    <div style={{ "width": "1440px", "height": "924px" }}>
-      <Roomsearch onSubmit={(e) => {
-        e.preventDefault();
-        if (roomsearch === '') {
-          alert("검색어를 입력해주세요.")
-        } else {
-          setResp(rooms.filter((res) => (res.roomTitle.includes(roomsearch) || res.nickname.includes(roomsearch))));
+    Loading === true ?
+      <div style={{ "width": "1440px", "height": "924px" }}>
+        <Roomsearch onSubmit={(e) => {
+          e.preventDefault();
+          if (roomsearch === '') {
+            Swal.fire({title:'검색어를 입력해주세요.', timer: 1500})
+          } else {
+            setResp(rooms.filter((res) => (res.roomTitle.includes(roomsearch) || res.nickname.includes(roomsearch))));
+          }
         }
-      }
-      }>
-        <input placeholder="방이름 또는 유저 닉네임을 입력해주세요." onChange={(e) => { setRoomsearch(e.target.value) }} />
-        <button>검색하기</button>
-      </Roomsearch>
-      <ChoosRock>
-        <button onClick={() => { setResp(rooms) }}>전체방</button>
-        <button onClick={() => { setResp(rooms.filter((res) => (res.roomLock === true))) }}>공개방</button>
-        <button onClick={() => { setResp(rooms.filter((res) => (res.roomLock === false))) }}>비공개방</button>
-      </ChoosRock>
-      <MainBody>
-        {currentCountings?.length === 0 ? <>입장가능한 방이 없습니다.</> : currentCountings?.map((room) => (
-          <RoomSelect key={room.roomId}>
-            <div>{room.roomTitle}</div>
-            <div>{room.nickname}님의 방</div>
-            {room.currentUsers !== 2 ?
-              <div>{room.roomLock === true ?
-                <>
-                  <button onClick={() => { setPwModal(true); setRoompw(room.roomPw); setRoomId(room.roomId); }}>입장하기</button>
-                </>
+        }>
+          <input placeholder="방이름 또는 유저 닉네임을 입력해주세요." onChange={(e) => { setRoomsearch(e.target.value) }} />
+          <button>검색하기</button>
+        </Roomsearch>
+        <ChoosRock>
+          <button onClick={() => { setResp(rooms) }}>전체방</button>
+          <button onClick={() => { setResp(rooms.filter((res) => (res.roomLock === true))) }}>공개방</button>
+          <button onClick={() => { setResp(rooms.filter((res) => (res.roomLock === false))) }}>비공개방</button>
+        </ChoosRock>
+        <MainBody>
+          {currentCountings?.length === 0 ? <>입장가능한 방이 없습니다.</> : currentCountings?.map((room) => (
+            <RoomSelect key={room.roomId}>
+              <div>{room.roomTitle}</div>
+              <div>{room.nickname}님의 방</div>
+              {room.currentUsers !== 2 ?
+                <div>{room.roomLock === true ?
+                  <>
+                    <button onClick={() => { setPwModal(true); setRoompw(room.roomPw); setRoomId(room.roomId); }}>입장하기</button>
+                  </>
+                  :
+                  <>
+                    <button onClick={() => { navigate(`room/${room.roomId}`) }}>입장하기</button>
+                  </>
+                }
+                </div>
                 :
-                <>
-                  <button onClick={() => { navigate(`room/${room.roomId}`) }}>입장하기</button>
-                </>
+                ''
               }
-              </div>
-              :
-              ''
-            }
-            <div>현재인원: {room.currentUsers}
-              <span>/{room.roomLock === true ?
-                <>비공개</>
-                :
-                <>공개</>
-              }
-              </span>
-            </div>
-          </RoomSelect>
-        ))}
-      </MainBody>
-      <Pagination
-        total={total}
-        limit={limit}
-        page={page}
-        setPage={setPage}
-      />
-      <MakeRoom onClick={() => { setMakeRoomModal(true) }}><div>게임만들기</div></MakeRoom>
-
-      {/* 룸 비밀번호 입력 모달 */}
-      {
-        pwModal === true ? (<>
-          <PwModal onClick={() => {
-            setPwModal(!pwModal)
-          }}>
-            <PwModalBody onClick={(event) => { event.stopPropagation() }}  >
-              <input onChange={(e) => { setCheckpw(e.target.value) }} placeholder="비밀번호 확인" style={{ "textAlign": "center", "height": "30px", "width": "300px" }}></input>
-              <button onClick={onclickHandle} style={{ "cursor": "pointer", "margin": "10px", "width": "200px" }}>입장하기</button>
-            </PwModalBody>
-          </PwModal>
-        </>) : ''
-      }
-
-      {/* 룸 생성 모달 */}
-      {
-        makeroomModal === true ? (<>
-          <MakeRoomModal onSubmit={onsubmitHandle} onClick={() => {
-            setMakeRoomModal(!makeroomModal);
-            setRoomLock(false);
-          }}>
-            <MakeRoomModalBody onClick={(event) => { event.stopPropagation() }}  >
-              <div>
-                <span>방 이름 : </span>
-                <input onChange={(e) => { setRoomTitle(e.target.value) }} placeholder="방 이름을 입력해주세요" style={{ "textAlign": "center", "height": "30px", "width": "400px", "marginBottom": "5px" }}></input>
-              </div>
-              <div>{roomLock === true ?
-                <>비밀번호 : <input onChange={(e) => { setRoomPw(e.target.value) }} placeholder="비밀번호를 입력해주세요" style={{ "textAlign": "center", "height": "30px", "width": "400px", "marginRight": "18px" }}></input>
-                </> : ''}
-              </div>
-              <div style={{ "fontSize": "20px", "color":"gray","display":"flex" }}>
-                <span style={{"marginTop":"15px"}}>비밀번호 만들기</span>
-                <span><input style={{"width":"30px", "display" : "flex", "marginTop":"10px"}} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }} type="checkbox"></input></span>
-                <span>
-                  <button style={{ "cursor": "pointer", "margin": "10px", "width": "150px", "marginRight":"120px" }}>방 생성하기</button>
+              <div>현재인원: {room.currentUsers}
+                <span>/{room.roomLock === true ?
+                  <>비공개</>
+                  :
+                  <>공개</>
+                }
                 </span>
               </div>
-            </MakeRoomModalBody>
-          </MakeRoomModal>
-        </>) : ''
-      }
-    </div>
+            </RoomSelect>
+          ))}
+        </MainBody>
+        <Pagination
+          total={total}
+          limit={limit}
+          page={page}
+          setPage={setPage}
+        />
+        <MakeRoom onClick={() => { setMakeRoomModal(true) }}><div>게임만들기</div></MakeRoom>
+
+        {/* 룸 비밀번호 입력 모달 */}
+        {
+          pwModal === true ? (<>
+            <PwModal onClick={() => {
+              setPwModal(!pwModal)
+            }}>
+              <PwModalBody onClick={(event) => { event.stopPropagation() }}  >
+                <input onChange={(e) => { setCheckpw(e.target.value) }} placeholder="비밀번호 확인" style={{ "textAlign": "center", "height": "30px", "width": "300px" }}></input>
+                <button onClick={onclickHandle} style={{ "cursor": "pointer", "margin": "10px", "width": "200px" }}>입장하기</button>
+              </PwModalBody>
+            </PwModal>
+          </>) : ''
+        }
+
+        {/* 룸 생성 모달 */}
+        {
+          makeroomModal === true ? (<>
+            <MakeRoomModal onSubmit={onsubmitHandle} onClick={() => {
+              setMakeRoomModal(!makeroomModal);
+              setRoomLock(false);
+            }}>
+              <MakeRoomModalBody onClick={(event) => { event.stopPropagation() }}  >
+                <div>
+                  <span>방 이름 : </span>
+                  <input onChange={(e) => { setRoomTitle(e.target.value) }} placeholder="방 이름을 입력해주세요" style={{ "textAlign": "center", "height": "30px", "width": "400px", "marginBottom": "5px" }}></input>
+                </div>
+                <div>{roomLock === true ?
+                  <>비밀번호 : <input onChange={(e) => { setRoomPw(e.target.value) }} placeholder="비밀번호를 입력해주세요" style={{ "textAlign": "center", "height": "30px", "width": "400px", "marginRight": "18px" }}></input>
+                  </> : ''}
+                </div>
+                <div style={{ "fontSize": "20px", "color": "gray", "display": "flex" }}>
+                  <span style={{ "marginTop": "15px" }}>비밀번호 만들기</span>
+                  <span><input style={{ "width": "30px", "display": "flex", "marginTop": "10px" }} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }} type="checkbox"></input></span>
+                  <span>
+                    <button style={{ "cursor": "pointer", "margin": "10px", "width": "150px", "marginRight": "120px" }}>방 생성하기</button>
+                  </span>
+                </div>
+              </MakeRoomModalBody>
+            </MakeRoomModal>
+          </>) : ''
+        }
+      </div> :
+      <div style={{ width: "1440px", height: "1024px", display: "flex" }}>
+        <div style={{ width: "250px", height: "350px", backgroundImage: 'url(' + Loadingimg + ')', backgroundPosition: "center", backgroundSize: "cover", margin: "auto", display: "flex", justifyContent: "center", alignItems: "center" }} />
+      </div>
   );
 }
 
@@ -187,9 +194,8 @@ let MainBody = styled.div`
  margin-top: 20px;
 
  flex-wrap: wrap;
- justify-content: center;
- align-items: center;
  font-size:18px;
+ 
 
  button {
   font-size:18px;
@@ -201,14 +207,13 @@ let RoomSelect = styled.div`
  width: 424px;
  height: 134px;
  margin: auto;
- margin-bottom: 30px;
  border: solid 3px black;
  border-radius: 10px;
  padding: 5px;
 
  button {
   :hover {
-  background-color: yellow;
+  background-color: #BAB7B7;
   cursor: pointer;
  }
  }
@@ -224,7 +229,7 @@ let MakeRoom = styled.div`
  padding: 5px;
  display: flex;
  :hover {
-  background-color: yellow;
+  background-color: #BAB7B7;
   cursor: pointer;
  }
 
@@ -248,7 +253,7 @@ let ChoosRock = styled.div`
     font-size:27px;
     margin: 5px;
     :hover {
-    background-color: yellow;
+    background-color: #BAB7B7;
     cursor: pointer;
   }
   }
@@ -274,7 +279,7 @@ let Roomsearch = styled.form`
     height: 40px;
     font-size:23px;
     :hover {
-    background-color: yellow;
+    background-color: #BAB7B7;
     cursor: pointer;
   }
   }
@@ -316,7 +321,7 @@ const PwModalBody = styled.div`
       height: 40px;
       font-size:23px;
       :hover {
-      background-color: yellow;
+      background-color: #BAB7B7;
       cursor: pointer;
               }
     }
@@ -358,7 +363,7 @@ const MakeRoomModalBody = styled.form`
       height: 40px;
       font-size:23px;
       :hover {
-      background-color: yellow;
+      background-color: #BAB7B7;
       cursor: pointer;
             }
     }
