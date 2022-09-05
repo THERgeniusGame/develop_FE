@@ -1,5 +1,5 @@
 # ✨프로젝트소개
-더지니어스게임의 흑과백 게임을 모티브로 웹 게임을 만들었습니다.
+더지니어스게임 의 흑과백 게임을 모티브로 웹 게임을 만들었습니다.
 
 # 🎀프로젝트 아키텍처 - 추가하기
 
@@ -40,16 +40,33 @@ ex) Module/MainGetList
 3. 추가적인 설명 기입
 ex) css 추가 수정
 
-# 🔖Library - 프로젝트 스텍으로 수정하기
-- axios	서버통신
-- redux-toolkit	상태관리, 미들웨어
-- styled-components	css 관리
-- json-server	백엔드 서버와의 연결 전 사용
-- jwt	jwt 토큰 사용
-- socket.io-client	실시간 반영
-- react-hook-form	로그인/ 회원가입 (리렌더링 수 ↓)
-- sweetalert2	alert css
-- dotenv	환경변수
+# 🔖프론트엔드 기술 스택
+
+<center>
+<br/>
+<div style="display: inline;">
+<img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&logo=react&logoColor=white">
+<img src="https://img.shields.io/badge/redux_toolkit-764ABC?style=for-the-badge&logo=redux&logoColor=white">
+<img src="https://img.shields.io/badge/styled_components-DB7093?style=for-the-badge&logo=styledcomponents&logoColor=white">
+</div>
+
+<div style="display: inline;">
+<img src="https://img.shields.io/badge/socket.io-black?style=for-the-badge&logo=socket.io&logoColor=white"/>
+<img src="https://img.shields.io/badge/axios-6236FF?style=for-the-badge&logo=axios&logoColor=white">
+<img src="https://img.shields.io/badge/Json-green?style=for-the-badge&logo=Json&logoColor=CC6699"/>
+</div>
+
+<div style="display: inline;">
+<img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
+<img src="https://img.shields.io/badge/ReactHookForm-b23838?style=for-the-badge&logo=ReactHookForm&logoColor=white"/>
+<img src="https://img.shields.io/badge/dotenv-3b0707aa?style=for-the-badge&logo=dotenv&logoColor=CC6699"/>
+</div>
+
+<div style="display: inline;">
+<img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
+<img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white"></div>
+</center>
+<br>
 
 # 🛰️와이어 프레임
 https://www.figma.com/file/0XBiaSNcr9NcTTKjBKfv1x/THERgeniusGame?node-id=0%3A1
