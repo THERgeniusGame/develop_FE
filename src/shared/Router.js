@@ -3,6 +3,7 @@ import Main from "../pages/Main";
 import LogIn from "../pages/LogIn";
 import SignUp from "../pages/SignUp";
 import Room from "../pages/Room"
+
 const Router = () => {
   return (
     <Routes>

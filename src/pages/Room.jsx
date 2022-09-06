@@ -128,6 +128,8 @@ function Room() {
     //     }
     // });
     // let timer = setTimeout(()=>{setList(prev => prev.concat({ text: chat.nickname + " " + chat.msg }))}, 2000);
+    // https://gall.dcinside.com/board/view/?id=thegenius&no=1152573
+    // https://m.blog.naver.com/topnara/221678593761
     return (
         <>
             {gamestart === false ?

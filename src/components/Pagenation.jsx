@@ -7,9 +7,7 @@ const Pagination = ({ total, limit, page, setPage }) => {
     return (
         <>
             <Nav>
-                <Button onClick={() => setPage(page - 1)} disabled={page === 1}>
-                    &lt;
-                </Button>
+                
                 {Array(numPages)
                     .fill()
                     .map((_, i) => (
@@ -21,9 +19,7 @@ const Pagination = ({ total, limit, page, setPage }) => {
                             {i + 1}
                         </Button>
                     ))}
-                <Button onClick={() => setPage(page + 1)} disabled={page === numPages}>
-                    &gt;
-                </Button>
+                
             </Nav>
         </>
     );
@@ -42,24 +38,20 @@ const Button = styled.button`
   border-radius: 8px;
   padding: 8px;
   margin: 1px;
-  background: black;
-  color: white;
-  font-size: 1rem;
+  font-size: 18px;
+  background: none;
   &:hover {
-    background: tomato;
+    background: black;
+    color: white;
     cursor: pointer;
     transform: translateY(-2px);
   }
   &[disabled] {
-    background: grey;
-    cursor: revert;
-    transform: revert;
   }
   &[aria-current] {
-    background: #ff1491a3;
     font-weight: bold;
-    cursor: revert;
-    transform: revert;
+    background: black;
+    color: white;
   }
 `;
 
