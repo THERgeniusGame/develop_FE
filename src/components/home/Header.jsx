@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import Main from "../assets/image/Main.png"
+import Main from "../../shared/image/Main.png"
 
 const Header = () => {
   

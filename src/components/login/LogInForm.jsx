@@ -7,7 +7,7 @@ import { serverUrl } from "../../serverurl";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import { __login } from "../../redux/modules/loginSlice";
-import Cards from "../assets/image/Cards.png"
+import Cards from "../../shared/image/Cards.png"
 
 const LogInForm = () => {
     const dispatch = useDispatch();
