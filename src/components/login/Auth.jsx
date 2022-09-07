@@ -12,10 +12,6 @@ const Auth = () => {
     const [userPw, setUserPw] = useState("");
     const [confirmPw, setConfirmPw] = useState("");
 
-    // // dp가 false면 사용 불가 (이미 사용중인 닉네임)
-    // const [dpNicknameCheck, setDpNicknameCheck] = useState(false);
-    // const [checkError, setCheckError] = useState(""); //띄울 메세지
-
     const loginCheck = () => {
       const token = window.localStorage.getItem("token");
       if (token !== null) {
@@ -34,28 +30,6 @@ const Auth = () => {
     const [userPwError, setUserPwError] = useState(false);
     const [confirmPwError, setConfirmPwError] = useState(false);
     const [nicknameError, setNickNameError] = useState(false);
-
-    // const onChange = async (ev) => {
-    //     const { target : { nickname, value }} = ev;
-    //     setData(data => ({ ...data, [nickname]: value }))
-    
-    //     if (nickname == "nickname") {
-    //         const nicknameCheck = await dbService
-    //             .collection()
-    //             .where("nickname", "==", value)
-    //             .get();
-    //         if (nicknameCheck.docs.length == 0 && value.length > 0) {
-    //             setCheckError("사용가능한 닉네임");
-    //             setDpNicknameCheck(true);
-    //         }
-    //         else {
-    //             if (value.length != 0) setCheckError("이미 사용중인 닉네임입니다.");
-    //             else setCheckError("");
-    //             setDpNicknameCheck(false); // 사용 불가
-                
-    //         }
-    //     }
-    // }
 
     const onChangeUserEmail = (e) => {
         const userEmailRegex = 
@@ -97,7 +71,6 @@ const Auth = () => {
             setConfirmPw(e.target.value);
     };
 
-
     const onSubmit = async (data) => {
       if (!userEmail) setUserEmailError(true);
       if (!userPw) setUserPwError(true);
@@ -126,15 +99,7 @@ const Auth = () => {
          .catch((error) => {
           console.log(error);
           alert("이미 가입한 이메일입니다")
-        }) 
-       
-        // await axios.post("http://15.164.95.144/api/signup", data).then((res) => {
-        //     console.log(res);
-        //     if (res.data.result === true) {
-        //         navigate("/login");
-        //     }
-        // });
-        //     console.log()
+        })
     };
 
     useEffect(() => {
