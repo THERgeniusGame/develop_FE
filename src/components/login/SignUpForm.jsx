@@ -52,7 +52,8 @@ const SignUpForm = () => {
                 );
             }
     };
-        //email 중복확인 성공했을 때 메시지 띄워주기
+    
+    //email 중복확인 성공했을 때 메시지 띄워주기
     useEffect(() => {
         const email = getValues("email")
         console.log(checkEmail)
@@ -96,7 +97,7 @@ const SignUpForm = () => {
         await new Promise((r) => setTimeout(r, 300));
         console.log(data) //input에 적은 값
         dispatch(__signup(data));
-        navigate('/')
+        navigate('/login')
     };
 
     return(
