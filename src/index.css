@@ -1,28 +1,32 @@
 @font-face {
-	font-family: 'NanumMyeongjo';
-	src: url("./shared/fonts/nanum-myeongjo/NanumMyeongjo.ttf");
-}
-
-.index div {
-	font-family: 'NanumMyeongjo';
-}
-
-.index input {
-	font-family: 'NanumMyeongjo';
-}
-
-.index button {
-	font-family: 'NanumMyeongjo';
-}
-
-.index span {
-	font-family: 'NanumMyeongjo';
-}
-
-.index form {
-	font-family: 'NanumMyeongjo';
-}
-
-.index p {
-	font-family: 'NanumMyeongjo';
-}
+    font-family: 'NanumMyeongjo';
+    src: url("../src/components/assets/fonts/nanum_myeonjo/NanumMyeongjo-Bold.ttf");
+    }
+    
+    .index div {
+        font-family: 'NanumMyeongjo';
+    }
+    
+    .index input {
+        font-family: 'NanumMyeongjo';
+    }
+    
+    .index button {
+        font-family: 'NanumMyeongjo';
+    }
+    
+    .index span {
+        font-family: 'NanumMyeongjo';
+    }
+    
+    .index form {
+        font-family: 'NanumMyeongjo';
+    }
+    
+    .index p {
+        font-family: 'NanumMyeongjo';
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 800;
+        line-height: 30px;
+    }
