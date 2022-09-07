@@ -1,9 +1,9 @@
-import SignIn from "../components/login/SignIn";
+import LogInForm from "../components/login/LogInForm";
 
 const LogIn = () => {
     return (
         <>
-        <SignIn />
+        <LogInForm />
         </>
     )
 }
