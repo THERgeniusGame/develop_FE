@@ -27,7 +27,7 @@ function Main() {
   const Loading = useSelector((state) => state.getmainroom.isLoading);
   const [resp, setResp] = useState([])
   const [lock, setLock] = useState("ALL");
-  
+
   //페이지네이션
   const [total, setTotal] = useState(0);
   const [limit] = useState(6);
@@ -57,7 +57,7 @@ function Main() {
       Swal.fire({ title: '비밀번호가 다릅니다.', timer: 1500 })
     }
   }
-  
+
   //방 생성
   const [roomTitle, setRoomTitle] = useState('')
   const [roomLock, setRoomLock] = useState(false)
@@ -104,15 +104,15 @@ function Main() {
             }
           }
           }>
-            <div><input placeholder="검색어를 입력하세요." onChange={(e) => { setRoomsearch(e.target.value) }} ></input><button><FaSearch style={{ paddingRight: "20px", fontSize: "18" }} /></button>
+            <div><input placeholder="검색어를 입력하세요." onChange={(e) => { setRoomsearch(e.target.value) }} ></input><SearchBtn><FaSearch style={{ paddingRight: "20px", fontSize: "18", padding: "10px" }} /></SearchBtn>
             </div>
           </Roomsearch>
         </div>
         <MainBody>
           {currentCountings?.length === 0 ? <>입장가능한 방이 없습니다.</> : currentCountings?.map((room) => (
             <RoomSelect key={room.roomId}>
-              <div>{room.roomTitle}</div>
               <div>{room.nickname}님의 방</div>
+              <div>{room.roomTitle}</div>
               {room.currentUsers !== 2 ?
                 <div>{room.roomLock === true ?
                   <>
@@ -125,7 +125,9 @@ function Main() {
                 }
                 </div>
                 :
-                ''
+                <>
+                  <button>게임중</button>
+                </>
               }
               <div>현재인원: {room.currentUsers}
                 <span>/{room.roomLock === true ?
@@ -168,19 +170,21 @@ function Main() {
               setRoomLock(false);
             }}>
               <MakeRoomModalBody onClick={(event) => { event.stopPropagation() }}  >
-                <p>게임방 만들기</p>
-                <div>게임방 이름<span>방 공개여부</span>{roomLock === false ? <BiLockOpenAlt onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }} /> : <BiLockAlt onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }}/>}</div>
-                <input onChange={(e) => { setRoomTitle(e.target.value) }}></input>
+                <p style={{ display: "flex", margin: "auto auto 56px auto" }}>게임방 만들기</p>
+                <div style={{ display: "flex", margin: "0px auto 3px 112px" }}>게임방 이름<span style={{ marginLeft: "552px" }}>방 공개여부</span>{roomLock === false ? <BiLockOpenAlt style={{ marginLeft: "16px" }} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }} /> : <BiLockAlt style={{ marginLeft: "16px" }} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }} />}</div>
+                <input style={{ display: "flex", margin: "0px auto 40px auto" }} onChange={(e) => { setRoomTitle(e.target.value) }}></input>
                 <div>{roomLock === true ?
-                  <><div>비밀번호 입력창</div>
-                  <input onChange={(e) => { setRoomPw(e.target.value) }}></input></>: ''}
+                  <>
+                    <div style={{ display: "flex", margin: "auto auto 3px 112px" }}>비밀번호 입력창</div>
+                    <input style={{ display: "flex", margin: "auto auto 50px auto" }} onChange={(e) => { setRoomPw(e.target.value) }}></input>
+                  </> : ''}
                 </div>
-                <div style={{ "fontSize": "20px", "color": "gray", "display": "flex" }}>
-                  <span>
+                <div style={{ "fontSize": "20px", "color": "gray", "display": "flex", margin: "0px auto auto auto" }}>
+                  <span style={{ marginRight: "34px" }}>
                     <button>방 만들기</button>
                   </span>
                   <span>
-                    <button type="button" onClick={() => {setMakeRoomModal(!makeroomModal); setRoomLock(false);}}>돌아가기</button>
+                    <button type="button" onClick={() => { setMakeRoomModal(!makeroomModal); setRoomLock(false); }}>돌아가기</button>
                   </span>
                 </div>
               </MakeRoomModalBody>
@@ -467,3 +471,10 @@ const MakeRoomModalBody = styled.form`
     }
 `;
 
+const SearchBtn = styled.button`
+  border-radius: 10px;
+   :hover {
+  background-color: #BAB7B7;
+  cursor: pointer;
+ }
+`

@@ -2,10 +2,12 @@ import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import socketio from 'socket.io-client';
 import { useParams, useNavigate } from "react-router-dom";
+import Roomimg from "../shared/image/Roomimg.png";
 
 //이미지
 import White from "../shared/image/CardWhite.png";
 import Black from "../shared/image/CardBlack.png";
+import Crown from "../shared/image/Crown.png"
 
 const socket = socketio.connect(process.env.REACT_APP_SURVER); //백서버
 
@@ -82,19 +84,20 @@ function Room() {
             setReady(ready);
         });
 
-        // socket.on("gameInfo", gameInfo => {
-        //     if(gameInfo.gameInfo.gamestart !== gamestart) {
-        //     setGamestart(gameInfo.gameInfo.gamestart);
-        // }
-        //     setRound(gameInfo.gameInfo.round);
-        // });
+        socket.on("gameInfo", gameInfo => {
+            console.log(gameInfo)
+            //     if(gameInfo.gameInfo.gamestart !== gamestart) {
+            //     setGamestart(gameInfo.gameInfo.gamestart);
+            // }
+            //     setRound(gameInfo.gameInfo.round);
+        });
 
-        // socket.on("disconnect", disconnect => {
-        //     console.log(disconnect);
-        //     if (disconnect !== undefined) {
-        //         navigate("/")
-        //     }
-        // });
+        socket.on("disconnect", disconnect => {
+            console.log(disconnect);
+            // if (disconnect !== undefined) {
+            //     navigate("/")
+            // }
+        });
 
         socket.on("error", error => {
             console.log(error.error.code);
@@ -128,57 +131,58 @@ function Room() {
     //     }
     // });
     // let timer = setTimeout(()=>{setList(prev => prev.concat({ text: chat.nickname + " " + chat.msg }))}, 2000);
-    // https://gall.dcinside.com/board/view/?id=thegenius&no=1152573
-    // https://m.blog.naver.com/topnara/221678593761
+
     return (
         <>
             {gamestart === false ?
                 //대기방
-                <div style={{ height: "924px", width: "1340px" }}>
-                    <RoomBody>
+                <div style={{ "width": "1440px", "height": "1024px", backgroundImage: 'url(' + Roomimg + ')', backgroundPosition: "center", backgroundSize: "cover", fontSize: "18px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                    <RoomBody style={{ paddingTop: "150px" }}>
                         {mynickname === ownerNickname ?
                             //호스트 구역
                             <div>
-                                <div>{ownerNickname}님의 게임방
+                                <div style={{ fontSize: "24px", width: "975px", margin: "auto auto 80px auto" }}>{ownerNickname}님의 게임방
                                     <span style={{ float: "right" }}>
-                                        <button onClick={() => { ready === false ? alert("상대가 아직 준비하지 않았습니다.") : socket.emit("gamestart", { gamestart }); }} style={{ marginRight: "30px" }}>게임시작</button>
-                                        <button onClick={() => { navigate("/") }}>나가기</button>
+                                        <button onClick={() => { ready === false ? alert("상대가 아직 준비하지 않았습니다.") : socket.emit("gamestart", { gamestart }); }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>게임시작</button>
+                                        <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { navigate("/") }}>나가기</button>
                                     </span>
                                 </div>
-                                <div style={{ marginTop: "150px", marginLeft: "100px", display: "flex" }}>
-                                    <span style={{ width: "420px", overflowX: "hidden", textAlign: "center" }}>{ownerNickname}</span>
-                                    <span style={{ width: "300px" }}>방장</span>
-                                    <span>준비완료</span>
-                                </div>
-                                <div style={{ marginTop: "150px", marginLeft: "100px", display: "flex" }}>{users.filter((user) => user.nickname !== ownerNickname)[0]?.nickname !== undefined ? <>
-                                    <span style={{ width: "420px", overflowX: "hidden", textAlign: "center" }}>{users.filter((user) => user.nickname !== ownerNickname)[0]?.nickname}</span>
-                                    <Kick style={{ width: "300px" }}><span onClick={() => { socket.emit("kick", { socketId: guestsoketId }) }}>추방하기</span></Kick>
-                                    <span>준비완료</span></> : ''}
-                                </div>
+                                <UserList>
+                                    <span style={{ display: "flex" }}>
+                                        <div>{ownerNickname}</div>
+                                        <div style={{ backgroundImage: 'url(' + Crown + ')', backgroundPosition: "center", backgroundSize: "cover", width: "25px", marginLeft: "10px", marginBottom: "6px" }}></div>
+                                    </span>
+                                    <div style={{ marginRight: "10px" }}>준비완료</div>
+                                </UserList>
+                                <UserList>{users.filter((user) => user.nickname !== ownerNickname)[0]?.nickname !== undefined ? <>
+                                    <div>{users.filter((user) => user.nickname !== ownerNickname)[0]?.nickname}<Kick><span style={{ marginLeft: "10px", fontSize:"14px", color:"red" }} onClick={() => { socket.emit("kick", { socketId: guestsoketId }) }}>추방하기</span></Kick></div>
+                                    <div style={{ marginRight: "10px" }}>준비완료</div></> : ''}
+                                </UserList>
                             </div> :
                             //게스트 구역
                             <div>
-                                <div>{ownerNickname}님의 게임방
+                                <div style={{ fontSize: "24px", width: "975px", margin: "auto auto 80px auto" }}>{ownerNickname}님의 게임방
                                     <span style={{ float: "right" }}>
-                                        <button onClick={() => { socket.emit("ready", { ready: !ready }); }} style={{ marginRight: "30px" }}>준비하기</button>
-                                        <button onClick={() => { navigate("/") }}>나가기</button>
+                                        <button onClick={() => { socket.emit("ready", { ready: !ready }); }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
+                                        <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { navigate("/") }}>나가기</button>
                                     </span>
                                 </div>
-                                <div style={{ marginTop: "150px", marginLeft: "100px", display: "flex" }}>
-                                    <span style={{ width: "420px", overflowX: "hidden", textAlign: "center" }}>{ownerNickname}</span>
-                                    <span style={{ width: "300px" }}>방장</span>
-                                    <span>준비완료</span>
-                                </div>
-                                <div style={{ marginTop: "150px", marginLeft: "100px", display: "flex" }}>
-                                    <span style={{ width: "420px", overflowX: "hidden", textAlign: "center" }}>{mynickname}</span>
-                                    <span style={{ width: "300px" }} onClick={() => { socket.emit("kick", { socketId: guestsoketId }) }}>나</span>
-                                    <span>{ready === true ? "준비완료" : "준비중"}</span>
-                                </div>
+                                <UserList>
+                                    <span style={{ display: "flex" }}>
+                                        <div>{ownerNickname}</div>
+                                        <div style={{ backgroundImage: 'url(' + Crown + ')', backgroundPosition: "center", backgroundSize: "cover", width: "25px", marginLeft: "10px", marginBottom: "6px" }}></div>
+                                    </span>
+                                    <div style={{ float: "right", display: "flex", marginRight: "10px" }}>준비완료</div>
+                                </UserList>
+                                <UserList>
+                                    <div>{mynickname}</div>
+                                    <div style={{ marginRight: "10px" }}>{ready === true ? "준비완료" : "준비중"}</div>
+                                </UserList>
                             </div>
                         }
                     </RoomBody>
                     <ChatBody>
-                        <span style={{ backgroundColor: "white" }}>{roomId}번 방입니다.</span>
+                        <span style={{ fontWeight: "700", marginBottom: "4px", marginLeft: "20px", display: "flex", width: "990px" }}>채팅</span>
                         <ChatWrapCss>
                             {list.map((item, index) => (
                                 <p key={index}>
@@ -194,9 +198,10 @@ function Room() {
                                 setChat("");
                             }}
                         >
-                            <div>
-                                <input placeholder="메세지를 입력해주세요." value={chat} onChange={e => setChat(e.target.value)} />
-                            </div>
+                            <ChatForm>
+                                <input style={{ fontSize: "18px", paddingLeft: "10px" }} placeholder="메세지 입력하기" value={chat} onChange={e => setChat(e.target.value)} />
+                                <button style={{ height: "30px", borderRadius: "10px", marginLeft: "3px", fontSize: "18px" }}>보내기</button>
+                            </ChatForm>
                         </form>
                     </ChatBody >
                 </div> :
@@ -390,14 +395,16 @@ const RoomBody = styled.div`
     height:689px;
     margin: auto;
     font-size: 36px;
-    font-weight: 548;
-    button {
-        border: 0px;
-        background-color: #D9D9D9;
-        font-size: 36px;
-        font-weight: 548;
-        width: 320px;
-        height: 80px;
+    font-style: normal;
+    font-weight: 700;
+    button {width: 140px;
+        height: 45px;
+        left: 908px;
+        top: 104px;
+        background: #F4F4F4;
+        border: 1px solid rgba(169, 169, 169, 0.25);
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+        border-radius: 8px;
         :hover {
         background-color: #BAB7B7;
         cursor: pointer;
@@ -406,30 +413,38 @@ const RoomBody = styled.div`
 `
 
 const ChatBody = styled.div`
-    width: 1040px;
-    height: 351px;
-    background-color: #D9D9D9;
-    margin: auto auto 0px auto;
-    display: flex;
-    flex-direction: column;
-    font-size: 36px;
-    font-weight: 548;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    margin-bottom:53px;
+    padding: 10px;
+    font-style: normal;
+    width: 980px;
+    height: 540px;
+    left: 193px;
+    top: 431px;
+    background: #F4F4F4;
+    border: 1px solid rgba(169, 169, 169, 0.25);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
     input {
-        font-weight: 548;
-        font-size: 36px;
-        width: 1017px;
-        height: 60px;
-        background-color: #8F1F1F;
-        color: white;
-        padding: 10px;
+        background: none;
+        border: none;
+        width: 895px;
     }
 `
 
 const ChatWrapCss = styled.div`
     overflow-y: scroll;
-    border: "1px solid";
-    padding: 3px;
-    height: 300px;
+    width: 960px;
+    height: 400px;
+    left: 219px;
+    top: 464px;
+    background: linear-gradient(259.36deg, #F1F1F1 2.14%, #F3F3F3 28.04%, #ECECEC 57.25%, #ECECEC 81.49%, #E3E3E3 103.54%);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    padding: 10px;
     p {
         height:5px;
     }
@@ -437,8 +452,10 @@ const ChatWrapCss = styled.div`
 
 const Kick = styled.span`
     span {
+        border-radius:5px;
         :hover{
         cursor:pointer;
+        background-color: #BAB7B7;
     }
     }
 `
@@ -458,4 +475,44 @@ const EndModal = styled.div`
 const Card = styled.div`
     background-size: cover;   
     background-position: center; 
+`
+
+const UserList = styled.div`
+    width: 918px;
+    height: 25px;
+    left: 230px;
+    top: 223px;
+    background: #F4F4F4;
+    border: 1px solid rgba(169, 169, 169, 0.25);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    font-size: 18px;
+    padding: 10px 30px 10px 30px;
+    display:flex;
+    margin: auto auto 40px auto;
+    justify-content: space-between;
+`
+
+const ChatForm = styled.div`
+    margin-top: 10px;
+    width: 980px;
+    height: 45px;
+    left: 219px;
+    top: 906px;
+    background: linear-gradient(259.36deg, #F1F1F1 2.14%, #F3F3F3 28.04%, #ECECEC 57.25%, #ECECEC 81.49%, #E3E3E3 103.54%);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    input {
+        height: 43px; 
+    }
+    button {
+        height: 45px;
+        font-weight:700; 
+        background:none; 
+        border:none;
+        :hover {
+            background-color: #BAB7B7;
+            cursor: pointer;
+        }
+    }
 `
