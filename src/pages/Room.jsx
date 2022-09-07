@@ -21,6 +21,7 @@ function Room() {
     const token = process.env.REACT_APP_TOKEN;
 
     const [userId, setUserId] = useState('');
+    
     //닉네임
     const [mynickname, setNickname] = useState('');
     const [ownerNickname, setOwnerNickname] = useState('');
@@ -76,7 +77,6 @@ function Room() {
         });
 
         socket.on("chat", chat => {
-            // let timer = setTimeout(()=>{setList(prev => prev.concat({ text: chat.nickname + " " + chat.msg }))}, 2000);
             setList(prev => prev.concat({ text: chat.nickname + " " + chat.msg }));
         });
 

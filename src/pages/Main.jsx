@@ -104,7 +104,7 @@ function Main() {
             }
           }
           }>
-            <div><input placeholder="검색어를 입력하세요." onChange={(e) => { setRoomsearch(e.target.value) }} ></input><SearchBtn><FaSearch style={{ paddingRight: "20px", fontSize: "18", padding: "10px" }} /></SearchBtn>
+            <div><input placeholder="검색어를 입력하세요." onChange={(e) => { setRoomsearch(e.target.value) }} ></input><SearchBtn style={{marginLeft:"3px"}}><FaSearch style={{ paddingRight: "20px", fontSize: "18", padding: "10px" }} /></SearchBtn>
             </div>
           </Roomsearch>
         </div>
@@ -388,6 +388,7 @@ const PwModalBody = styled.div`
       line-height: 30px;
     }
     input {
+      font-size: 18px;
       display:flex;
       margin: auto auto 50px auto;
       width: 505px;
