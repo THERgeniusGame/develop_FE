@@ -17,7 +17,6 @@ export const __signup = createAsyncThunk(
     async (payload, thunkAPI) => {
         try {
             const response = await axios.post(`${serverUrl}/api/user/signup`, payload)
-            localStorage.setItem("token", response.data.token)
             console.log(response);
             return Swal.fire("회원가입이 완료되었습니다!", "success");
             // localStorage.setItem("token", response);
