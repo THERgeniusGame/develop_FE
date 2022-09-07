@@ -1,0 +1,28 @@
+@font-face {
+	font-family: 'NanumMyeongjo';
+	src: url("./shared/fonts/nanum-myeongjo/NanumMyeongjo.ttf");
+}
+
+.index div {
+	font-family: 'NanumMyeongjo';
+}
+
+.index input {
+	font-family: 'NanumMyeongjo';
+}
+
+.index button {
+	font-family: 'NanumMyeongjo';
+}
+
+.index span {
+	font-family: 'NanumMyeongjo';
+}
+
+.index form {
+	font-family: 'NanumMyeongjo';
+}
+
+.index p {
+	font-family: 'NanumMyeongjo';
+}
