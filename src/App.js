@@ -4,7 +4,7 @@ import Router from "./shared/Router";
 function App() {
   return (
     <div>
-      <Header />
+      {/* <Header /> */}
       <Router />
     </div>
   );
