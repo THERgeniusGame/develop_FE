@@ -8,7 +8,7 @@ const initialState = {
   error: null, //
 };
 
-// const token = localStorage.getItem("token");
+const token = localStorage.getItem("token");
 
 export const __PostMainRoom = createAsyncThunk(
   "postmainroom/postMainroom",
@@ -18,7 +18,7 @@ export const __PostMainRoom = createAsyncThunk(
         process.env.REACT_APP_SURVER + `/api/room`, payload,
         {
           headers: {
-            authorization: process.env.REACT_APP_TOKENNAME + " " + process.env.REACT_APP_TOKEN,
+            authorization: `Bearer ${token}`,
           }
         }
       )

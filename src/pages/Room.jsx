@@ -4,12 +4,12 @@ import socketio from 'socket.io-client';
 import { useParams, useNavigate } from "react-router-dom";
 
 //이미지
-import Roomimg from "../shared/image/Roomimg.png";
-import BackWhite from "../shared/image/CardBackWhite.png";
-import BackBlack from "../shared/image/CardBackBlack.png";
-import FrontWhite from "../shared/image/CardFrontWhite.png";
-import FrontBlack from "../shared/image/CardFrontBlack.png";
-import Crown from "../shared/image/Crown.png"
+import RoomBackground from "../shared/image/RoomIMG/RoomBackground.png";
+import BackWhite from "../shared/image/RoomIMG/CardBackWhite.png";
+import BackBlack from "../shared/image/RoomIMG/CardBackBlack.png";
+import FrontWhite from "../shared/image/RoomIMG/CardFrontWhite.png";
+import FrontBlack from "../shared/image/RoomIMG/CardFrontBlack.png";
+import Crown from "../shared/image/RoomIMG/Crown.png"
 
 const socket = socketio.connect(process.env.REACT_APP_SURVER); //백서버
 
@@ -20,15 +20,14 @@ function Room() {
     const roomId = +params.roomId;
     const room = roomId;
 
-    const token = process.env.REACT_APP_TOKEN;
-    const token1 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsIm5pY2tuYW1lIjoi64KY66y0Iiwid2luIjowLCJ0b3RhbCI6MCwiaWF0IjoxNjYyNTM5MjIwLCJleHAiOjE2NjMxNDQwMjB9.-r12oYdnUxMvKTvBp4eZ678MV-39b7lG7rPzd6UEQvg"
-    const token2 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJuaWNrbmFtZSI6Iuq4iOuCmOustCIsIndpbiI6MCwidG90YWwiOjAsImlhdCI6MTY2MjY2MDY3NiwiZXhwIjoxNjYzMjY1NDc2fQ._JpUcYtWqVW-Pwc47BmjpdL8uQ5ff81N4k0OYtM5EdA"
+    const token = localStorage.getItem("token");
 
+    //유저Id
     const [userId, setUserId] = useState('');
 
     //닉네임
-    const [mynickname, setNickname] = useState('');
-    const [ownerNickname, setOwnerNickname] = useState('나무');
+    const [mynickname, setMyNickname] = useState('');
+    const [ownerNickname, setOwnerNickname] = useState('');
     const [guestNIckname, setGuestNIckname] = useState('');
 
     //소켓아이디
@@ -47,12 +46,14 @@ function Room() {
 
     //진행
     const [ready, setReady] = useState(false); // 새로운 채팅
-    const [gamestart, setGamestart] = useState(false); // 게임시작 여부
+    const [gamestart, setGamestart] = useState(true); // 게임시작 여부
     const [round, setRound] = useState(0); // 라운드 
     const [turn, setTurn] = useState(true); // 턴 여부
     const [middleView, setMiddleView] = useState(true); // 중간부분 뷰 여부
     const [gameEnd, setGameEnd] = useState(false);
     const [batting, setBatting] = useState(0);
+    const [card, setCard] = useState(0);
+    const [cardPick, setCardPick] =useState(false);
     //게스트 진행정보
     const [guestCards, setGuestCards] = useState([]);
     const [guestBattingCards, setGuestBattingCards] = useState([]);
@@ -72,28 +73,26 @@ function Room() {
 
         socket.emit("login",
             {
-                token: token1,
+                token,
                 room
             }, () => {
             }
         );
 
-        socket.on("login", login => {
-            console.log(login)
-            setList(prev => prev.concat({ text: login.nickname + "님이 입장하셨습니다." })); //입장 알림
+        socket.on("login_room", login => {
             setUsers(login.userList); //유저 목록
-
-            setNickname(login.nickname); //나의 닉네임
-            // setOwnerNickname(login.owner); //방장 닉네임
+            setOwnerNickname(login.owner); //방장 닉네임
             setGuestNIckname(login.userList.filter((user) => user.nickname !== ownerNickname)[0]?.nickname); //게스트 닉네임
-
-            setMysocketId(login.socketId); //나의 소켓 아이디
             setOwnersoketId(login.userList.filter((user) => user.nickname === ownerNickname)[0]?.socketId); //방장 소켓 아이디
-            setGuestsoketId(login.userList.filter((user) => user.nickname !== ownerNickname)[0]?.socketId); //게스트 소켓 아이디
-
-            setUserId(login.userId);
+            setGuestsoketId(login.userList.filter((user) => user.nickname !== ownerNickname)[0]?.socketId); //게스트 소켓 아이디     
         });
 
+        socket.on("login_user", login => {
+            socket.emit("chat", { nickname: login.mynickname, msg: "님이 입장하셨습니다." });
+            setUserId(login.userId);
+            setMysocketId(login.socketId); //나의 소켓 아이디
+            setMyNickname(login.nickname); //나의 닉네임
+        });
 
         socket.on("chat", chat => {
             setList(prev => prev.concat({ text: chat.nickname + " " + chat.msg }));
@@ -104,13 +103,13 @@ function Room() {
         });
 
         socket.on("gameStart", gameStart => {
+            console.log(gameStart)
             const timer1 = setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 5초전..." })) }, 1000);
             const timer2 = setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 4초전..." })) }, 2000);
             const timer3 = setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 3초전..." })) }, 3000);
             const timer4 = setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 2초전..." })) }, 4000);
             const timer5 = setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 1초전..." })) }, 5000);
             const timer6 = setTimeout(() => { setGamestart(true) }, 6000);
-            console.log(gameStart);
             const guest = gameStart.guest;
             const owner = gameStart.owner;
 
@@ -133,7 +132,6 @@ function Room() {
             setOwnersoketId(owner.socketId);
             setOwnerWin(owner.win);
             setGuestCoin(owner.coin);
-            console.log(gameStart.turn[0])
             if (gameStart.turn[0] === "owner") {
                 if (mynickname === ownerNickname) {
                     setTurn(true);
@@ -149,11 +147,11 @@ function Room() {
             }
         });
 
-        socket.on("disconnect", disconnect => {
-            if (disconnect) {
-                navigate("/")
-            }
-        });
+        // socket.on("disconnect", disconnect => {
+        //     if (disconnect) {
+        //         window.location.reload("/")
+        //     }
+        // });
 
         socket.on("error", error => {
             console.log(error);
@@ -173,17 +171,27 @@ function Room() {
 
         //게임정보의 게임종료가 트루면, 모달 true / 결과 닫기 누르면 gameEnd false, 게임스타트 false
     }, []);
+
     // socket.emit("turnEnd", {
-    //     {
+    //     batting,
+    //     turn,
+    //     round,
+    //     card,
+    //     player: {
+    //         userId,
     //         nickname:mynickname,
     //         socketId:mysocketId,
-    //         cards: [],
-    //         battingCard,
-    //         batting,
-    //         turn:false,
-    //         money,
-    //         win: undifind,
-    //         round,
+    //         cards: mynickname === ownerNickname ? ownerCards : guestCards,
+    //         battingCards: mynickname === ownerNickname ? ownerBattingCards : guestBattingCards,
+    //         coin: mynickname === ownerNickname ? ownerCoin : guestCoin,
+    //         result: mynickname === ownerNickname ? ownerResult : guestResult,
+    //         win : mynickname === ownerNickname ? ownerWin : guestWin
+    //     }
+    // });
+
+    // socket.emit("gameEnd", {
+    //     owner: {
+    //         userId
     //     }
     // });
     // let timer = setTimeout(()=>{setList(prev => prev.concat({ text: chat.nickname + " " + chat.msg }))}, 2000);
@@ -193,7 +201,7 @@ function Room() {
             {gamestart === false ?
                 //대기방
                 <div style={{ width: "1440px", height: "1024px", padding: "0 270px 0 270px" }}>
-                    <div style={{ "width": "1440px", "height": "1024px", backgroundImage: 'url(' + Roomimg + ')', backgroundPosition: "center", backgroundSize: "cover", fontSize: "18px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                    <div style={{ "width": "1440px", "height": "1024px", backgroundImage: 'url(' + RoomBackground + ')', backgroundPosition: "center", backgroundSize: "cover", fontSize: "18px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
                         <RoomBody style={{ paddingTop: "150px" }}>
                             {mynickname === ownerNickname ?
                                 //호스트 구역
@@ -201,7 +209,7 @@ function Room() {
                                     <div style={{ fontSize: "24px", width: "975px", margin: "auto auto 80px auto" }}>{ownerNickname}님의 게임방
                                         <span style={{ float: "right" }}>
                                             <button onClick={() => { !ready ? alert("상대가 아직 준비하지 않았습니다.") : socket.emit("gameStart", { gameStart: true }); }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>게임시작</button>
-                                            <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { navigate("/") }}>나가기</button>
+                                            <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { window.location.reload("/") }}>나가기</button>
                                         </span>
                                     </div>
                                     <UserList>
@@ -303,23 +311,26 @@ function Room() {
                                 )}
                             </div>
                             {/* 중간구역 */}
-                            {turn === true && middleView === true ?
+                            {turn === true && middleView === true && cardPick === false ?
                                 // {/* 배팅 뷰 */}
-                                <div style={{ height: "190px", width: "897px", backgroundColor: "#D9D9D9", margin: "auto", fontSize: "36px", display: "flex", justifyContent: "space-between", lineHeight: "180px" }}>
+                                <form style={{ height: "300px", width: "1040px", backgroundColor: "#D9D9D9", margin: "auto", fontSize: "36px", display: "flex", flexDirection:"column" }}>
+                                    <div>배팅을 시작해주세요.</div>
+                                    <div></div>
+                                    <div>배팅은 최대 0개까지 가능합니다.</div>
                                     <div style={{ display: "flex" }}>
-                                        <input style={{ height: "33px", width: "146px", padding: "5px", border: "0px", marginTop: "70px", marginLeft: "100px" }}></input>개 배팅
+                                        <input style={{ height: "45px", width: "162px" }}></input>개 <button style={{fontSize:"29px"}}>배팅</button>
                                     </div>
-                                    <div style={{ marginRight: "100px" }}>
-                                        나가기
-                                    </div>
-                                </div> : ''}
+                                </form> : ''}
                             {turn === false && middleView === true ?
                                 // {/* 기다릴 때 뷰 */}
                                 <div style={{ height: "190px", width: "897px", backgroundColor: "#D9D9D9", margin: "auto", fontSize: "50px", display: "flex", justifyContent: "space-between", lineHeight: "180px" }}>
                                     <span style={{ display: "flex", margin: "auto" }}>상대가 배팅하는 중입니다</span>
                                 </div> : ''}
+                                {/* // 카드 픽알림 뷰 */}
+                            {turn === true && middleView === true && cardPick === true ? 
+                            <div></div> : ''}
                             {/* 결과 뷰 */}
-                            {middleView === false ? <div style={{ height: "190px", width: "897px", backgroundColor: "#D9D9D9", margin: "auto", fontSize: "36px", display: "flex", justifyContent: "space-between", lineHeight: "180px" }}>
+                            {middleView === false && cardPick === false ? <div style={{ height: "190px", width: "897px", backgroundColor: "#D9D9D9", margin: "auto", fontSize: "36px", display: "flex", justifyContent: "space-between", lineHeight: "180px" }}>
                                 0라운드 승리 {mynickname}!!
                             </div> : ''}
                             {/* owner */}
