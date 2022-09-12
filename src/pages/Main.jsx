@@ -48,7 +48,6 @@ function Main() {
   // 모달 상태
   const [pwModal, setPwModal] = useState(false);
   const [makeroomModal, setMakeRoomModal] = useState(false);
-  const [test, setTest] = useState(false);
 
   const pwSubmit = (e) => {
     e.preventDefault();
@@ -64,7 +63,7 @@ function Main() {
   const [roomTitle, setRoomTitle] = useState('')
   const [roomLock, setRoomLock] = useState(false)
   const [roomPw, setRoomPw] = useState('')
-  const [roomCategory, setRoomCategory] = useState(1)
+  const [roomCategory] = useState(1) // 추후 카테고리 추가 가능 const [roomCategory, setRoomCategory] = useState(1)
 
   const onsubmitHandle = (e) => {
     e.preventDefault();
@@ -86,18 +85,33 @@ function Main() {
       setTotal(rooms?.length);
     }
     setResp(rooms);
-  }, [rooms]);
+  }, [rooms?.length]);
 
- 
+
   return (
     Loading === true ?
-      <div style={{ "width": "1440px", "height": "1024px", backgroundImage: 'url(' + MainBackground + ')', backgroundPosition: "center", backgroundSize: "auto", fontSize: "18px", margin: "0px auto" }}>
+      <div style={{ width: "1440px", height: "1024px", backgroundImage: 'url(' + MainBackground + ')', backgroundPosition: "center", backgroundSize: "auto", fontSize: "18px", margin: "0px auto" }}>
         <div style={{ width: "1040px", height: "755px", margin: "0px auto" }}>
           <div style={{ display: "flex", justifyContent: "space-between", width: "1040px", margin: "0px auto" }}>
             <ChoosLock style={{ marginTop: "140px" }}>
-              {lock === "ALL" ? <button onClick={(e) => { setResp(rooms); setLock("ALL") }}>전체방</button> : <div style={{ display: "flex" }} onClick={(e) => { setResp(rooms); setLock("ALL") }}><span style={{ display: "flex", margin: "auto" }}>전체방</span></div>}
-              {lock === "unLock" ? <button onClick={(e) => { setResp(rooms.filter((res) => (res.roomLock === false))); setLock("unLock") }}>공개방</button> : <div style={{ display: "flex" }} onClick={(e) => { setResp(rooms.filter((res) => (res.roomLock === false))); setLock("unLock") }}><span style={{ display: "flex", margin: "auto" }}>공개방</span></div>}
-              {lock === "Lock" ? <button onClick={(e) => { setResp(rooms.filter((res) => (res.roomLock === true))); setLock("Lock") }}>비공개방</button> : <div style={{ display: "flex" }} onClick={(e) => { setResp(rooms.filter((res) => (res.roomLock === true))); setLock("Lock") }}><span style={{ display: "flex", margin: "auto" }}>비공개방</span></div>}
+              {lock === "ALL" ?
+                <button onClick={(e) => { setResp(rooms); setLock("ALL") }}>전체방</button> :
+                <div style={{ display: "flex" }} onClick={(e) => { setResp(rooms); setLock("ALL") }}>
+                  <span style={{ display: "flex", margin: "auto" }}>전체방</span>
+                </div>
+              }
+              {lock === "unLock" ?
+                <button onClick={(e) => { setResp(rooms.filter((res) => (res.roomLock === false))); setLock("unLock") }}>공개방</button> :
+                <div style={{ display: "flex" }} onClick={(e) => { setResp(rooms.filter((res) => (res.roomLock === false))); setLock("unLock") }}>
+                  <span style={{ display: "flex", margin: "auto" }}>공개방</span>
+                </div>
+              }
+              {lock === "Lock" ?
+                <button onClick={(e) => { setResp(rooms.filter((res) => (res.roomLock === true))); setLock("Lock") }}>비공개방</button> :
+                <div style={{ display: "flex" }} onClick={(e) => { setResp(rooms.filter((res) => (res.roomLock === true))); setLock("Lock") }}>
+                  <span style={{ display: "flex", margin: "auto" }}>비공개방</span>
+                </div>
+              }
             </ChoosLock>
             <Roomsearch style={{ marginTop: "140px" }} onSubmit={(e) => {
               e.preventDefault();
@@ -109,31 +123,39 @@ function Main() {
               }
             }
             }>
-              <div><input value={roomsearch} placeholder="검색어를 입력하세요." onChange={(e) => { setRoomsearch(e.target.value) }} ></input><SearchBtn style={{ marginLeft: "3px" }}><FaSearch style={{ paddingRight: "20px", fontSize: "18", padding: "10px" }} /></SearchBtn>
+              <div>
+                <input value={roomsearch} placeholder="검색어를 입력하세요." onChange={(e) => { setRoomsearch(e.target.value) }} ></input>
+                <SearchBtn style={{ marginLeft: "3px" }}>
+                  <FaSearch style={{ paddingRight: "20px", fontSize: "18", padding: "10px" }} />
+                </SearchBtn>
               </div>
             </Roomsearch>
           </div>
-          <RoomList style={{ display: "flex", flexDirection: "row", paddingTop: "15px",padding: "10px" , marginBottom: "5px" }}><span style={{ marginRight: "145px" }}>번호</span><span style={{ marginRight: "325px" }}>방 이름</span><span style={{ marginRight: "195px" }}>방장</span><span style={{ marginRight: "160px" }}>인원</span><span>공개</span></RoomList>
+          <RoomList style={{ display: "flex", flexDirection: "row", paddingTop: "15px", padding: "10px", marginBottom: "5px" }}>
+            <span style={{ marginRight: "145px" }}>번호</span>
+            <span style={{ marginRight: "325px" }}>방 이름</span>
+            <span style={{ marginRight: "195px" }}>방장</span>
+            <span style={{ marginRight: "160px" }}>인원</span>
+            <span>공개</span>
+          </RoomList>
           <MainBody>
-            {currentCountings?.length === 0 ? <>입장가능한 방이 없습니다.</> :
+            {currentCountings?.length === 0 ?
+              <>입장가능한 방이 없습니다.</> :
               currentCountings?.map((room) => (
-                <RoomSelect key={room.roomId}>
-                  <Roomhover onClick={(e) => {
-                    setRoomId(room.roomId);
-                    if (room.roomLock === true) {
+                <RoomSelect key={room.roomId} onClick={(e) => {
+                  setRoomId(room.roomId);
+                  if (room.roomLock === true) {
                     setRoompw(room.roomPw);
                     setPwModal(true);
                   } else {
                     navigate(`room/${roomId}`)
                   }
-                  console.log(room.roomId)
-                  }}>
-                    <div style={{ width: "173px", display: "flex" }}>{room.roomId}</div>
-                    <div style={{ width: "380px", display: "flex", overflow: "hidden" }}>{room.roomTitle}</div>
-                    <div style={{ width: "245px", display: "flex", overflow: "hidden" }}>{room.nickname}</div>
-                    <div style={{ width: "190px", display: "flex" }}>{room.currentUsers}1</div>
-                    <div style={{ display: "flex", width: "20px", height: "20px", backgroundRepeat: "no-repeat", backgroundImage: room.lock === true ? 'url(' + LockImg + ')' : 'url(' + UnLockImg + ')' }}></div>
-                  </Roomhover>
+                }}>
+                  <div style={{ width: "173px", display: "flex" }}>{room.roomId}</div>
+                  <div style={{ width: "380px", display: "flex", overflow: "hidden" }}>{room.roomTitle}</div>
+                  <div style={{ width: "245px", display: "flex", overflow: "hidden" }}>{room.nickname}</div>
+                  <div style={{ width: "190px", display: "flex" }}>{room.currentUsers}</div>
+                  <div style={{ display: "flex", width: "20px", height: "20px", backgroundRepeat: "no-repeat", backgroundImage: room.lock === true ? 'url(' + LockImg + ')' : 'url(' + UnLockImg + ')' }}></div>
                 </RoomSelect>
               ))}
           </MainBody>
@@ -143,50 +165,62 @@ function Main() {
             page={page}
             setPage={setPage}
           />
-          <MakeRoom onClick={() => { setMakeRoomModal(true) }}><div style={{ display: "flex" }}>방만들기<IoMdAdd style={{ marginLeft: "30px", fontSize: "22px" }} /></div></MakeRoom>
+          <MakeRoom onClick={() => { setMakeRoomModal(true) }}>
+            <div style={{ display: "flex" }}>방만들기
+              <IoMdAdd style={{ marginLeft: "30px", fontSize: "22px" }} />
+            </div>
+          </MakeRoom>
 
           {/* 룸 비밀번호 입력 모달 */}
           {
-            pwModal === true ? (<>
-              <PwModal onSubmit={(e) => pwSubmit(e)} type="button" onClick={() => {
-                setPwModal(!pwModal)
-              }}>
-                <PwModalBody onClick={(event) => { event.stopPropagation() }} >
-                  <div>비밀번호를 입력해주세요</div>
-                  <input onChange={(e) => { setCheckpw(e.target.value) }} ></input>
-                </PwModalBody>
-              </PwModal>
-            </>) : ''
+            pwModal === true ? (
+              <>
+                <PwModal onSubmit={(e) => pwSubmit(e)} type="button" onClick={() => {
+                  setPwModal(!pwModal)
+                }}>
+                  <PwModalBody onClick={(event) => { event.stopPropagation() }} >
+                    <div>비밀번호를 입력해주세요</div>
+                    <input onChange={(e) => { setCheckpw(e.target.value) }} ></input>
+                  </PwModalBody>
+                </PwModal>
+              </>
+            ) : ''
           }
 
           {/* 룸 생성 모달 */}
           {
-            makeroomModal === true ? (<>
-              <MakeRoomModal onSubmit={onsubmitHandle} onClick={() => {
-                setMakeRoomModal(!makeroomModal);
-                setRoomLock(false);
-              }}>
-                <MakeRoomModalBody onClick={(event) => { event.stopPropagation() }}  >
-                  <p style={{ display: "flex", margin: "auto auto 56px auto" }}>게임방 만들기</p>
-                  <div style={{ display: "flex", margin: "0px auto 3px 112px" }}>게임방 이름<span style={{ marginLeft: "552px" }}>방 공개여부</span>{roomLock === false ? <LockBtn style={{ marginLeft: "16px" }} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }}></LockBtn> : <UnLockBtn style={{ marginLeft: "16px" }} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }}></UnLockBtn>}</div>
-                  <input style={{ display: "flex", margin: "0px auto 40px auto" }} onChange={(e) => { setRoomTitle(e.target.value) }}></input>
-                  <div>{roomLock === true ?
-                    <>
-                      <div style={{ display: "flex", margin: "auto auto 3px 112px" }}>비밀번호 입력창</div>
-                      <input style={{ display: "flex", margin: "auto auto 50px auto" }} onChange={(e) => { setRoomPw(e.target.value) }}></input>
-                    </> : ''}
-                  </div>
-                  <div style={{ "fontSize": "20px", "color": "gray", "display": "flex", margin: "0px auto auto auto" }}>
-                    <span style={{ marginRight: "34px" }}>
-                      <button>방 만들기</button>
-                    </span>
-                    <span>
-                      <button type="button" onClick={() => { setMakeRoomModal(!makeroomModal); setRoomLock(false); }}>돌아가기</button>
-                    </span>
-                  </div>
-                </MakeRoomModalBody>
-              </MakeRoomModal>
-            </>) : ''
+            makeroomModal === true ? (
+              <>
+                <MakeRoomModal onSubmit={onsubmitHandle} onClick={() => {
+                  setMakeRoomModal(!makeroomModal);
+                  setRoomLock(false);
+                }}>
+                  <MakeRoomModalBody onClick={(event) => { event.stopPropagation() }}  >
+                    <p style={{ display: "flex", margin: "auto auto 56px auto" }}>게임방 만들기</p>
+                    <div style={{ display: "flex", margin: "0px auto 3px 112px" }}>게임방 이름
+                      <span style={{ marginLeft: "552px" }}>방 공개여부</span>
+                      {roomLock === false ?
+                        <LockBtn style={{ marginLeft: "16px" }} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }}></LockBtn> :
+                        <UnLockBtn style={{ marginLeft: "16px" }} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }}></UnLockBtn>}
+                    </div>
+                    <input style={{ display: "flex", margin: "0px auto 40px auto" }} onChange={(e) => { setRoomTitle(e.target.value) }}></input>
+                    <div>{roomLock === true ?
+                      <>
+                        <div style={{ display: "flex", margin: "auto auto 3px 112px" }}>비밀번호 입력창</div>
+                        <input style={{ display: "flex", margin: "auto auto 50px auto" }} onChange={(e) => { setRoomPw(e.target.value) }}></input>
+                      </> : ''}
+                    </div>
+                    <div style={{ "fontSize": "20px", "color": "gray", "display": "flex", margin: "0px auto auto auto" }}>
+                      <span style={{ marginRight: "34px" }}>
+                        <button>방 만들기</button>
+                      </span>
+                      <span>
+                        <button type="button" onClick={() => { setMakeRoomModal(!makeroomModal); setRoomLock(false); }}>돌아가기</button>
+                      </span>
+                    </div>
+                  </MakeRoomModalBody>
+                </MakeRoomModal>
+              </>) : ''
           }
         </div>
       </div> :
@@ -217,20 +251,12 @@ let RoomSelect = styled.button`
   flex-direction: row;
   width: 1040px;
   height: 45px;
-  background: linear-gradient(259.36deg, #F1F1F1 2.14%, #F3F3F3 28.04%, #ECECEC 57.25%, #ECECEC 81.49%, #E3E3E3 103.54%);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 8px;
   margin: 5px 0;
+  padding-left:15px;
+  padding-top: 12px;
   border: 0;
-`
-let Roomhover = styled.div`
-  display: flex;
-  width: 1040px;
-  height: 25px;
-  border-radius: 10px;
-  margin: auto;
-  padding: 0 10px;
-  padding-top: 3px;
   :hover {
   background-color: #BAB7B7;
   cursor: pointer;
