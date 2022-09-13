@@ -76,7 +76,7 @@ function Main() {
       dispatch(__PostMainRoom({ roomTitle, roomCategory, roomLock, roomPw }));
     }
   }
-
+  
   useEffect(() => {
     dispatch(__GetMainRoom());
     if (rooms?.length === undefined) {
