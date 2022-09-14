@@ -23,14 +23,12 @@ function Room() {
     const params = useParams();
     const roomId = +params.roomId;
     const room = roomId;
-
     const token = localStorage.getItem("token");
 
     //유저Id
     const [userId, setUserId] = useState('');
     const [ownerUserId, setOwnerUserId] = useState('');
     const [guestUserId, setGuestUserId] = useState('');
-
     //닉네임
     const [mynickname, setMyNickname] = useState('');
     const [ownerNickname, setOwnerNickname] = useState('');
@@ -64,6 +62,10 @@ function Room() {
     const [TurnWinner, setTurnWinner] = useState('');
     const [limitCoin, setLimitCoin] = useState(10);
     const [gameWinner, setGameWinner] = useState('');
+    const [winGame, setWinGame] = useState(false);
+    const [loseGame, setLoseGame] = useState(false);
+    const [drawGame, setDrawGame] = useState(false);
+    const [resultModal, setresultModal] = useState(false);
 
     const [unableBTN, setUnableBTN] = useState(false);
     //게스트 진행정보
@@ -83,7 +85,7 @@ function Room() {
     // const Interval = setInterval(() => {setTimer(timer-1)}, 1000); //1초 마다 실행
 
     useEffect(scrollToBottom, [list]);
-
+    console.log(ownerUserId)
     useEffect(() => {
 
         socket.emit("login",
@@ -95,11 +97,14 @@ function Room() {
         );
 
         socket.on("login_room", login => {
+            socket.emit("ready", { ready: false });
             setUsers(login.userList); //유저 목록
             setOwnerNickname(login.owner); //방장 닉네임
             setGuestNickname(login.userList.filter((user) => user.nickname !== ownerNickname)[0]?.nickname); //게스트 닉네임
             setOwnersoketId(login.userList.filter((user) => user.nickname === ownerNickname)[0]?.socketId); //방장 소켓 아이디
-            setGuestsoketId(login.userList.filter((user) => user.nickname !== ownerNickname)[0]?.socketId); //게스트 소켓 아이디     
+            setGuestsoketId(login.userList.filter((user) => user.nickname !== ownerNickname)[0]?.socketId); //게스트 소켓 아이디
+            setOwnerUserId(login.userList.filter((user) => user.nickname === ownerNickname)[0]?.userId); //방장 유저 아이디 
+            setGuestUserId(login.userList.filter((user) => user.nickname !== ownerNickname)[0]?.userId); //방장 유저 아이디     
         });
         socket.on("login_user", login => {
             setReady(false);
@@ -110,6 +115,7 @@ function Room() {
         });
 
         socket.on("gameStart", gameStart => {
+            setUnableBTN(true);
             setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 5초전..." })) }, 1000);
             setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 4초전..." })) }, 2000);
             setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 3초전..." })) }, 3000);
@@ -209,6 +215,11 @@ function Room() {
 
         });
 
+        socket.on("gameEnd", gameEnd => {
+            setGameEnd(true);
+            setGameWinner(gameEnd.winner);
+        });
+
         socket.on("turnResult", turnResult => {
             setCard(10);
             setCardPick(false);
@@ -237,16 +248,10 @@ function Room() {
 
             setGuestNickname(guest.nickname);
             setGuestsoketId(guest.socketId);
-            setOwnerUserId(guest.userId);
+            setGuestUserId(guest.userId);
 
             setTimeout(() => { setTurnWinner(''); setMiddleView(true); }, 5000);
             setTimeout(() => { setTurnWinner(''); setMiddleView(false); }, 15000);
-        });
-
-        socket.on("gameEnd", gameEnd => {
-            console.log(gameEnd);
-            setGameEnd(true);
-            setGameWinner(gameEnd.winner);
         });
 
     }, []);
@@ -325,6 +330,18 @@ function Room() {
         }
     });
 
+    socket.on("gameEnd", gameEnd => {
+        if (gameEnd.winner === mynickname) {
+            setWinGame(true);
+        } else { }
+        if (gameEnd.loser === mynickname) {
+            setLoseGame(true);
+        } else { }
+        if (gameEnd.winner !== mynickname && gameEnd.loser === mynickname) {
+            setDrawGame(true);
+        } else { }
+    });
+
     return (
         <>
             {gamestart === false ?
@@ -336,11 +353,25 @@ function Room() {
                                 //호스트 구역
                                 <div>
                                     <div style={{ fontSize: "24px", width: "975px", margin: "auto auto 80px auto" }}>{ownerNickname}님의 게임방
-                                        <span style={{ float: "right" }}>
-                                            <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold", color: "red" }} onClick={() => { socket.emit("kick", { socketId: guestsoketId }); }}>추방하기</button>
-                                            <button onClick={() => { !ready ? Swal.fire({ title: '상대가 아직 준비되지 않았습니다.', timer: 1500 }) : socket.emit("gameStart", { gameStart: true }); }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>게임시작</button>
-                                            <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { navigate("/") }}>나가기</button>
-                                        </span>
+                                        {unableBTN === false ?
+                                            <Able style={{ float: "right" }}>
+                                                <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold", color: "red" }} onClick={() => { socket.emit("kick", { socketId: guestsoketId }); }}>추방하기</button>
+                                                <button onClick={() => {
+                                                    if (ready !== true) {
+                                                        Swal.fire({ title: '상대가 아직 준비되지 않았습니다.', timer: 1500 })
+                                                    } else {
+                                                        socket.emit("gameStart", { gameStart: true });
+                                                        setUnableBTN(true);
+                                                    }
+                                                }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>게임시작</button>
+                                                <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { navigate("/") }}>나가기</button>
+                                            </Able> :
+                                            <Unable style={{ float: "right" }}>
+                                                <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>추방하기</button>
+                                                <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>게임시작</button>
+                                                <button style={{ fontSize: "18px", fontWeight: "bold" }}>나가기</button>
+                                            </Unable>
+                                        }
                                     </div>
                                     <UserList>
                                         <span style={{ display: "flex" }}>
@@ -357,10 +388,15 @@ function Room() {
                                 //게스트 구역
                                 <div>
                                     <div style={{ fontSize: "24px", width: "975px", margin: "auto auto 80px auto" }}>{ownerNickname}님의 게임방
-                                        <span style={{ float: "right" }}>
-                                            <button onClick={() => { socket.emit("ready", { ready: !ready }); }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
-                                            <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { navigate("/") }}>나가기</button>
-                                        </span>
+                                        {unableBTN === false ?
+                                            <Able style={{ float: "right" }}>
+                                                <button onClick={() => { if (unableBTN === false) { socket.emit("ready", { ready: !ready }); } else { Swal.fire({ title: "이미 게임이 시작되었습니다!", timer: 1500 }); } }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
+                                                <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { navigate("/") }}>나가기</button>
+                                            </Able> :
+                                            <Unable style={{ float: "right" }}>
+                                                <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
+                                                <button style={{ fontSize: "18px", fontWeight: "bold" }}>나가기</button>
+                                            </Unable>}
                                     </div>
                                     <UserList>
                                         <span style={{ display: "flex" }}>
@@ -424,29 +460,33 @@ function Room() {
                                 </div>
                                 <div>
                                     <button onClick={() => {
-                                        socket.emit("gameEnd", {
-                                            name: ownerUserId,
-                                            owner: {
-                                                userId: ownerUserId,
-                                                nickname: ownerNickname,
-                                                socketId: ownersoketId,
-                                                cards: ownerCards,
-                                                battingCards: ownerBattingCards,
-                                                coin: +ownerCoin,
-                                                result: ownerResult,
-                                                win: ownerWin,
-                                            },
-                                            guest: {
-                                                userId: guestUserId,
-                                                nickname: guestNickname,
-                                                socketId: guestsoketId,
-                                                cards: guestCards,
-                                                battingCards: guestBattingCards,
-                                                coin: +guestCoin,
-                                                result: guestResult,
-                                                win: guestWin,
-                                            },
-                                        });
+                                        if (round < 3) {
+                                            Swal.fire({ title: "항복은 3라운드 이후에 가능합니다!", timer: 1500 });
+                                        } else {
+                                            socket.emit("gameEnd", {
+                                                name: ownerUserId,
+                                                owner: {
+                                                    userId: ownerUserId,
+                                                    nickname: ownerNickname,
+                                                    socketId: ownersoketId,
+                                                    cards: ownerCards,
+                                                    battingCards: ownerBattingCards,
+                                                    coin: +ownerCoin,
+                                                    result: ownerResult,
+                                                    win: ownerWin,
+                                                },
+                                                guest: {
+                                                    userId: guestUserId,
+                                                    nickname: guestNickname,
+                                                    socketId: guestsoketId,
+                                                    cards: guestCards,
+                                                    battingCards: guestBattingCards,
+                                                    coin: +guestCoin,
+                                                    result: guestResult,
+                                                    win: guestWin,
+                                                },
+                                            });
+                                        }
                                     }}>항복하기</button>
                                     <button style={{ marginLeft: "55px" }} onClick={() => { navigate("/") }}>나가기</button>
                                 </div>
@@ -465,20 +505,20 @@ function Room() {
                                 )}
                             </div>
                             {/* 중간구역 */}
-                            {middleView ?
+                            {middleView === true && gameEnd === false ?
                                 <MidBase>
                                     <div style={{ display: "flex", margin: "auto" }}><MidWinCircle></MidWinCircle></div>
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>Round {round}</div>
                                     <div style={{ display: "flex", margin: "auto" }}><MidLoseCircle></MidLoseCircle></div>
                                 </MidBase> : ''}
-                            {middleView === false && turn === true && cardPick === false && TurnWinner === '' ?
+                            {middleView === false && turn === true && cardPick === false && TurnWinner === '' && gameEnd === false ?
                                 <BattingMid onSubmit={(e) => { e.preventDefault(); 0 !== +batting && +batting <= limitCoin ? setCardPick(true) : Swal.fire({ title: `배팅은 1개 부터 ${Math.floor(limitCoin)}개 까지 가능합니다!`, timer: 1500 }); }}>
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>배팅을 시작해주세요.</div>
                                     <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "auto" }}></div>
                                     <div style={{ display: "flex", margin: "auto", fontSize: "18px" }}>배팅은 최대 {Math.floor(limitCoin)}개 까지 가능합니다.</div>
                                     <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => setBatting(e.target.value)}></input><span style={{ marginTop: "10px" }}>개</span><button style={{ marginLeft: "10px", marginTop: "3px" }}>배팅하기</button></div>
                                 </BattingMid> : ''}
-                            {middleView === false && turn === true && cardPick === true ?
+                            {middleView === false && turn === true && cardPick === true && gameEnd === false ?
                                 <CardPickMid>
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto auto 40px auto" }}>카드를 선택해주세요.</div>
                                     <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "0px auto auto auto" }}></div>
@@ -505,13 +545,13 @@ function Room() {
                                             Swal.fire({ title: "카드를 선택해주세요!", timer: 1500 });
                                         }
                                     }}>선택 완료</button>
-                                </CardPickMid> : ""}
-                            {turn === false && middleView === false && TurnWinner === '' ?
+                                </CardPickMid> : <MidBase></MidBase>}
+                            {turn === false && middleView === false && TurnWinner === '' && gameEnd === false ?
                                 <TurnFalseMid>
                                     <div style={{ display: "flex", margin: "auto auto 50px auto", fontSize: "36px" }}>상대가 턴을 진행중입니다.</div>
                                     <div style={{ display: "flex", margin: "0px auto auto auto", fontSize: "30px", color: "red" }}><span style={{ color: "black", marginRight: "10px" }}>남은시간</span> {timer}초</div>
                                 </TurnFalseMid> : ''}
-                            {TurnWinner !== '' ?
+                            {TurnWinner !== '' && gameEnd === false ?
                                 <TurnResultMid>
                                     <div style={{ width: "475px", height: "95px", display: "flex", flexDirection: "column", margin: "auto" }}>
                                         <div style={{ color: "#3A3A3A", fontSize: "36px", display: "flex", margin: "auto auto auto 0px" }}>{round - 1} 라운드</div>
@@ -564,29 +604,33 @@ function Room() {
                                 </div>
                                 <div>
                                     <button onClick={() => {
-                                        socket.emit("gameEnd", {
-                                            name: guestUserId,
-                                            owner: {
-                                                userId: ownerUserId,
-                                                nickname: ownerNickname,
-                                                socketId: ownersoketId,
-                                                cards: ownerCards,
-                                                battingCards: ownerBattingCards,
-                                                coin: +ownerCoin,
-                                                result: ownerResult,
-                                                win: ownerWin,
-                                            },
-                                            guest: {
-                                                userId: guestUserId,
-                                                nickname: guestNickname,
-                                                socketId: guestsoketId,
-                                                cards: guestCards,
-                                                battingCards: guestBattingCards,
-                                                coin: +guestCoin,
-                                                result: guestResult,
-                                                win: guestWin,
-                                            },
-                                        });
+                                        if (round < 3) {
+                                            Swal.fire({ title: "항복은 3라운드 이후에 가능합니다!", timer: 1500 });
+                                        } else {
+                                            socket.emit("gameEnd", {
+                                                name: ownerUserId,
+                                                owner: {
+                                                    userId: ownerUserId,
+                                                    nickname: ownerNickname,
+                                                    socketId: ownersoketId,
+                                                    cards: ownerCards,
+                                                    battingCards: ownerBattingCards,
+                                                    coin: +ownerCoin,
+                                                    result: ownerResult,
+                                                    win: ownerWin,
+                                                },
+                                                guest: {
+                                                    userId: guestUserId,
+                                                    nickname: guestNickname,
+                                                    socketId: guestsoketId,
+                                                    cards: guestCards,
+                                                    battingCards: guestBattingCards,
+                                                    coin: +guestCoin,
+                                                    result: guestResult,
+                                                    win: guestWin,
+                                                },
+                                            });
+                                        }
                                     }}>항복하기</button>
                                     <button style={{ marginLeft: "55px" }} onClick={() => { navigate("/") }}>나가기</button>
                                 </div>
@@ -605,20 +649,20 @@ function Room() {
                                 )}
                             </div>
                             {/* 중간구역 */}
-                            {middleView ?
+                            {middleView === true && gameEnd === false ?
                                 <MidBase>
                                     <div style={{ display: "flex", margin: "auto" }}><MidWinCircle></MidWinCircle></div>
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>Round {round}</div>
                                     <div style={{ display: "flex", margin: "auto" }}><MidLoseCircle></MidLoseCircle></div>
                                 </MidBase> : ''}
-                            {middleView === false && turn === true && cardPick === false && TurnWinner === '' ?
-                                <BattingMid onSubmit={(e) => { e.preventDefault(); 0 !== +batting && +batting <= limitCoin ? setCardPick(true) :  Swal.fire({ title: `배팅은 1개 부터 ${Math.floor(limitCoin)}개 까지 가능합니다!`, timer: 1500 }); }}>
+                            {middleView === false && turn === true && cardPick === false && TurnWinner === '' && gameEnd === false ?
+                                <BattingMid onSubmit={(e) => { e.preventDefault(); 0 !== +batting && +batting <= limitCoin ? setCardPick(true) : Swal.fire({ title: `배팅은 1개 부터 ${Math.floor(limitCoin)}개 까지 가능합니다!`, timer: 1500 }); }}>
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>배팅을 시작해주세요.</div>
                                     <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "auto" }}></div>
-                                    <div style={{ display: "flex", margin: "auto", fontSize: "18px" }}>배팅은 최대  {Math.floor(limitCoin)}개 까지 가능합니다.</div>
+                                    <div style={{ display: "flex", margin: "auto", fontSize: "18px" }}>배팅은 최대 {Math.floor(limitCoin)}개 까지 가능합니다.</div>
                                     <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => setBatting(e.target.value)}></input><span style={{ marginTop: "10px" }}>개</span><button style={{ marginLeft: "10px", marginTop: "3px" }}>배팅하기</button></div>
                                 </BattingMid> : ''}
-                            {middleView === false && turn === true && cardPick === true ?
+                            {middleView === false && turn === true && cardPick === true && gameEnd === false ?
                                 <CardPickMid>
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto auto 40px auto" }}>카드를 선택해주세요.</div>
                                     <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "0px auto auto auto" }}></div>
@@ -645,13 +689,13 @@ function Room() {
                                             Swal.fire({ title: "카드를 선택해주세요!", timer: 1500 });
                                         }
                                     }}>선택 완료</button>
-                                </CardPickMid> : ""}
-                            {turn === false && middleView === false && TurnWinner === '' ?
+                                </CardPickMid> : <MidBase></MidBase>}
+                            {turn === false && middleView === false && TurnWinner === '' && gameEnd === false ?
                                 <TurnFalseMid>
                                     <div style={{ display: "flex", margin: "auto auto 50px auto", fontSize: "36px" }}>상대가 턴을 진행중입니다.</div>
-                                    <div style={{ display: "flex", margin: "0px auto auto auto", fontSize: "30px", color: "red" }}><span style={{ color: "black", marginRight: "10px" }}>남은시간</span> 20초</div>
+                                    <div style={{ display: "flex", margin: "0px auto auto auto", fontSize: "30px", color: "red" }}><span style={{ color: "black", marginRight: "10px" }}>남은시간</span> {timer}초</div>
                                 </TurnFalseMid> : ''}
-                            {TurnWinner !== '' ?
+                            {TurnWinner !== '' && gameEnd === false ?
                                 <TurnResultMid>
                                     <div style={{ width: "475px", height: "95px", display: "flex", flexDirection: "column", margin: "auto" }}>
                                         <div style={{ color: "#3A3A3A", fontSize: "36px", display: "flex", margin: "auto auto auto 0px" }}>{round - 1} 라운드</div>
@@ -684,37 +728,44 @@ function Room() {
                     </div>}
 
             {/* win모달 */}
-            {/* <WinModal>
-                <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>W</span></div><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px" }}><span style={{ display: "flex", margin: "auto" }}>I</span></div><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px" }}><span style={{ display: "flex", margin: "auto" }}>N</span></div></div>
-                <div style={{display:"flex", justifyContent:"space-between", width:"430px", marginTop:"105px"}}><button>대기방으로</button><button>게임 결과</button></div>
-            </WinModal> */}
+            {winGame === true && gameEnd === true ?
+                <WinModal>
+                    <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>W</span></div><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px" }}><span style={{ display: "flex", margin: "auto" }}>I</span></div><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px" }}><span style={{ display: "flex", margin: "auto" }}>N</span></div></div>
+                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { window.location.reload(`/room/${params.roomId}`); }}>대기방으로</button><button onClick={(e) => { setresultModal(true); }}>게임 결과</button></div>
+                </WinModal> : ''
+            }
             {/* lose모달 */}
-            {/* <LoseModal>
-                <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>L</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color:"black" }}><span style={{ display: "flex", margin: "auto" }}>O</span></div><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px" }}><span style={{ display: "flex", margin: "auto" }}>S</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color:"black" }}><span style={{ display: "flex", margin: "auto" }}>E</span></div></div>
-                <div style={{display:"flex", justifyContent:"space-between", width:"430px", marginTop:"105px"}}><button>대기방으로</button><button>게임 결과</button></div>
-            </LoseModal> */}
+            {loseGame === true && gameEnd === true ?
+                <LoseModal>
+                    <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>L</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color: "black" }}><span style={{ display: "flex", margin: "auto" }}>O</span></div><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px" }}><span style={{ display: "flex", margin: "auto" }}>S</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color: "black" }}><span style={{ display: "flex", margin: "auto" }}>E</span></div></div>
+                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { window.location.reload(`/room/${params.roomId}`); }}>대기방으로</button><button onClick={(e) => { setresultModal(true); }}>게임 결과</button></div>
+                </LoseModal> : ''
+            }
             {/* draw모달 */}
-            {/* <DrawMOdal>
-                <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>D</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color:"black" }}><span style={{ display: "flex", margin: "auto" }}>R</span></div><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px" }}><span style={{ display: "flex", margin: "auto" }}>A</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color:"black" }}><span style={{ display: "flex", margin: "auto" }}>W</span></div></div>
-                <div style={{display:"flex", justifyContent:"space-between", width:"430px", marginTop:"105px"}}><button>대기방으로</button><button>게임 결과</button></div>
-            </DrawMOdal> */}
+            {drawGame === true && gameEnd === true ?
+                <DrawModal>
+                    <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>D</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color: "black" }}><span style={{ display: "flex", margin: "auto" }}>R</span></div><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px" }}><span style={{ display: "flex", margin: "auto" }}>A</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color: "black" }}><span style={{ display: "flex", margin: "auto" }}>W</span></div></div>
+                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { window.location.reload(`/room/${params.roomId}`); }}>대기방으로</button><button onClick={() => { setresultModal(true); }}>게임 결과</button></div>
+                </DrawModal> : ''
+            }
             {/* 게임 결과 모달 */}
-            {gameEnd === true ?
+            {resultModal === true ?
                 <ResultModal>
-                    <div style={{ fontSize: "36px", marginTop: "20px", marginBottom: "45px" }}>게임 결과</div>
+                    <div style={{ fontSize: "36px", marginTop: "20px", marginBottom: "45px" }}>게임 결과 확인하기</div>
                     <GameTop style={{ width: "1040px", display: "flex", fontSize: "24px", justifyContent: "space-between", marginTop: "15px", marginBottom: "45px" }}>
+                        <div style={{ backgroundImage: 'url(' + Crown + ')', backgroundPosition: "center", backgroundSize: "cover", width: "25px", height: "20px", display: "flex", margin: "auto auto auto 0px" }}></div>
                         <div style={{ display: "flex", width: "520px" }}>
                             <div style={{ overflow: "hidden", margin: "auto", maxWidth: "420px" }}>{ownerNickname}님</div>
                             <div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "60px", height: "60px", display: "flex", backgroundSize: "cover" }}></div>
                             <div style={{ margin: "auto auto auto 0px" }}>
-                                획득 코인 개수
+                                x{ownerCoin}
                             </div>
                         </div>
                         <div style={{ display: "flex", width: "520px" }}>
                             <div style={{ overflow: "hidden", margin: "auto", maxWidth: "420px" }}>{guestNickname}님</div>
                             <div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "60px", height: "60px", display: "flex", backgroundSize: "cover" }}></div>
                             <div style={{ margin: "auto auto auto 0px" }}>
-                                획득 코인 개수
+                                x{guestCoin}
                             </div>
                         </div>
                     </GameTop>
@@ -723,7 +774,7 @@ function Room() {
                         <>
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
                                 {guestBattingCards?.map((guestbattingcard, index) =>
-                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", marginLeft: "6px", color: guestbattingcard % 2 !== 0 ? "white" : "black", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", paddingLeft: "34px" }}>
+                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {guestbattingcard}
                                     </Card>
                                 )}
@@ -734,7 +785,7 @@ function Room() {
                             </MidBase>
                             <div style={{ height: "125px", width: "1040px", margin: "0px auto 105px auto", display: "flex" }}>
                                 {ownerBattingCards?.map((ownerbattingcard, index) =>
-                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: ownerbattingcard % 2 !== 0 ? "white" : "black", paddingLeft: "34px", margin: "auto", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center" }}>
+                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {ownerbattingcard}
                                     </Card>
                                 )}
@@ -743,7 +794,7 @@ function Room() {
                             {/* //게스트구역 */}
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
                                 {ownerBattingCards?.map((ownerbattingcard, index) =>
-                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", marginLeft: "6px", color: ownerbattingcard % 2 !== 0 ? "white" : "black", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", paddingLeft: "34px" }}>
+                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {ownerbattingcard}
                                     </Card>
                                 )}
@@ -754,13 +805,13 @@ function Room() {
                             </MidBase>
                             <div style={{ height: "125px", width: "1040px", margin: "0px auto 105px auto", display: "flex" }}>
                                 {guestBattingCards?.map((guestbattingcard, index) =>
-                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", paddingLeft: "34px", margin: "auto", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center" }}>
+                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {guestbattingcard}
                                     </Card>
                                 )}
                             </div>
                         </>}
-                    <button style={{ width: "210px", height: "45px", background: "#FFFFFF", boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)", borderRadius: "8px", border: "0", marginBottom: "30px" }}>대기실로 이동하기</button>
+                    <button onClick={() => { window.location.reload(`/room/${params.roomId}`); }} style={{ width: "210px", height: "45px", background: "#FFFFFF", boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)", borderRadius: "8px", border: "0", marginBottom: "30px" }}>대기실로 이동하기</button>
                 </ResultModal> : ''}
         </>
     );
@@ -768,7 +819,7 @@ function Room() {
 
 export default Room;
 
-const RoomBody = styled.div`
+let RoomBody = styled.div`
     display:flex;
     padding: 10px;
     width: 1140px;
@@ -777,6 +828,10 @@ const RoomBody = styled.div`
     font-size: 36px;
     font-style: normal;
     font-weight: 700;
+`
+
+let Able = styled.span`
+    float:right;
     button {
         width: 140px;
         height: 45px;
@@ -791,7 +846,19 @@ const RoomBody = styled.div`
     }
 `
 
-const ChatBody = styled.div`
+let Unable = styled.span`
+    float:right;
+    button {
+        width: 140px;
+        height: 45px;
+        background-color: #BAB7B7;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+        border-radius: 8px;
+        border: 0;
+    }
+`
+
+let ChatBody = styled.div`
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -814,7 +881,7 @@ const ChatBody = styled.div`
     }
 `
 
-const ChatWrapCss = styled.div`
+let ChatWrapCss = styled.div`
     overflow-y: scroll;
     width: 960px;
     height: 400px;
@@ -829,7 +896,7 @@ const ChatWrapCss = styled.div`
     }
 `
 
-const EndModal = styled.div`
+let EndModal = styled.div`
     position: fixed;
     top: 0;
     left: 0;
@@ -841,12 +908,12 @@ const EndModal = styled.div`
     align-items: center;
 `;
 
-const Card = styled.div`
+let Card = styled.div`
     background-size: cover;   
     background-position: center; 
 `
 
-const PickCard = styled.div`
+let PickCard = styled.div`
     background-size: cover;   
     background-position: center; 
     &:hover {
@@ -855,7 +922,7 @@ const PickCard = styled.div`
     }
 `
 
-const UserList = styled.div`
+let UserList = styled.div`
     width: 918px;
     height: 25px;
     left: 230px;
@@ -871,7 +938,7 @@ const UserList = styled.div`
     justify-content: space-between;
 `
 
-const ChatForm = styled.div`
+let ChatForm = styled.div`
     margin-top: 10px;
     width: 980px;
     height: 45px;
@@ -1022,7 +1089,7 @@ let MidLoseCircle = styled.div`
     border-radius:100%;
 `
 
-const WinModal = styled.form`
+let WinModal = styled.div`
     font-size:60px;
     position: fixed;
     top: 0;
@@ -1054,7 +1121,7 @@ const WinModal = styled.form`
     }
 `;
 
-const LoseModal = styled.form`
+let LoseModal = styled.div`
     font-size:60px;
     position: fixed;
     top: 0;
@@ -1086,7 +1153,39 @@ const LoseModal = styled.form`
     }
 `;
 
-const ResultModal = styled.form`
+let DrawModal = styled.div`
+    font-size:60px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.126);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    flex-direction:column;
+   
+    button {
+      font-style: normal;
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 22px;
+      width: 190px;
+      height: 55px;
+      background: #F4F4F4;
+      border: 1px solid rgba(169, 169, 169, 0.25);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+        :hover {
+        background-color: #BAB7B7;
+        cursor: pointer;
+              }
+    }
+`;
+
+let ResultModal = styled.div`
     font-size:60px;
     position: fixed;
     top: 0;
@@ -1099,7 +1198,7 @@ const ResultModal = styled.form`
     align-items: center;
     flex-direction:column;
    
-    /* button {
+    button {
       font-style: normal;
       font-weight: 700;
       font-size: 18px;
@@ -1114,5 +1213,5 @@ const ResultModal = styled.form`
         background-color: #BAB7B7;
         cursor: pointer;
               }
-    } */
+    }
 `;
