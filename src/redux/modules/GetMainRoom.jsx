@@ -7,8 +7,7 @@ const initialState = {
     error: null, //
 };
 
-// const token = localStorage.getItem("token");
-
+const token = localStorage.getItem("token");
 export const __GetMainRoom = createAsyncThunk(
     "getmainroom/getMainroom",
     async (payload, api) => {
@@ -17,7 +16,7 @@ export const __GetMainRoom = createAsyncThunk(
                 process.env.REACT_APP_SURVER + `/api/room`,
                 {
                     headers: {
-                        authorization: process.env.REACT_APP_TOKENNAME + " "+process.env.REACT_APP_TOKEN,
+                        authorization: `Bearer ${token}`,
                     },
                 }
             )
