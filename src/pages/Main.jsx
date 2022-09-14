@@ -6,6 +6,7 @@ import { __PostMainRoom } from "../redux/modules/PostMainRoom"
 import { useSelector } from "react-redux/es/exports";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 
 import Loadingimg from "../shared/image/Loading.png";
 import MainBackground from "../shared/image/MainIMG/MainBackground.png";
@@ -89,6 +90,7 @@ function Main() {
 
 
   return (
+    
     Loading === true ?
       <div style={{ width: "1440px", height: "1024px", backgroundImage: 'url(' + MainBackground + ')', backgroundPosition: "center", backgroundSize: "auto", fontSize: "18px", margin: "0px auto" }}>
         <div style={{ width: "1040px", height: "755px", margin: "0px auto" }}>
