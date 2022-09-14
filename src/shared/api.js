@@ -2,7 +2,7 @@ import axios from "axios";
 
 // axios 기본 주소 & header 타입 세팅
 export const api = axios.create({
-  baseURL: "http://15.164.95.144",
+  baseURL: process.env.REACT_APP_ENDPOINT,
   headers: {
     "content-type": "application/json;charset=UTF-8",
     accept: "application/json,",
@@ -15,3 +15,6 @@ api.interceptors.request.use(function (config) {
   config.headers.common["Authorization"] = `Bearer ${accessToken}`;
   return config;
 });
+
+
+//success 받고 이동하도록
