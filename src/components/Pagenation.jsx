@@ -36,8 +36,7 @@ const Nav = styled.nav`
 const Button = styled.button`
   border: none;
   border-radius: 8px;
-  padding: 8px;
-  margin: 1px;
+  padding: 4px;
   font-size: 18px;
   background: none;
   &:hover {

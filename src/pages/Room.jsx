@@ -4,12 +4,16 @@ import socketio from 'socket.io-client';
 import { useParams, useNavigate } from "react-router-dom";
 
 //이미지
-import Roomimg from "../shared/image/Roomimg.png";
-import BackWhite from "../shared/image/CardBackWhite.png";
-import BackBlack from "../shared/image/CardBackBlack.png";
-import FrontWhite from "../shared/image/CardFrontWhite.png";
-import FrontBlack from "../shared/image/CardFrontBlack.png";
-import Crown from "../shared/image/Crown.png"
+import RoomBackground from "../shared/image/RoomIMG/RoomBackground.png";
+import BackWhite from "../shared/image/RoomIMG/CardBackWhite.png";
+import BackBlack from "../shared/image/RoomIMG/CardBackBlack.png";
+import FrontWhite from "../shared/image/RoomIMG/CardFrontWhite.png";
+import FrontBlack from "../shared/image/RoomIMG/CardFrontBlack.png";
+import Crown from "../shared/image/RoomIMG/Crown.png"
+import Coin from "../shared/image/RoomIMG/Coin.png"
+import BigCoin from "../shared/image/RoomIMG/BigCoin.png"
+
+import Swal from 'sweetalert2'
 
 const socket = socketio.connect(process.env.REACT_APP_SURVER); //백서버
 
@@ -20,16 +24,17 @@ function Room() {
     const roomId = +params.roomId;
     const room = roomId;
 
-    const token = process.env.REACT_APP_TOKEN;
-    const token1 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsIm5pY2tuYW1lIjoi64KY66y0Iiwid2luIjowLCJ0b3RhbCI6MCwiaWF0IjoxNjYyNTM5MjIwLCJleHAiOjE2NjMxNDQwMjB9.-r12oYdnUxMvKTvBp4eZ678MV-39b7lG7rPzd6UEQvg"
-    const token2 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJuaWNrbmFtZSI6Iuq4iOuCmOustCIsIndpbiI6MCwidG90YWwiOjAsImlhdCI6MTY2MjY2MDY3NiwiZXhwIjoxNjYzMjY1NDc2fQ._JpUcYtWqVW-Pwc47BmjpdL8uQ5ff81N4k0OYtM5EdA"
+    const token = localStorage.getItem("token");
 
+    //유저Id
     const [userId, setUserId] = useState('');
+    const [ownerUserId, setOwnerUserId] = useState('');
+    const [guestUserId, setGuestUserId] = useState('');
 
     //닉네임
-    const [mynickname, setNickname] = useState('');
-    const [ownerNickname, setOwnerNickname] = useState('나무');
-    const [guestNIckname, setGuestNIckname] = useState('');
+    const [mynickname, setMyNickname] = useState('');
+    const [ownerNickname, setOwnerNickname] = useState('');
+    const [guestNickname, setGuestNickname] = useState('');
 
     //소켓아이디
     const [mysocketId, setMysocketId] = useState('');
@@ -49,22 +54,33 @@ function Room() {
     const [ready, setReady] = useState(false); // 새로운 채팅
     const [gamestart, setGamestart] = useState(false); // 게임시작 여부
     const [round, setRound] = useState(0); // 라운드 
-    const [turn, setTurn] = useState(true); // 턴 여부
+    const [turn, setTurn] = useState(false); // 턴 여부
     const [middleView, setMiddleView] = useState(true); // 중간부분 뷰 여부
     const [gameEnd, setGameEnd] = useState(false);
     const [batting, setBatting] = useState(0);
+    const [card, setCard] = useState(10);
+    const [cardPick, setCardPick] = useState(false);
+    const [Giveturn, setGiveturn] = useState([]);
+    const [TurnWinner, setTurnWinner] = useState('');
+    const [limitCoin, setLimitCoin] = useState(10);
+    const [gameWinner, setGameWinner] = useState('');
+
+    const [unableBTN, setUnableBTN] = useState(false);
     //게스트 진행정보
     const [guestCards, setGuestCards] = useState([]);
     const [guestBattingCards, setGuestBattingCards] = useState([]);
-    const [guestCoin, setGuestCoin] = useState(50);
+    const [guestCoin, setGuestCoin] = useState(100);
     const [guestResult, setGuestResult] = useState([]);
     const [guestWin, setGuestWin] = useState(0);
     //호스트 진행정보
     const [ownerCards, setOwnerCards] = useState([]);
     const [ownerBattingCards, setOwnerBattingCards] = useState([]);
-    const [ownerCoin, setOwnerCoin] = useState(50);
+    const [ownerCoin, setOwnerCoin] = useState(100);
     const [ownerResult, setOwnerResult] = useState([]);
     const [ownerWin, setOwnerWin] = useState(0);
+    //타이머
+    const [timer, setTimer] = useState(30);
+    // const Interval = setInterval(() => {setTimer(timer-1)}, 1000); //1초 마다 실행
 
     useEffect(scrollToBottom, [list]);
 
@@ -72,28 +88,71 @@ function Room() {
 
         socket.emit("login",
             {
-                token: token1,
+                token,
                 room
             }, () => {
             }
         );
 
-        socket.on("login", login => {
-            console.log(login)
-            setList(prev => prev.concat({ text: login.nickname + "님이 입장하셨습니다." })); //입장 알림
+        socket.on("login_room", login => {
             setUsers(login.userList); //유저 목록
-
-            setNickname(login.nickname); //나의 닉네임
-            // setOwnerNickname(login.owner); //방장 닉네임
-            setGuestNIckname(login.userList.filter((user) => user.nickname !== ownerNickname)[0]?.nickname); //게스트 닉네임
-
-            setMysocketId(login.socketId); //나의 소켓 아이디
+            setOwnerNickname(login.owner); //방장 닉네임
+            setGuestNickname(login.userList.filter((user) => user.nickname !== ownerNickname)[0]?.nickname); //게스트 닉네임
             setOwnersoketId(login.userList.filter((user) => user.nickname === ownerNickname)[0]?.socketId); //방장 소켓 아이디
-            setGuestsoketId(login.userList.filter((user) => user.nickname !== ownerNickname)[0]?.socketId); //게스트 소켓 아이디
-
+            setGuestsoketId(login.userList.filter((user) => user.nickname !== ownerNickname)[0]?.socketId); //게스트 소켓 아이디     
+        });
+        socket.on("login_user", login => {
+            setReady(false);
+            socket.emit("chat", { nickname: login.mynickname, msg: "님이 입장하셨습니다." });
             setUserId(login.userId);
+            setMysocketId(login.socketId); //나의 소켓 아이디
+            setMyNickname(login.nickname); //나의 닉네임
         });
 
+        socket.on("gameStart", gameStart => {
+            setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 5초전..." })) }, 1000);
+            setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 4초전..." })) }, 2000);
+            setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 3초전..." })) }, 3000);
+            setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 2초전..." })) }, 4000);
+            setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 1초전..." })) }, 5000);
+            setTimeout(() => { setGamestart(true) }, 6000);
+            const guest = gameStart.guest;
+            const owner = gameStart.owner;
+
+            setRound(gameStart.round);
+            //게스트 set
+            setGuestBattingCards(guest.battingCards);
+            const newnum = [];
+            while (guest.cards.length) {
+                const movenum = guest.cards.splice(Math.floor(Math.random() * guest.cards.length), 1)[0]
+                newnum.push(movenum)
+            };
+            const guestcards = newnum.filter(x => !guest.battingCards.includes(x));
+            setGuestCards(guestcards);
+            setGuestNickname(guest.nickname);
+            setGuestResult(guest.result);
+            setGuestsoketId(guest.socketId);
+            setGuestWin(guest.win);
+            setGuestUserId(guest.userId);
+
+            //호스트 set
+            setOwnerBattingCards(owner.battingCards);
+            const newnum2 = [];
+            while (owner.cards.length) {
+                const movenum2 = owner.cards.splice(Math.floor(Math.random() * owner.cards.length), 1)[0]
+                newnum2.push(movenum2)
+            };
+            const ownercards = newnum2.filter(x => !owner.battingCards.includes(x));
+            setOwnerCards(ownercards);
+            setOwnerNickname(owner.nickname);
+            setOwnerResult(owner.result);
+            setOwnersoketId(owner.socketId);
+            setOwnerWin(owner.win);
+            setOwnerUserId(owner.userId);
+
+            setMiddleView(false);
+            setGiveturn(gameStart.turn);
+        });
 
         socket.on("chat", chat => {
             setList(prev => prev.concat({ text: chat.nickname + " " + chat.msg }));
@@ -103,56 +162,15 @@ function Room() {
             setReady(ready.ready);
         });
 
-        socket.on("gameStart", gameStart => {
-            const timer1 = setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 5초전..." })) }, 1000);
-            const timer2 = setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 4초전..." })) }, 2000);
-            const timer3 = setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 3초전..." })) }, 3000);
-            const timer4 = setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 2초전..." })) }, 4000);
-            const timer5 = setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 1초전..." })) }, 5000);
-            const timer6 = setTimeout(() => { setGamestart(true) }, 6000);
-            console.log(gameStart);
-            const guest = gameStart.guest;
-            const owner = gameStart.owner;
-
-            setBatting(gameStart.batting);
-            setRound(gameStart.round);
-            //게스트 set
-            setGuestBattingCards(guest.battingCards);
-            setGuestCards(guest.cards);
-            setGuestNIckname(guest.nickname);
-            setGuestResult(guest.Result);
-            setGuestsoketId(guest.socketId);
-            setGuestWin(guest.win);
-            setGuestCoin(guest.coin);
-
-            //호스트 set
-            setOwnerBattingCards(owner.battingCards);
-            setOwnerCards(owner.cards);
-            setOwnerNickname(owner.nickname);
-            setOwnerResult(owner.Result);
-            setOwnersoketId(owner.socketId);
-            setOwnerWin(owner.win);
-            setGuestCoin(owner.coin);
-            console.log(gameStart.turn[0])
-            if (gameStart.turn[0] === "owner") {
-                if (mynickname === ownerNickname) {
-                    setTurn(true);
-                } else {
-                    setTurn(false);
-                }
-            } else if (gameStart.turn[0] === "guest") {
-                if (mynickname === ownerNickname) {
-                    setTurn(false);
-                } else {
-                    setTurn(true);
-                }
-            }
+        socket.on("setting", setting => {
+            socket.emit("setting", setting)
         });
 
-        socket.on("disconnect", disconnect => {
-            if (disconnect) {
-                navigate("/")
-            }
+        socket.on("kick", kick => {
+            Swal.fire({ title: '방장에 의해 추방되었습니다.', timer: 1500 });
+            socket.emit("forceDisconnect")
+            setReady(false);
+            navigate("/")
         });
 
         socket.on("error", error => {
@@ -160,47 +178,167 @@ function Room() {
         });
 
         socket.on("turnEnd", turnEnd => {
-            console.log(turnEnd);
+            setCard(10);
+            if (turnEnd.batting !== 0) {
+                setCardPick(true);
+            }
+            setBatting(turnEnd.batting);
+            setRound(turnEnd.round);
+            const owner = turnEnd.owner;
+            const guest = turnEnd.guest;
+            //호스트
+            setOwnerBattingCards(owner.battingCards);
+            setOwnerCards(owner.cards);
+            setOwnerResult(owner.result);
+            setOwnerWin(owner.win);
+
+            setOwnerNickname(owner.nickname);
+            setOwnersoketId(owner.socketId);
+            setOwnerUserId(owner.userId);
+            //게스트
+            setGuestBattingCards(guest.battingCards);
+            setGuestCards(guest.cards);
+            setGuestResult(guest.result);
+            setGuestWin(guest.win);
+
+            setGuestNickname(guest.nickname);
+            setGuestsoketId(guest.socketId);
+            setGuestUserId(guest.userId);
+
+            setGiveturn(turnEnd.turn);
+
         });
 
         socket.on("turnResult", turnResult => {
-            console.log(turnResult);
+            setCard(10);
+            setCardPick(false);
+            setBatting(turnResult.batting);
+            setRound(turnResult.round);
+            setTurnWinner(turnResult.winner);
+            const owner = turnResult.owner;
+            const guest = turnResult.guest;
+            //오너
+            setOwnerBattingCards(owner.battingCards);
+            setOwnerCards(owner.cards);
+            setOwnerCoin(owner.coin);
+            setOwnerResult(owner.result);
+            setOwnerWin(owner.win);
+
+            setOwnerNickname(owner.nickname);
+            setOwnersoketId(owner.socketId);
+            setOwnerUserId(owner.userId);
+
+            //게스트
+            setGuestBattingCards(guest.battingCards);
+            setGuestCards(guest.cards);
+            setGuestCoin(guest.coin);
+            setGuestResult(guest.result);
+            setGuestWin(guest.win);
+
+            setGuestNickname(guest.nickname);
+            setGuestsoketId(guest.socketId);
+            setOwnerUserId(guest.userId);
+
+            setTimeout(() => { setTurnWinner(''); setMiddleView(true); }, 5000);
+            setTimeout(() => { setTurnWinner(''); setMiddleView(false); }, 15000);
         });
 
         socket.on("gameEnd", gameEnd => {
             console.log(gameEnd);
+            setGameEnd(true);
+            setGameWinner(gameEnd.winner);
         });
 
-        //게임정보의 게임종료가 트루면, 모달 true / 결과 닫기 누르면 gameEnd false, 게임스타트 false
     }, []);
-    // socket.emit("turnEnd", {
-    //     {
-    //         nickname:mynickname,
-    //         socketId:mysocketId,
-    //         cards: [],
-    //         battingCard,
-    //         batting,
-    //         turn:false,
-    //         money,
-    //         win: undifind,
-    //         round,
-    //     }
-    // });
-    // let timer = setTimeout(()=>{setList(prev => prev.concat({ text: chat.nickname + " " + chat.msg }))}, 2000);
+
+    socket.on("gameStart", gameStart => {
+        if (gameStart.turn[0] === "owner") {
+            if (mynickname === ownerNickname) {
+                setTurn(true);
+            } else { setTurn(false) }
+        } else if (gameStart.turn[0] === "guest") {
+            if (mynickname === ownerNickname) {
+                setTurn(false);
+            } else { setTurn(true) }
+        }
+
+        // const Interval = setInterval(() => {setTimer(timer-1)}, 1000); //1초 마다 실행
+        // setTimeout(() => { Interval}, 1000);
+        // setTimeout(() => { clearInterval(Interval);}, 20000);
+    });
+    console.log(timer);
+    socket.on("turnEnd", turnEnd => {
+        if (turnEnd.turn[0] === "owner") {
+            if (mynickname === ownerNickname) {
+                setTurn(true);
+            } else { setTurn(false) }
+        } else if (turnEnd.turn[0] === "guest") {
+            if (mynickname === ownerNickname) {
+                setTurn(false);
+            } else { setTurn(true) }
+        }
+
+
+    });
+
+    socket.on("turnResult", turnResult => {
+        setGiveturn(turnResult.turn);
+        if (turnResult.turn[0] === "owner") {
+            if (mynickname === ownerNickname) {
+                setTurn(true);
+            } else { setTurn(false) }
+        } else if (turnResult.turn[0] === "guest") {
+            if (mynickname === ownerNickname) {
+                setTurn(false);
+            } else { setTurn(true) }
+        }
+
+        if (turnResult.owner.coin > turnResult.guest.coin) {
+            setLimitCoin(+turnResult.guest.coin / 10);
+        } else {
+            setLimitCoin(+turnResult.owner.coin / 10);
+        }
+
+        if (turnResult.owner.cards === [] && turnResult.guest.cards === []) {
+            socket.emit("gameEnd", {
+                owner: {
+                    userId: ownerUserId,
+                    nickname: ownerNickname,
+                    socketId: ownersoketId,
+                    cards: ownerCards,
+                    battingCards: ownerBattingCards,
+                    coin: ownerCoin,
+                    result: ownerResult,
+                    win: ownerWin,
+                },
+                guest: {
+                    userId: guestUserId,
+                    nickname: guestNickname,
+                    socketId: guestsoketId,
+                    cards: guestCards,
+                    battingCards: guestBattingCards,
+                    coin: guestCoin,
+                    result: guestResult,
+                    win: guestWin,
+                },
+            });
+        }
+    });
 
     return (
         <>
             {gamestart === false ?
                 //대기방
-                <div style={{ width: "1440px", height: "1024px", padding: "0 270px 0 270px" }}>
-                    <div style={{ "width": "1440px", "height": "1024px", backgroundImage: 'url(' + Roomimg + ')', backgroundPosition: "center", backgroundSize: "cover", fontSize: "18px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                <div style={{ width: "1440px", height: "1024px", backgroundImage: 'url(' + RoomBackground + ')', backgroundPosition: "center", backgroundSize: "auto", fontSize: "18px", margin: "0px auto" }}>
+                    <div style={{ width: "1040px", height: "755px", margin: "0px auto", display: "flex", flexDirection: "column" }}>
                         <RoomBody style={{ paddingTop: "150px" }}>
                             {mynickname === ownerNickname ?
                                 //호스트 구역
                                 <div>
                                     <div style={{ fontSize: "24px", width: "975px", margin: "auto auto 80px auto" }}>{ownerNickname}님의 게임방
                                         <span style={{ float: "right" }}>
-                                            <button onClick={() => { !ready ? alert("상대가 아직 준비하지 않았습니다.") : socket.emit("gameStart", { gameStart: true }); }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>게임시작</button>
+                                            <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold", color: "red" }} onClick={() => { socket.emit("kick", { socketId: guestsoketId }); }}>추방하기</button>
+                                            <button onClick={() => { !ready ? Swal.fire({ title: '상대가 아직 준비되지 않았습니다.', timer: 1500 }) : socket.emit("gameStart", { gameStart: true }); }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>게임시작</button>
                                             <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { navigate("/") }}>나가기</button>
                                         </span>
                                     </div>
@@ -212,7 +350,7 @@ function Room() {
                                         <div style={{ marginRight: "10px" }}>준비완료</div>
                                     </UserList>
                                     <UserList>{users.filter((user) => user.nickname !== ownerNickname)[0]?.nickname !== undefined ? <>
-                                        <div>{users.filter((user) => user.nickname !== ownerNickname)[0]?.nickname}<Kick><span style={{ marginLeft: "10px", fontSize: "14px", color: "red" }} onClick={() => { socket.emit("kick", { socketId: guestsoketId }) }}>추방하기</span></Kick></div>
+                                        <div>{users.filter((user) => user.nickname !== ownerNickname)[0]?.nickname}</div>
                                         <div style={{ marginRight: "10px" }}>{ready ? "준비완료" : "준비중"}</div></> : ''}
                                     </UserList>
                                 </div> :
@@ -265,200 +403,365 @@ function Room() {
                 </div> :
                 //게임방
                 mynickname === ownerNickname ?
-                    <div style={{ width: "1440px", height: "1024px", padding: "0 270px 0 270px" }}>
-                        <div style={{ height: "1024px", width: "1440px" }}>
+                    <div style={{ width: "100%", height: "100%", minWidth: "1440px", minHeight: "1024px" }}>
+                        <div style={{ width: "1040px", height: "1024px", display: "flex", margin: "auto", flexDirection: "column" }}>
                             {/* //호스트뷰 */}
-                            <div style={{ height: "125px", width: "1041px", backgroundColor: "#D9D9D9", margin: "auto", display: "flex", fontSize: "36px" }}>
-                                <div style={{ marginLeft: "100px" }}>
-                                    <div>
-                                        {guestNIckname}
-                                    </div>
-                                    <div>
-                                        코인
-                                    </div>
-                                </div>
-                                <div style={{ textAlign: "center", margin: "auto" }}>
-                                    VS
-                                </div>
-                                <div style={{ marginRight: "100px", textAlign: "right" }}>
-                                    <div>
-                                        {mynickname}
-                                    </div>
-                                    <div>
-                                        코인
+                            <GameTop style={{ display: "flex", fontSize: "18px", justifyContent: "space-between", marginTop: "15px" }}>
+                                <div style={{ display: "flex", margin: "auto auto auto 0px" }}>
+                                    <div style={{ backgroundImage: 'url(' + Crown + ')', backgroundPosition: "center", backgroundSize: "cover", width: "25px", marginRight: "3px", marginBottom: "6px" }}></div>
+                                    <div style={{ overflow: "hidden", marginTop: '3px' }}>{ownerNickname}님</div>
+                                    <div style={{ backgroundImage: 'url(' + Coin + ')', width: "30px", height: "30px", display: "flex", backgroundSize: "cover" }}></div>
+                                    <div style={{ marginTop: '3px' }}>
+                                        x{ownerCoin}
                                     </div>
                                 </div>
-                            </div>
+                                <div style={{ display: "flex", margin: "auto" }}>
+                                    <div style={{ overflow: "hidden", marginTop: '3px' }}>{guestNickname}님</div>
+                                    <div style={{ backgroundImage: 'url(' + Coin + ')', width: "30px", height: "30px", display: "flex", backgroundSize: "cover" }}></div>
+                                    <div style={{ marginTop: '3px' }}>
+                                        x{guestCoin}
+                                    </div>
+                                </div>
+                                <div>
+                                    <button onClick={() => {
+                                        socket.emit("gameEnd", {
+                                            name: ownerUserId,
+                                            owner: {
+                                                userId: ownerUserId,
+                                                nickname: ownerNickname,
+                                                socketId: ownersoketId,
+                                                cards: ownerCards,
+                                                battingCards: ownerBattingCards,
+                                                coin: +ownerCoin,
+                                                result: ownerResult,
+                                                win: ownerWin,
+                                            },
+                                            guest: {
+                                                userId: guestUserId,
+                                                nickname: guestNickname,
+                                                socketId: guestsoketId,
+                                                cards: guestCards,
+                                                battingCards: guestBattingCards,
+                                                coin: +guestCoin,
+                                                result: guestResult,
+                                                win: guestWin,
+                                            },
+                                        });
+                                    }}>항복하기</button>
+                                    <button style={{ marginLeft: "55px" }} onClick={() => { navigate("/") }}>나가기</button>
+                                </div>
+                            </GameTop>
                             {/* guest */}
-                            <div style={{ height: "125px", width: "941px", margin: "auto", marginTop: "40px", display: "flex", justifyContent: "flex-end" }}>
+                            <div style={{ height: "125px", width: "1040px", margin: "25px auto auto 2px", display: "flex" }}>
                                 {guestCards?.map((guestcard, index) =>
-                                    <Card key={index} style={{ height: "117.12px", width: "80px", display: "flex", margin: "auto", marginRight: "7px", backgroundImage: guestcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
+                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
                                     </Card>
                                 )}
                             </div>
-                            <div style={{ height: "125px", width: "941px", margin: "10px auto 20px auto", display: "flex" }}>
+                            <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
                                 {guestBattingCards?.map((guestbattingcard, index) =>
-                                    <Card key={index} style={{ height: "117.12px", width: "80px", display: "flex", margin: "auto", marginLeft: "7px", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
+                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", margin: "auto 0px", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
                                     </Card>
                                 )}
                             </div>
                             {/* 중간구역 */}
-                            {turn === true && middleView === true ?
-                                // {/* 배팅 뷰 */}
-                                <div style={{ height: "190px", width: "897px", backgroundColor: "#D9D9D9", margin: "auto", fontSize: "36px", display: "flex", justifyContent: "space-between", lineHeight: "180px" }}>
-                                    <div style={{ display: "flex" }}>
-                                        <input style={{ height: "33px", width: "146px", padding: "5px", border: "0px", marginTop: "70px", marginLeft: "100px" }}></input>개 배팅
+                            {middleView ?
+                                <MidBase>
+                                    <div style={{ display: "flex", margin: "auto" }}><MidWinCircle></MidWinCircle></div>
+                                    <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>Round {round}</div>
+                                    <div style={{ display: "flex", margin: "auto" }}><MidLoseCircle></MidLoseCircle></div>
+                                </MidBase> : ''}
+                            {middleView === false && turn === true && cardPick === false && TurnWinner === '' ?
+                                <BattingMid onSubmit={(e) => { e.preventDefault(); 0 !== +batting && +batting <= limitCoin ? setCardPick(true) : Swal.fire({ title: `배팅은 1개 부터 ${Math.floor(limitCoin)}개 까지 가능합니다!`, timer: 1500 }); }}>
+                                    <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>배팅을 시작해주세요.</div>
+                                    <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "auto" }}></div>
+                                    <div style={{ display: "flex", margin: "auto", fontSize: "18px" }}>배팅은 최대 {Math.floor(limitCoin)}개 까지 가능합니다.</div>
+                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => setBatting(e.target.value)}></input><span style={{ marginTop: "10px" }}>개</span><button style={{ marginLeft: "10px", marginTop: "3px" }}>배팅하기</button></div>
+                                </BattingMid> : ''}
+                            {middleView === false && turn === true && cardPick === true ?
+                                <CardPickMid>
+                                    <div style={{ fontSize: "36px", display: "flex", margin: "auto auto 40px auto" }}>카드를 선택해주세요.</div>
+                                    <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "0px auto auto auto" }}></div>
+                                    <button onClick={() => {
+                                        if (card !== 10) {
+                                            socket.emit("turnEnd", {
+                                                batting: +batting,
+                                                turn: Giveturn,
+                                                card,
+                                                player: {
+                                                    userId,
+                                                    nickname: mynickname,
+                                                    socketId: mysocketId,
+                                                    cards: mynickname === ownerNickname ? ownerCards : guestCards,
+                                                    battingCards: mynickname === ownerNickname ? ownerBattingCards : guestBattingCards,
+                                                    coin: mynickname === ownerNickname ? +ownerCoin : +guestCoin,
+                                                    result: mynickname === ownerNickname ? ownerResult : guestResult,
+                                                    win: mynickname === ownerNickname ? ownerWin : guestWin
+                                                }
+
+                                            });
+                                            setBatting(0);
+                                        } else {
+                                            Swal.fire({ title: "카드를 선택해주세요!", timer: 1500 });
+                                        }
+                                    }}>선택 완료</button>
+                                </CardPickMid> : ""}
+                            {turn === false && middleView === false && TurnWinner === '' ?
+                                <TurnFalseMid>
+                                    <div style={{ display: "flex", margin: "auto auto 50px auto", fontSize: "36px" }}>상대가 턴을 진행중입니다.</div>
+                                    <div style={{ display: "flex", margin: "0px auto auto auto", fontSize: "30px", color: "red" }}><span style={{ color: "black", marginRight: "10px" }}>남은시간</span> {timer}초</div>
+                                </TurnFalseMid> : ''}
+                            {TurnWinner !== '' ?
+                                <TurnResultMid>
+                                    <div style={{ width: "475px", height: "95px", display: "flex", flexDirection: "column", margin: "auto" }}>
+                                        <div style={{ color: "#3A3A3A", fontSize: "36px", display: "flex", margin: "auto auto auto 0px" }}>{round - 1} 라운드</div>
+                                        <div style={{ color: "black", fontSize: "36px", margin: "auto 0px auto auto" }}>{TurnWinner}님 승리</div>
                                     </div>
-                                    <div style={{ marginRight: "100px" }}>
-                                        나가기
-                                    </div>
-                                </div> : ''}
-                            {turn === false && middleView === true ?
-                                // {/* 기다릴 때 뷰 */}
-                                <div style={{ height: "190px", width: "897px", backgroundColor: "#D9D9D9", margin: "auto", fontSize: "50px", display: "flex", justifyContent: "space-between", lineHeight: "180px" }}>
-                                    <span style={{ display: "flex", margin: "auto" }}>상대가 배팅하는 중입니다</span>
-                                </div> : ''}
-                            {/* 결과 뷰 */}
-                            {middleView === false ? <div style={{ height: "190px", width: "897px", backgroundColor: "#D9D9D9", margin: "auto", fontSize: "36px", display: "flex", justifyContent: "space-between", lineHeight: "180px" }}>
-                                0라운드 승리 {mynickname}!!
-                            </div> : ''}
+                                    <div style={{ display: "flex", color: "black", fontSize: "36px", margin: "auto" }}>획득 코인<div style={{ backgroundImage: 'url(' + Coin + ')', width: "40px", height: "40px", backgroundSize: "cover", marginTop: "3px" }}></div>x<span>10</span></div>
+                                </TurnResultMid> : ''}
                             {/* owner */}
-                            <div style={{ height: "125px", width: "941px", margin: "20px auto 10px auto", display: "flex" }}>
+                            <div style={{ height: "125px", width: "1040px", margin: "10px auto 10px auto", display: "flex" }}>
                                 {ownerBattingCards?.map((ownerbattingcard, index) =>
-                                    <Card key={index} style={{ height: "117.12px", width: "80px", display: "flex", margin: "auto", marginLeft: "7px", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')' }}>
+                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {ownerbattingcard}
                                     </Card>
                                 )}
                             </div>
-                            <div style={{ height: "125px", width: "941px", margin: "auto auto 49px auto", display: "flex" }}>
+                            <div style={{ height: "125px", width: "1040px", margin: "auto auto 0px auto", display: "flex" }}>
                                 {ownerCards?.map((ownercard, index) =>
-                                    <Card key={index} style={{ height: "117.12px", width: "80px", display: "flex", color: "white", margin: "auto 7px auto auto", backgroundImage: ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')' }}>
-                                        {ownercard}
-                                    </Card>
+                                    <>
+                                        {turn === true && cardPick === true ?
+                                            <PickCard onClick={(e) => { setCard(ownercard); }} key={index} style={{ height: "140px", width: "95px", display: "flex", color: ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                                {ownercard}
+                                            </PickCard> :
+                                            <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                                {ownercard}
+                                            </Card>}
+                                    </>
                                 )}
-                            </div>
-                            {/* 마지막구역 */}
-                            <div style={{ height: "60px", width: "1041px", margin: "auto", fontSize: "36px", display: "flex", justifyContent: "space-between" }}>
-                                <div>
-                                    {mynickname}
-                                </div>
-                                <div>
-                                    나가기
-                                </div>
                             </div>
                         </div>
                     </div>
                     :
-                    <div style={{ paddingLeft: "270px", paddingRight: "270px" }}>
-                        <div style={{ height: "1024px", width: "1440px" }}>
+                    <div style={{ width: "100%", height: "100%", minWidth: "1440px", minHeight: "1024px" }}>
+                        <div style={{ width: "1040px", height: "1024px", display: "flex", margin: "auto", flexDirection: "column" }}>
                             {/* //게스트뷰 */}
-                            <div style={{ height: "125px", width: "1041px", backgroundColor: "#D9D9D9", margin: "auto", display: "flex", fontSize: "36px" }}>
-                                <div style={{ marginLeft: "100px" }}>
-                                    <div>
-                                        {ownerNickname}
-                                    </div>
-                                    <div>
-                                        코인
-                                    </div>
-                                </div>
-                                <div style={{ textAlign: "center", margin: "auto" }}>
-                                    VS
-                                </div>
-                                <div style={{ marginRight: "100px", textAlign: "right" }}>
-                                    <div>
-                                        {mynickname}
-                                    </div>
-                                    <div>
-                                        코인
+                            <GameTop style={{ display: "flex", fontSize: "18px", justifyContent: "space-between", marginTop: "15px" }}>
+                                <div style={{ backgroundImage: 'url(' + Crown + ')', backgroundPosition: "center", backgroundSize: "cover", width: "25px", marginRight: "3px", marginBottom: "6px" }}></div>
+                                <div style={{ display: "flex", margin: "auto auto auto 0px" }}>
+                                    <div style={{ overflow: "hidden", marginTop: '3px' }}>{ownerNickname}님</div>
+                                    <div style={{ backgroundImage: 'url(' + Coin + ')', width: "30px", height: "30px", display: "flex", backgroundSize: "cover" }}></div>
+                                    <div style={{ marginTop: '3px' }}>
+                                        x{ownerCoin}
                                     </div>
                                 </div>
-                            </div>
+                                <div style={{ display: "flex", margin: "auto" }}>
+                                    <div style={{ overflow: "hidden", marginTop: '3px' }}>{guestNickname}님</div>
+                                    <div style={{ backgroundImage: 'url(' + Coin + ')', width: "30px", height: "30px", display: "flex", backgroundSize: "cover" }}></div>
+                                    <div style={{ marginTop: '3px' }}>
+                                        x{guestCoin}
+                                    </div>
+                                </div>
+                                <div>
+                                    <button onClick={() => {
+                                        socket.emit("gameEnd", {
+                                            name: guestUserId,
+                                            owner: {
+                                                userId: ownerUserId,
+                                                nickname: ownerNickname,
+                                                socketId: ownersoketId,
+                                                cards: ownerCards,
+                                                battingCards: ownerBattingCards,
+                                                coin: +ownerCoin,
+                                                result: ownerResult,
+                                                win: ownerWin,
+                                            },
+                                            guest: {
+                                                userId: guestUserId,
+                                                nickname: guestNickname,
+                                                socketId: guestsoketId,
+                                                cards: guestCards,
+                                                battingCards: guestBattingCards,
+                                                coin: +guestCoin,
+                                                result: guestResult,
+                                                win: guestWin,
+                                            },
+                                        });
+                                    }}>항복하기</button>
+                                    <button style={{ marginLeft: "55px" }} onClick={() => { navigate("/") }}>나가기</button>
+                                </div>
+                            </GameTop>
                             {/* owner */}
-                            <div style={{ height: "125px", width: "941px", margin: "auto", marginTop: "40px", display: "flex", justifyContent: "flex-end" }}>
-                                {ownerCards?.map((ownercard, index) =>
-                                    <Card key={index} style={{ height: "117.12px", width: "80px", display: "flex", margin: "auto", marginRight: "7px", backgroundImage: ownercard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
+                            <div style={{ height: "125px", width: "1040px", margin: "25px auto auto 2px", display: "flex" }}>
+                                {ownerCards?.map((guestcard, index) =>
+                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
                                     </Card>
                                 )}
                             </div>
-                            <div style={{ height: "125px", width: "941px", margin: "10px auto 20px auto", display: "flex" }}>
-                                {ownerBattingCards?.map((ownerbattingcard, index) =>
-                                    <Card key={index} style={{ height: "117.12px", width: "80px", display: "flex", margin: "auto", marginLeft: "7px", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
+                            <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
+                                {ownerBattingCards?.map((guestbattingcard, index) =>
+                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", margin: "auto 0", marginLeft: "7px", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
                                     </Card>
                                 )}
                             </div>
                             {/* 중간구역 */}
-                            {turn === true && middleView === true ?
-                                // {/* 배팅 뷰 */}
-                                <div style={{ height: "190px", width: "897px", backgroundColor: "#D9D9D9", margin: "auto", fontSize: "36px", display: "flex", justifyContent: "space-between", lineHeight: "180px" }}>
-                                    <div style={{ display: "flex" }}>
-                                        <input style={{ height: "33px", width: "146px", padding: "5px", border: "0px", marginTop: "70px", marginLeft: "100px" }}></input>개 배팅
+                            {middleView ?
+                                <MidBase>
+                                    <div style={{ display: "flex", margin: "auto" }}><MidWinCircle></MidWinCircle></div>
+                                    <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>Round {round}</div>
+                                    <div style={{ display: "flex", margin: "auto" }}><MidLoseCircle></MidLoseCircle></div>
+                                </MidBase> : ''}
+                            {middleView === false && turn === true && cardPick === false && TurnWinner === '' ?
+                                <BattingMid onSubmit={(e) => { e.preventDefault(); 0 !== +batting && +batting <= limitCoin ? setCardPick(true) :  Swal.fire({ title: `배팅은 1개 부터 ${Math.floor(limitCoin)}개 까지 가능합니다!`, timer: 1500 }); }}>
+                                    <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>배팅을 시작해주세요.</div>
+                                    <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "auto" }}></div>
+                                    <div style={{ display: "flex", margin: "auto", fontSize: "18px" }}>배팅은 최대  {Math.floor(limitCoin)}개 까지 가능합니다.</div>
+                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => setBatting(e.target.value)}></input><span style={{ marginTop: "10px" }}>개</span><button style={{ marginLeft: "10px", marginTop: "3px" }}>배팅하기</button></div>
+                                </BattingMid> : ''}
+                            {middleView === false && turn === true && cardPick === true ?
+                                <CardPickMid>
+                                    <div style={{ fontSize: "36px", display: "flex", margin: "auto auto 40px auto" }}>카드를 선택해주세요.</div>
+                                    <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "0px auto auto auto" }}></div>
+                                    <button onClick={() => {
+                                        if (card !== 10) {
+                                            socket.emit("turnEnd", {
+                                                batting: +batting,
+                                                turn: Giveturn,
+                                                card,
+                                                player: {
+                                                    userId,
+                                                    nickname: mynickname,
+                                                    socketId: mysocketId,
+                                                    cards: mynickname === ownerNickname ? ownerCards : guestCards,
+                                                    battingCards: mynickname === ownerNickname ? ownerBattingCards : guestBattingCards,
+                                                    coin: mynickname === ownerNickname ? +ownerCoin : +guestCoin,
+                                                    result: mynickname === ownerNickname ? ownerResult : guestResult,
+                                                    win: mynickname === ownerNickname ? ownerWin : guestWin
+                                                }
+
+                                            });
+                                            setBatting(0);
+                                        } else {
+                                            Swal.fire({ title: "카드를 선택해주세요!", timer: 1500 });
+                                        }
+                                    }}>선택 완료</button>
+                                </CardPickMid> : ""}
+                            {turn === false && middleView === false && TurnWinner === '' ?
+                                <TurnFalseMid>
+                                    <div style={{ display: "flex", margin: "auto auto 50px auto", fontSize: "36px" }}>상대가 턴을 진행중입니다.</div>
+                                    <div style={{ display: "flex", margin: "0px auto auto auto", fontSize: "30px", color: "red" }}><span style={{ color: "black", marginRight: "10px" }}>남은시간</span> 20초</div>
+                                </TurnFalseMid> : ''}
+                            {TurnWinner !== '' ?
+                                <TurnResultMid>
+                                    <div style={{ width: "475px", height: "95px", display: "flex", flexDirection: "column", margin: "auto" }}>
+                                        <div style={{ color: "#3A3A3A", fontSize: "36px", display: "flex", margin: "auto auto auto 0px" }}>{round - 1} 라운드</div>
+                                        <div style={{ color: "black", fontSize: "36px", margin: "auto 0px auto auto" }}>{TurnWinner}님 승리</div>
                                     </div>
-                                    <div style={{ marginRight: "100px" }}>
-                                        나가기
-                                    </div>
-                                </div> : ''}
-                            {turn === false && middleView === true ?
-                                // {/* 기다릴 때 뷰 */}
-                                <div style={{ height: "190px", width: "897px", backgroundColor: "#D9D9D9", margin: "auto", fontSize: "50px", display: "flex", justifyContent: "space-between", lineHeight: "180px" }}>
-                                    <span style={{ display: "flex", margin: "auto" }}>상대가 배팅하는 중입니다</span>
-                                </div> : ''}
-                            {/* 결과 뷰 */}
-                            {middleView === false ? <div style={{ height: "190px", width: "897px", backgroundColor: "#D9D9D9", margin: "auto", fontSize: "36px", display: "flex", justifyContent: "space-between", lineHeight: "180px" }}>
-                                0라운드 승리 {mynickname}!!
-                            </div> : ''}
+                                    <div style={{ display: "flex", color: "black", fontSize: "36px", margin: "auto" }}>획득 코인<div style={{ backgroundImage: 'url(' + Coin + ')', width: "40px", height: "40px", backgroundSize: "cover", marginTop: "3px" }}></div>x<span>10</span></div>
+                                </TurnResultMid> : ''}
                             {/* guest */}
-                            <div style={{ height: "125px", width: "941px", margin: "20px auto 10px auto", display: "flex" }}>
+                            <div style={{ height: "125px", width: "1040px", margin: "10px auto 10px auto", display: "flex" }}>
                                 {guestBattingCards?.map((guestbattingcard, index) =>
-                                    <Card key={index} style={{ height: "117.12px", width: "80px", display: "flex", margin: "auto", marginLeft: "7px", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')' }}>
+                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {guestbattingcard}
                                     </Card>
                                 )}
                             </div>
-                            <div style={{ height: "125px", width: "941px", margin: "auto auto 49px auto", display: "flex" }}>
+                            <div style={{ height: "125px", width: "1040px", margin: "auto auto 0px auto", display: "flex" }}>
                                 {guestCards?.map((guestcard, index) =>
-                                    <Card key={index} style={{ height: "117.12px", width: "80px", display: "flex", margin: "auto 7px auto auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')' }}>
-                                        {guestcard}
-                                    </Card>
+                                    <>
+                                        {turn === true && cardPick === true ?
+                                            <PickCard onClick={(e) => { setCard(guestcard); }} key={index} style={{ height: "140px", width: "95px", display: "flex", color: guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                                {guestcard}
+                                            </PickCard> :
+                                            <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                                {guestcard}
+                                            </Card>}
+                                    </>
                                 )}
-                            </div>
-                            {/* 마지막구역 */}
-                            <div style={{ height: "60px", width: "1041px", margin: "auto", fontSize: "36px", display: "flex", justifyContent: "space-between" }}>
-                                <div>
-                                    {mynickname}
-                                </div>
-                                <div>
-                                    나가기
-                                </div>
                             </div>
                         </div>
                     </div>}
 
-
-            {/* 결과창 모달 */}
-            {
-                gameEnd === true ? (<>
-                    <EndModal>
-                        <div style={{ width: "1000px", height: "600px", backgroundColor: "white", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                            <div style={{ fontSize: "60px", marginBottom: "30px" }}>승자는 누구!</div>
-                            <div style={{ fontSize: "36px" }}>상대 카드</div>
-                            <div style={{ width: "941px", margin: "0px auto 10px auto", display: "flex" }}>
-                                <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto", marginLeft: "7px" }}>
-
-                                </div>
+            {/* win모달 */}
+            {/* <WinModal>
+                <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>W</span></div><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px" }}><span style={{ display: "flex", margin: "auto" }}>I</span></div><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px" }}><span style={{ display: "flex", margin: "auto" }}>N</span></div></div>
+                <div style={{display:"flex", justifyContent:"space-between", width:"430px", marginTop:"105px"}}><button>대기방으로</button><button>게임 결과</button></div>
+            </WinModal> */}
+            {/* lose모달 */}
+            {/* <LoseModal>
+                <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>L</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color:"black" }}><span style={{ display: "flex", margin: "auto" }}>O</span></div><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px" }}><span style={{ display: "flex", margin: "auto" }}>S</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color:"black" }}><span style={{ display: "flex", margin: "auto" }}>E</span></div></div>
+                <div style={{display:"flex", justifyContent:"space-between", width:"430px", marginTop:"105px"}}><button>대기방으로</button><button>게임 결과</button></div>
+            </LoseModal> */}
+            {/* draw모달 */}
+            {/* <DrawMOdal>
+                <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>D</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color:"black" }}><span style={{ display: "flex", margin: "auto" }}>R</span></div><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px" }}><span style={{ display: "flex", margin: "auto" }}>A</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color:"black" }}><span style={{ display: "flex", margin: "auto" }}>W</span></div></div>
+                <div style={{display:"flex", justifyContent:"space-between", width:"430px", marginTop:"105px"}}><button>대기방으로</button><button>게임 결과</button></div>
+            </DrawMOdal> */}
+            {/* 게임 결과 모달 */}
+            {gameEnd === true ?
+                <ResultModal>
+                    <div style={{ fontSize: "36px", marginTop: "20px", marginBottom: "45px" }}>게임 결과</div>
+                    <GameTop style={{ width: "1040px", display: "flex", fontSize: "24px", justifyContent: "space-between", marginTop: "15px", marginBottom: "45px" }}>
+                        <div style={{ display: "flex", width: "520px" }}>
+                            <div style={{ overflow: "hidden", margin: "auto", maxWidth: "420px" }}>{ownerNickname}님</div>
+                            <div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "60px", height: "60px", display: "flex", backgroundSize: "cover" }}></div>
+                            <div style={{ margin: "auto auto auto 0px" }}>
+                                획득 코인 개수
                             </div>
-                            <div style={{ fontSize: "36px", marginTop: "50px" }}>나의 카드</div>
-                            <div style={{ width: "941px", margin: "0px auto 10px auto", display: "flex" }}>
-                                <div style={{ height: "117.12px", width: "80px", backgroundColor: "purple", display: "flex", margin: "auto", marginLeft: "7px" }}>
-
-                                </div>
-                            </div>
-                            <button onClick={() => { setGameEnd(false); setGamestart(false); }} style={{ fontSize: "26px", marginTop: "10px" }}>
-                                결과 닫기
-                            </button>
                         </div>
-                    </EndModal>
-                </>) : ''
-            }
+                        <div style={{ display: "flex", width: "520px" }}>
+                            <div style={{ overflow: "hidden", margin: "auto", maxWidth: "420px" }}>{guestNickname}님</div>
+                            <div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "60px", height: "60px", display: "flex", backgroundSize: "cover" }}></div>
+                            <div style={{ margin: "auto auto auto 0px" }}>
+                                획득 코인 개수
+                            </div>
+                        </div>
+                    </GameTop>
+                    {mynickname === ownerNickname ?
+                        // 방장구역
+                        <>
+                            <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
+                                {guestBattingCards?.map((guestbattingcard, index) =>
+                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", marginLeft: "6px", color: guestbattingcard % 2 !== 0 ? "white" : "black", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", paddingLeft: "34px" }}>
+                                        {guestbattingcard}
+                                    </Card>
+                                )}
+                            </div>
+                            <MidBase>
+                                <div style={{ display: "flex", margin: "auto" }}><MidWinCircle></MidWinCircle></div>
+                                <div style={{ display: "flex", margin: "auto" }}><MidLoseCircle></MidLoseCircle></div>
+                            </MidBase>
+                            <div style={{ height: "125px", width: "1040px", margin: "0px auto 105px auto", display: "flex" }}>
+                                {ownerBattingCards?.map((ownerbattingcard, index) =>
+                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: ownerbattingcard % 2 !== 0 ? "white" : "black", paddingLeft: "34px", margin: "auto", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center" }}>
+                                        {ownerbattingcard}
+                                    </Card>
+                                )}
+                            </div>
+                        </> : <>
+                            {/* //게스트구역 */}
+                            <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
+                                {ownerBattingCards?.map((ownerbattingcard, index) =>
+                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", marginLeft: "6px", color: ownerbattingcard % 2 !== 0 ? "white" : "black", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", paddingLeft: "34px" }}>
+                                        {ownerbattingcard}
+                                    </Card>
+                                )}
+                            </div>
+                            <MidBase>
+                                <div style={{ display: "flex", margin: "auto" }}><MidWinCircle></MidWinCircle></div>
+                                <div style={{ display: "flex", margin: "auto" }}><MidLoseCircle></MidLoseCircle></div>
+                            </MidBase>
+                            <div style={{ height: "125px", width: "1040px", margin: "0px auto 105px auto", display: "flex" }}>
+                                {guestBattingCards?.map((guestbattingcard, index) =>
+                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", paddingLeft: "34px", margin: "auto", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center" }}>
+                                        {guestbattingcard}
+                                    </Card>
+                                )}
+                            </div>
+                        </>}
+                    <button style={{ width: "210px", height: "45px", background: "#FFFFFF", boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)", borderRadius: "8px", border: "0", marginBottom: "30px" }}>대기실로 이동하기</button>
+                </ResultModal> : ''}
         </>
     );
 };
@@ -466,20 +769,21 @@ function Room() {
 export default Room;
 
 const RoomBody = styled.div`
+    display:flex;
+    padding: 10px;
     width: 1140px;
     height:689px;
     margin: auto;
     font-size: 36px;
     font-style: normal;
     font-weight: 700;
-    button {width: 140px;
+    button {
+        width: 140px;
         height: 45px;
-        left: 908px;
-        top: 104px;
         background: #F4F4F4;
-        border: 1px solid rgba(169, 169, 169, 0.25);
         box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
         border-radius: 8px;
+        border: 0;
         :hover {
         background-color: #BAB7B7;
         cursor: pointer;
@@ -525,16 +829,6 @@ const ChatWrapCss = styled.div`
     }
 `
 
-const Kick = styled.span`
-    span {
-        border-radius:5px;
-        :hover{
-        cursor:pointer;
-        background-color: #BAB7B7;
-    }
-    }
-`
-
 const EndModal = styled.div`
     position: fixed;
     top: 0;
@@ -550,6 +844,15 @@ const EndModal = styled.div`
 const Card = styled.div`
     background-size: cover;   
     background-position: center; 
+`
+
+const PickCard = styled.div`
+    background-size: cover;   
+    background-position: center; 
+    &:hover {
+    cursor: pointer;
+    transform: translateY(-25px);
+    }
 `
 
 const UserList = styled.div`
@@ -591,3 +894,225 @@ const ChatForm = styled.div`
         }
     }
 `
+
+// --------
+
+let GameTop = styled.div`
+    button {
+        font-size:18px;
+        width: 121px;
+        height: 45px;
+        left: 943px;
+        top: 15px;
+        background: #FFFFFF;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+        border-radius: 8px;
+        border: 0;
+        :hover {
+        background-color: #BAB7B7;
+        cursor: pointer;
+            }
+    }
+`
+
+let BattingMid = styled.form`
+    display:flex;
+    flex-direction:column;
+    width: 1040px;
+    height: 300px;
+    background: linear-gradient(259.36deg, #F1F1F1 2.14%, #F3F3F3 28.04%, #ECECEC 57.25%, #ECECEC 81.49%, #E3E3E3 103.54%);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    input {
+        font-size: 18px;
+        padding: 0 10px;
+        width: 162px;
+        height: 45px;
+        background: #F4F4F4;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+        border-radius: 8px;
+    }
+    button {
+        font-size:18px;
+        width: 121px;
+        height: 45px;
+        background: #FFFFFF;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+        border-radius: 8px;
+        border: 0;
+        :hover {
+        background-color: #BAB7B7;
+        cursor: pointer;
+            }
+    }
+`
+
+let CardPickMid = styled.div`
+    display:flex;
+    flex-direction:column;
+    width: 1040px;
+    height: 300px;
+    left: 200px;
+    top: 405px;
+    background: linear-gradient(259.36deg, #F1F1F1 2.14%, #F3F3F3 28.04%, #ECECEC 57.25%, #ECECEC 81.49%, #E3E3E3 103.54%);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    button {
+      margin: 0 auto auto auto;
+      font-style: normal;
+      font-weight: 700;
+      font-size: 18px;
+      width: 190px;
+      height: 55px;
+      background: #F4F4F4;
+      border: 1px solid rgba(169, 169, 169, 0.25);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+        :hover {
+        background-color: #BAB7B7;
+        cursor: pointer;
+              }
+    }
+`
+
+let TurnFalseMid = styled.div`
+    display:flex;
+    flex-direction:column;
+    width: 1040px;
+    height: 300px;
+    left: 200px;
+    top: 405px;
+    background: linear-gradient(259.36deg, #F1F1F1 2.14%, #F3F3F3 28.04%, #ECECEC 57.25%, #ECECEC 81.49%, #E3E3E3 103.54%);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+`
+
+let TurnResultMid = styled.div`
+    display:flex;
+    flex-direction:column;
+    width: 1040px;
+    height: 300px;
+    left: 200px;
+    top: 405px;
+    background: linear-gradient(259.36deg, #F1F1F1 2.14%, #F3F3F3 28.04%, #ECECEC 57.25%, #ECECEC 81.49%, #E3E3E3 103.54%);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+`
+
+let MidBase = styled.div`
+    display:flex;
+    flex-direction:column;
+    width: 1040px;
+    height: 300px;
+`
+
+let MidWinCircle = styled.div`
+    width:48px;
+    height:48px;
+    background: linear-gradient(135deg, #FADE48 13.75%, #FEDA17 38.67%, #FEF3BA 62.84%, #FFFAE0 86.25%);
+    box-shadow: inset 2px 2px 6px rgba(146, 152, 113, 0.2);
+    border-radius:100%;
+`
+
+let MidLoseCircle = styled.div`
+    width:48px;
+    height:48px;
+    background: #CACACA;
+    box-shadow: inset 2px 2px 6px rgba(146, 152, 113, 0.2);
+    border-radius:100%;
+`
+
+const WinModal = styled.form`
+    font-size:60px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.126);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    flex-direction:column;
+   
+    button {
+      font-style: normal;
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 22px;
+      width: 190px;
+      height: 55px;
+      background: #F4F4F4;
+      border: 1px solid rgba(169, 169, 169, 0.25);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+        :hover {
+        background-color: #BAB7B7;
+        cursor: pointer;
+              }
+    }
+`;
+
+const LoseModal = styled.form`
+    font-size:60px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.126);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    flex-direction:column;
+   
+    button {
+      font-style: normal;
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 22px;
+      width: 190px;
+      height: 55px;
+      background: #F4F4F4;
+      border: 1px solid rgba(169, 169, 169, 0.25);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+        :hover {
+        background-color: #BAB7B7;
+        cursor: pointer;
+              }
+    }
+`;
+
+const ResultModal = styled.form`
+    font-size:60px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction:column;
+   
+    /* button {
+      font-style: normal;
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 22px;
+      width: 190px;
+      height: 55px;
+      background: #F4F4F4;
+      border: 1px solid rgba(169, 169, 169, 0.25);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+        :hover {
+        background-color: #BAB7B7;
+        cursor: pointer;
+              }
+    } */
+`;
