@@ -19,7 +19,7 @@ import { FaSearch } from 'react-icons/fa';
 import { IoMdAdd } from 'react-icons/io';
 
 function Main() {
-
+  
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -28,7 +28,7 @@ function Main() {
   const Loading = useSelector((state) => state.getmainroom.isLoading);
   const [resp, setResp] = useState([]);
   const [lock, setLock] = useState("ALL");
-
+  console.log(rooms)
   //페이지네이션
   const [total, setTotal] = useState(0);
   const [limit] = useState(9);
@@ -150,14 +150,14 @@ function Main() {
                     setRoompw(room.roomPw);
                     setPwModal(true);
                   } else {
-                    navigate(`room/${roomId}`)
+                    navigate(`room/${room.roomId}`)
                   }
                 }}>
                   <div style={{ width: "173px", display: "flex" }}>{room.roomId}</div>
                   <div style={{ width: "380px", display: "flex", overflow: "hidden" }}>{room.roomTitle}</div>
                   <div style={{ width: "245px", display: "flex", overflow: "hidden" }}>{room.nickname}</div>
                   <div style={{ width: "190px", display: "flex" }}>{room.currentUsers}</div>
-                  <div style={{ display: "flex", width: "20px", height: "20px", backgroundRepeat: "no-repeat", backgroundImage: room.lock === true ? 'url(' + LockImg + ')' : 'url(' + UnLockImg + ')' }}></div>
+                  <div style={{ display: "flex", width: "20px", height: "20px", backgroundRepeat: "no-repeat", backgroundImage:room.roomLock === true ? 'url(' + LockImg + ')' : 'url(' + UnLockImg + ')' }}></div>
                 </RoomSelect>
               ))}
           </MainBody>
