@@ -28,7 +28,7 @@ function Main() {
   const Loading = useSelector((state) => state.getmainroom.isLoading);
   const [resp, setResp] = useState([]);
   const [lock, setLock] = useState("ALL");
-  console.log(rooms)
+  
   //페이지네이션
   const [total, setTotal] = useState(0);
   const [limit] = useState(9);
