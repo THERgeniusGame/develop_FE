@@ -3,10 +3,10 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 const initialState = {
-    isLoading: false,
     error: null,
     data: [],
     isPost: [],
+    isLogin: false,
 };
 
 //로그인
@@ -19,8 +19,14 @@ export const __login = createAsyncThunk(
             //토큰 localStorage에 저장하기
             localStorage.setItem("token", res.data)
             console.log(res);
-            //로그인 상태 값 true, false
-            return res.data
+            (window.location.href="http://localhost:3000/")
+            // return res.data
+            
+            // Swal.fire({
+            //     icon: "success",
+            //     title: "로그인 되었습니다!",
+            //   })
+
         } catch (err) {
             console.log(err)
             Swal.fire({
@@ -43,15 +49,15 @@ export const loginSlice = createSlice({
         //로그인 
         .addCase(__login.fulfilled, (state, action) => {
             console.log(action)
-            state.isLoading = false;
             state.isPost = action
+            state.isLogin = true;
         })
         .addCase(__login.rejected, (state, action) => {
             console.log(action)
-            state.isLoading = false;
+            state.isLogin = false;
         })
         .addCase(__login.pending, (state, action) => {
-            state.isLoading = true;
+            state.isLogin = false;
         })
     },
 });

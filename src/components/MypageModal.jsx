@@ -1,15 +1,19 @@
 import styled from "styled-components";
 import React from "react";
 import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
 
 const MypageModal = () => {
   const navigate = useNavigate()
   
   const logout = () => {
     localStorage.removeItem("token")
-    
+      //localStorage.setItem("token", null);
+    Swal.fire({
+      icon: "success",
+      title: "로그아웃 되었습니다!",
+    })
     navigate('/login')
-    
   }
 
     return(
@@ -20,9 +24,7 @@ const MypageModal = () => {
                     <hr/>
                     <div className="logout"
                       onClick={logout}
-                      
                     >로그아웃</div>
-                    
                 </div>
             </Modal>
         </>

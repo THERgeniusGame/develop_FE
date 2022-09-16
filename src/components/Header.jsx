@@ -8,13 +8,13 @@ const Header = () => {
   const navigate = useNavigate()
   const [modal, setModal] = useState(false);
 
-  useEffect(()=>{
-    const accessToken = localStorage.removeItem("token")
-    console.log(accessToken)
-    if (accessToken) {
-        return navigate("/login")
-    }
-  }, [])
+  // useEffect(()=>{
+  //   const accessToken = localStorage.removeItem("token")
+  //   console.log(accessToken)
+  //   if (accessToken) {
+  //       return navigate("/login")
+  //   }
+  // }, [])
 
   return (
    <>
@@ -53,7 +53,9 @@ const HeaderBox = styled.div`
   flex-direction: row;
   justify-content: space-between;
   margin: 0px auto;
-  position: sticky;
+  position: relative;
+  z-index: 4;
+  //position: sticky;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   
   div {

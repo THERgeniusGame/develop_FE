@@ -90,8 +90,9 @@ function Main() {
 
 
   return (
-    
-    Loading === true ?
+   <>
+   <Header />
+    {Loading === true ?
       <div style={{ width: "1440px", height: "1024px", backgroundImage: 'url(' + MainBackground + ')', backgroundPosition: "center", backgroundSize: "auto", fontSize: "18px", margin: "0px auto" }}>
         <div style={{ width: "1040px", height: "755px", margin: "0px auto" }}>
           <div style={{ display: "flex", justifyContent: "space-between", width: "1040px", margin: "0px auto" }}>
@@ -230,8 +231,10 @@ function Main() {
         <div style={{ width: "1440px", height: "1024px", display: "flex", backgroundImage: 'url(' + MainBackground + ')', backgroundPosition: "center", backgroundSize: "cover" }}>
           <div style={{ width: "250px", height: "350px", backgroundImage: 'url(' + Loadingimg + ')', backgroundPosition: "center", backgroundSize: "cover", margin: "auto", display: "flex", justifyContent: "center", alignItems: "center" }} />
         </div>
-      </div>
+      </div>}
+      </>
   );
+  
 }
 
 export default Main;

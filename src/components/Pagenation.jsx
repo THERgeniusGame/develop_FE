@@ -1,9 +1,32 @@
 import styled from "styled-components";
 
 import React from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
 
 const Pagination = ({ total, limit, page, setPage }) => {
     const numPages = Math.ceil(total / limit);
+    const token = localStorage.getItem("token");
+
+    const [rooms, setRooms] = useState();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [roomPerPage, setRoomPerPage] = useState(9);
+
+    useEffect(()=> {
+      const data = axios.get(
+        process.env.REACT_APP_SURVER + `/api/room`,
+        {
+          headers: {
+          authorization: `Bearer ${token}`,
+          },
+        }
+
+        )
+        console.log(data)
+    }, [])
+       
+
     return (
         <>
             <Nav>
