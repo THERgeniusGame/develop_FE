@@ -27,7 +27,7 @@ function Room() {
     const token = localStorage.getItem("token");
 
     //유저Id
-    const [userId, setUserId] = useState('');
+    const [myUserId, setMyUserId] = useState('');
     const [ownerUserId, setOwnerUserId] = useState('');
     const [guestUserId, setGuestUserId] = useState('');
     //닉네임
@@ -108,20 +108,18 @@ function Room() {
             setGuestNickname(login.userList.filter((user) => user.nickname !== ownerNickname)[0]?.nickname); //게스트 닉네임
             setOwnersoketId(login.userList.filter((user) => user.nickname === ownerNickname)[0]?.socketId); //방장 소켓 아이디
             setGuestsoketId(login.userList.filter((user) => user.nickname !== ownerNickname)[0]?.socketId); //게스트 소켓 아이디
-            // setOwnerUserId(login.userList.filter((user) => user.nickname === ownerNickname)[0]?.userId); //방장 유저 아이디 
             setGuestUserId(login.userList.filter((user) => user.nickname !== ownerNickname)[0]?.userId); //게스트 유저 아이디
         });
 
         socket.on("login_user", login => {
             setReady(false);
             socket.emit("chat", { nickname: login.mynickname, msg: "님이 입장하셨습니다." });
-            setUserId(login.userId);
+            setMyUserId(login.userId);
             setMysocketId(login.socketId); //나의 소켓 아이디
             setMyNickname(login.nickname); //나의 닉네임
         });
 
-        socket.on("gameStart", gameStart => {
-
+        socket.on("gameStart_room", gameStart_room => {
             setTimer(35);
             setUnableBTN(true);
             setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 5초전..." })) }, 1000);
@@ -130,10 +128,10 @@ function Room() {
             setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 2초전..." })) }, 4000);
             setTimeout(() => { setList(prev => prev.concat({ text: "게임시작 1초전..." })) }, 5000);
             setTimeout(() => { setGamestart(true) }, 6000);
-            const guest = gameStart.guest;
-            const owner = gameStart.owner;
+            const guest = gameStart_room.guest;
+            const owner = gameStart_room.owner;
 
-            setRound(gameStart.round);
+            setRound(gameStart_room.round);
             //게스트 set
             setGuestBattingCards(guest.battingCards);
             const newnum = [];
@@ -165,31 +163,7 @@ function Room() {
             setOwnerUserId(owner.userId);
 
             setMiddleView(false);
-            setGiveturn(gameStart.turn);
-
-            // setTimeout(() => {
-            //     if (turn === true) {
-            //         socket.emit("turnEnd", {
-            //             userId: ownerUserId,
-            //             batting: +1,
-            //             turn: Giveturn,
-            //             card,
-            //             player: {
-            //                 userId: ownerUserId,
-            //                 nickname: mynickname,
-            //                 socketId: mysocketId,
-            //                 cards: mynickname === ownerNickname ? ownerCards : guestCards,
-            //                 battingCards: mynickname === ownerNickname ? ownerBattingCards : guestBattingCards,
-            //                 coin: mynickname === ownerNickname ? +ownerCoin : +guestCoin,
-            //                 result: mynickname === ownerNickname ? ownerResult : guestResult,
-            //                 win: mynickname === ownerNickname ? ownerWin : guestWin
-            //             }
-
-            //         });
-            //         setBatting(0);
-            //         console.log(ownerUserId, Giveturn)
-            //     }
-            // }, 35000)
+            setGiveturn(gameStart_room.turn);
         });
 
         socket.on("chat", chat => {
@@ -214,16 +188,17 @@ function Room() {
         socket.on("error", error => {
             console.log(error);
         });
-        socket.on("turnEnd", turnEnd => {
+
+        socket.on("turnEnd_room", turnEnd_room => {
             setCard(10);
-            if (turnEnd.batting !== 0) {
+            if (turnEnd_room.batting !== 0) {
                 setCardPick(true);
             }
-            setGetCoin(+turnEnd.batting * 2)
-            setBatting(turnEnd.batting);
-            setRound(turnEnd.round);
-            const owner = turnEnd.owner;
-            const guest = turnEnd.guest;
+            setGetCoin(+turnEnd_room.batting * 2)
+            setBatting(turnEnd_room.batting);
+            setRound(turnEnd_room.round);
+            const owner = turnEnd_room.owner;
+            const guest = turnEnd_room.guest;
             //호스트
             setOwnerBattingCards(owner.battingCards);
             setOwnerCards(owner.cards);
@@ -243,33 +218,8 @@ function Room() {
             setGuestsoketId(guest.socketId);
             setGuestUserId(guest.userId);
 
-            setGiveturn(turnEnd.turn);
-            setTimeout(() => {
-                if (+turnEnd.round === +round + 1) {
-                    // socket.emit("turnEnd", {
-                    //     userId: ownerUserId,
-                    //     batting: +1,
-                    //     turn: Giveturn,
-                    //     card,
-                    //     player: {
-                    //         userId: ownerUserId,
-                    //         nickname: mynickname,
-                    //         socketId: mysocketId,
-                    //         cards: [1,2,3,4,5,6,7,8,9,0],
-                    //         battingCards: [],
-                    //         coin: 100,
-                    //         result: [],
-                    //         win: 0
-                    //     }
+            setGiveturn(turnEnd_room.turn);
 
-                    // });
-                    // setBatting(0);
-                    // Swal.fire({ title: "시간이 초과되었습니다!", timer: 1500 });
-
-                    // console.log(ownerUserId)
-                    // window.location.replace('/')
-                };
-            }, 5000)
         });
 
         socket.on("gameEnd", gameEnd => {
@@ -312,70 +262,71 @@ function Room() {
 
             setTimeout(() => { setTurnWinner(''); setMiddleView(true); }, 5000);
             setTimeout(() => { setTurnWinner(''); setMiddleView(false); }, 15000);
-
-
         });
 
     }, []);
 
-    useEffect(() => {
-        socket.on("turnEnd", turnEnd => {
-            setTimeout(() => {
-                if (+turnEnd.round === +round + 1) {
-                    // socket.emit("turnEnd", {
-                    //     userId: ownerUserId,
-                    //     batting: +1,
-                    //     turn: Giveturn,
-                    //     card,
-                    //     player: {
-                    //         userId: ownerUserId,
-                    //         nickname: mynickname,
-                    //         socketId: mysocketId,
-                    //         cards: [1,2,3,4,5,6,7,8,9,0],
-                    //         battingCards: [],
-                    //         coin: 100,
-                    //         result: [],
-                    //         win: 0
-                    //     }
+    socket.on("gameStart_user", gameStart_user => {
+        setMyUserId(gameStart_user.userId);
+        setMyNickname(gameStart_user.nickname);
+        setMysocketId(gameStart_user.socketId);
 
-                    // });
-                    // setBatting(0);
-                    // Swal.fire({ title: "시간이 초과되었습니다!", timer: 1500 });
+        // setTimeout(() => {
+        //     socket.emit("turnEnd", {
+        //         userId: gameStart_user.userId,
+        //         batting: +1,
+        //         turn: Giveturn,
+        //         card,
+        //         player: {
+        //             userId: ownerUserId,
+        //             nickname: mynickname,
+        //             socketId: mysocketId,
+        //             cards: mynickname === ownerNickname ? ownerCards : guestCards,
+        //             battingCards: mynickname === ownerNickname ? ownerBattingCards : guestBattingCards,
+        //             coin: mynickname === ownerNickname ? +ownerCoin : +guestCoin,
+        //             result: mynickname === ownerNickname ? ownerResult : guestResult,
+        //             win: mynickname === ownerNickname ? ownerWin : guestWin
+        //         }
 
-                    window.location.replace('/')
-                };
-            }, 5000)
-        });
-    }, [])
+        //     });
+        //     setBatting(0);
+        //     Swal.fire({ title: "카드를 선택해주세요!", timer: 1500 });
+        // }, 5000);
+    });
 
-    socket.on("login_user", login => {
+    socket.on("login_user", login_user => {
         if (mynickname === ownerNickname) {
-            setOwnerUserId(login.userId);
+            setOwnerUserId(login_user.userId);
         }
     });
 
-    socket.on("gameStart", gameStart => {
-        if (gameStart.turn[0] === "owner") {
+    socket.on("turnEnd_user", turnEnd_user => {
+        // console.log(turnEnd_user)
+        // console.log(round, turn)
+    });
+
+    socket.on("gameStart_room", gameStart_room => {
+        if (gameStart_room.turn[0] === "owner") {
             if (mynickname === ownerNickname) {
                 setTurn(true);
             } else { setTurn(false); }
         }
     });
 
-    socket.on("gameStart", gameStart => {
-        if (gameStart.turn[0] === "guest") {
+    socket.on("gameStart_room", gameStart_room => {
+        if (gameStart_room.turn[0] === "guest") {
             if (mynickname === ownerNickname) {
                 setTurn(false);
             } else { setTurn(true); }
         }
     })
 
-    socket.on("turnEnd", turnEnd => {
-        if (turnEnd.turn[0] === "owner") {
+    socket.on("turnEnd_room", turnEnd_room => {
+        if (turnEnd_room.turn[0] === "owner") {
             if (mynickname === ownerNickname) {
                 setTurn(true);
             } else { setTurn(false); }
-        } else if (turnEnd.turn[0] === "guest") {
+        } else if (turnEnd_room.turn[0] === "guest") {
             if (mynickname === ownerNickname) {
                 setTurn(false);
             } else { setTurn(true); }
@@ -428,6 +379,8 @@ function Room() {
     });
 
     socket.on("gameEnd", gameEnd => {
+        console.log(gameEnd)
+        
         if (gameEnd.winner === mynickname) {
             setWinGame(true);
         } else if (gameEnd.loser === mynickname) {
@@ -660,18 +613,18 @@ function Room() {
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto auto 40px auto" }}>카드를 선택해주세요.</div>
                                     {/* <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "0px auto auto auto" }}></div> */}
                                     <div style={{ fontSize: "26px", display: "flex", margin: "auto" }}>선택한 카드 {card >= 10 ? <span style={{ marginLeft: "10px", fontSize: "30px", color: "red" }}>없음</span> : <span style={{ marginLeft: "10px", fontSize: "30px", color: "red" }}> {card}</span>}</div>
-                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>남은시간 {timer - 1}초</div>
+                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{batting !== 0 ? <span style={{ color: "black", marginRight: '20px' }}>라운드 배팅금액{batting}</span> : ''}남은시간 {timer - 1}초</div>
                                     <button onClick={() => {
                                         if (card !== 10) {
                                             socket.emit("turnEnd", {
-                                                userId: ownerUserId,
+                                                userId: myUserId,
                                                 batting: +batting,
                                                 turn: Giveturn,
                                                 card,
                                                 player: {
                                                     userId: ownerUserId,
                                                     nickname: mynickname,
-                                                    socketId: mysocketId,
+                                                    // socketId: mysocketId,
                                                     cards: mynickname === ownerNickname ? ownerCards : guestCards,
                                                     battingCards: mynickname === ownerNickname ? ownerBattingCards : guestBattingCards,
                                                     coin: mynickname === ownerNickname ? +ownerCoin : +guestCoin,
@@ -748,7 +701,7 @@ function Room() {
                                             Swal.fire({ title: "항복은 3라운드 이후에 가능합니다!", timer: 1500 });
                                         } else {
                                             socket.emit("gameEnd", {
-                                                name: ownerUserId,
+                                                name: guestUserId,
                                                 owner: {
                                                     userId: ownerUserId,
                                                     nickname: ownerNickname,
@@ -843,7 +796,7 @@ function Room() {
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto auto 40px auto" }}>카드를 선택해주세요.</div>
                                     {/* <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "0px auto auto auto" }}></div> */}
                                     <div style={{ fontSize: "26px", display: "flex", margin: "auto" }}>선택한 카드 {card >= 10 ? <span style={{ marginLeft: "10px", fontSize: "30px", color: "red" }}>없음</span> : <span style={{ marginLeft: "10px", fontSize: "30px", color: "red" }}> {card}</span>}</div>
-                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>남은시간 {timer - 1}초</div>
+                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{batting !== 0 ? <span style={{ color: "black", marginRight: '20px' }}>라운드 배팅금액{batting}</span> : ''}남은시간 {timer - 1}초</div>
                                     <button onClick={() => {
                                         if (card !== 10) {
                                             socket.emit("turnEnd", {
@@ -854,7 +807,7 @@ function Room() {
                                                 player: {
                                                     userId: guestUserId,
                                                     nickname: mynickname,
-                                                    socketId: mysocketId,
+                                                    // socketId: mysocketId,
                                                     cards: mynickname === ownerNickname ? ownerCards : guestCards,
                                                     battingCards: mynickname === ownerNickname ? ownerBattingCards : guestBattingCards,
                                                     coin: mynickname === ownerNickname ? +ownerCoin : +guestCoin,
