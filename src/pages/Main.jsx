@@ -77,7 +77,7 @@ function Main() {
       dispatch(__PostMainRoom({ roomTitle, roomCategory, roomLock, roomPw }));
     }
   }
-  
+
   useEffect(() => {
     dispatch(__GetMainRoom());
     if (rooms?.length === undefined) {
@@ -88,11 +88,11 @@ function Main() {
     setResp(rooms);
   }, [rooms?.length]);
 
-
   return (
    <>
    <Header />
     {Loading === true ?
+
       <div style={{ width: "1440px", height: "1024px", backgroundImage: 'url(' + MainBackground + ')', backgroundPosition: "center", backgroundSize: "auto", fontSize: "18px", margin: "0px auto" }}>
         <div style={{ width: "1040px", height: "755px", margin: "0px auto" }}>
           <div style={{ display: "flex", justifyContent: "space-between", width: "1040px", margin: "0px auto" }}>
@@ -147,18 +147,22 @@ function Main() {
               currentCountings?.map((room) => (
                 <RoomSelect key={room.roomId} onClick={(e) => {
                   setRoomId(room.roomId);
-                  if (room.roomLock === true) {
-                    setRoompw(room.roomPw);
-                    setPwModal(true);
+                  if (room.currentUsers >= 2) {
+                    Swal.fire({ title: '인원이 꽉 찼습니다.', timer: 1500 })
                   } else {
-                    navigate(`room/${roomId}`)
+                    if (room.roomLock === true) {
+                      setRoompw(room.roomPw);
+                      setPwModal(true);
+                    } else {
+                      navigate(`room/${room.roomId}`)
+                    }
                   }
                 }}>
                   <div style={{ width: "173px", display: "flex" }}>{room.roomId}</div>
                   <div style={{ width: "380px", display: "flex", overflow: "hidden" }}>{room.roomTitle}</div>
                   <div style={{ width: "245px", display: "flex", overflow: "hidden" }}>{room.nickname}</div>
                   <div style={{ width: "190px", display: "flex" }}>{room.currentUsers}</div>
-                  <div style={{ display: "flex", width: "20px", height: "20px", backgroundRepeat: "no-repeat", backgroundImage: room.lock === true ? 'url(' + LockImg + ')' : 'url(' + UnLockImg + ')' }}></div>
+                  <div style={{ display: "flex", width: "20px", height: "20px", backgroundRepeat: "no-repeat", backgroundImage: room.roomLock === true ? 'url(' + LockImg + ')' : 'url(' + UnLockImg + ')' }}></div>
                 </RoomSelect>
               ))}
           </MainBody>
