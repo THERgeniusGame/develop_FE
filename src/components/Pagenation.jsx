@@ -23,7 +23,6 @@ const Pagination = ({ total, limit, page, setPage }) => {
         }
 
         )
-        console.log(data)
     }, [])
        
 

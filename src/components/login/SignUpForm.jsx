@@ -18,7 +18,6 @@ const SignUpForm = () => {
     const confirmEmail = useSelector((state) => state.signup.ConfirmEmail)
    
     const signup = useSelector((state) => state.signup.data)
-    console.log(signup);
 
     const {
         register,
@@ -32,7 +31,6 @@ const SignUpForm = () => {
     //이메일 중복확인
     const onDupEmail = () => {
         const email = getValues("email")
-        console.log(email)
             if (email !== "" && errors.email === undefined) {
                 dispatch(__checkEmail({email}));
                 if (checkEmail === false) {
@@ -89,14 +87,12 @@ const SignUpForm = () => {
     //이메일 인증 
     const onEmailConfirm = () => {
         const emailConfirm = getValues("email")
-        console.log(emailConfirm)
         dispatch(__confirmEmail({email:emailConfirm}))
     }
 
     //인증번호 확인
     const onNumConfirm = () => {
         const NumConfirm = getValues("emailConfirm") 
-        console.log(NumConfirm)
         if (
             confirmEmail == NumConfirm
         )
