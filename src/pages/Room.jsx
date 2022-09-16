@@ -4,6 +4,7 @@ import socketio from 'socket.io-client';
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import useInterval from "../components/useInterval.jsx";
+import { v4 as uuidv4 } from 'uuid';
 
 
 //이미지
@@ -382,7 +383,7 @@ function Room() {
 
     socket.on("gameEnd", gameEnd => {
         console.log(gameEnd)
-        
+
         if (gameEnd.winner === mynickname) {
             setWinGame(true);
         } else if (gameEnd.loser === mynickname) {
@@ -472,8 +473,8 @@ function Room() {
                         <ChatBody>
                             <span style={{ fontWeight: "700", marginBottom: "4px", marginLeft: "20px", display: "flex", width: "990px" }}>채팅</span>
                             <ChatWrapCss>
-                                {list.map((item, index) => (
-                                    <p key={index}>
+                                {list.map((item) => (
+                                    <p key={uuidv4()}>
                                         {item.text}
                                     </p>
                                 ))}
@@ -576,14 +577,14 @@ function Room() {
                             </GameTop>
                             {/* guest */}
                             <div style={{ height: "125px", width: "1040px", margin: "25px auto auto 2px", display: "flex" }}>
-                                {guestCards?.map((guestcard, index) =>
-                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
+                                {guestCards?.map((guestcard) =>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
                                     </Card>
                                 )}
                             </div>
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
-                                {guestBattingCards?.map((guestbattingcard, index) =>
-                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", margin: "auto 0px", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
+                                {guestBattingCards?.map((guestbattingcard) =>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto 0px", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
                                     </Card>
                                 )}
                             </div>
@@ -591,14 +592,14 @@ function Room() {
                             {middleView === true && gameEnd === false ?
                                 <MidBase>
                                     <div style={{ display: 'flex', margin: "auto 20px" }}>
-                                        {winnerList.map((item, i) => (
-                                            <div key={i} style={{ marginRight: "50px" }} >{item === guestNickname ? <MidWinCircle></MidWinCircle> : <MidLoseCircle></MidLoseCircle>}</div>
+                                        {winnerList.map((item) => (
+                                            <div key={uuidv4()} style={{ marginRight: "50px" }} >{item === guestNickname ? <MidWinCircle></MidWinCircle> : <MidLoseCircle></MidLoseCircle>}</div>
                                         ))}
                                     </div>
                                     <div style={{ color: "#3A3A3A", fontSize: "36px", display: "flex", margin: "auto" }}>{round - 1} 라운드</div>
                                     <div style={{ display: 'flex', margin: "auto 20px" }}>
-                                        {winnerList.map((item, i) => (
-                                            <div key={i} style={{ marginRight: "50px" }} >{item === ownerNickname ? <MidWinCircle></MidWinCircle> : <MidLoseCircle></MidLoseCircle>}</div>
+                                        {winnerList.map((item) => (
+                                            <div key={uuidv4()} style={{ marginRight: "50px" }} >{item === ownerNickname ? <MidWinCircle></MidWinCircle> : <MidLoseCircle></MidLoseCircle>}</div>
                                         ))}
                                     </div>
                                 </MidBase>
@@ -616,7 +617,7 @@ function Room() {
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto auto 40px auto" }}>카드를 선택해주세요.</div>
                                     {/* <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "0px auto auto auto" }}></div> */}
                                     <div style={{ fontSize: "26px", display: "flex", margin: "auto" }}>선택한 카드 {card >= 10 ? <span style={{ marginLeft: "10px", fontSize: "30px", color: "red" }}>없음</span> : <span style={{ marginLeft: "10px", fontSize: "30px", color: "red" }}> {card}</span>}</div>
-                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{batting !== 0 ? <span style={{ color: "black", marginRight: '20px' }}>라운드 배팅금액{batting}</span> : ''}남은시간 {timer - 1}초</div>
+                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{batting !== 0 ? <span style={{ color: "black", marginRight: '20px' }}>라운드 배팅금액 {batting}</span> : ''}남은시간 {timer - 1}초</div>
                                     <button onClick={() => {
                                         if (card !== 10) {
                                             socket.emit("turnEnd", {
@@ -651,26 +652,30 @@ function Room() {
                                 <TurnResultMid>
                                     <div style={{ width: "475px", height: "95px", display: "flex", flexDirection: "column", margin: "auto" }}>
                                         <div style={{ color: "#3A3A3A", fontSize: "36px", display: "flex", margin: "auto auto auto 0px" }}>{round - 1} 라운드</div>
-                                        <div style={{ color: "black", fontSize: "36px", margin: "auto 0px auto auto" }}>{TurnWinner === undefined ? <span>무승부</span> : <span>{TurnWinner}님 승리</span>}</div>
+                                        <div style={{ color: "black", fontSize: "36px", margin: "auto 0px auto auto" }}>{TurnWinner === undefined ? <span style={{ color: 'red' }}>무승부!</span> : <span>{TurnWinner}님 승리</span>}</div>
                                     </div>
                                     {TurnWinner === undefined ? '' : <div style={{ display: "flex", color: "black", fontSize: "36px", margin: "auto" }}>획득 코인<div style={{ backgroundImage: 'url(' + Coin + ')', width: "40px", height: "40px", backgroundSize: "cover", marginTop: "3px" }}></div>x<span>{getCoin}</span></div>}
                                 </TurnResultMid> : ''}
                             {/* owner */}
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 10px auto", display: "flex" }}>
-                                {ownerBattingCards?.map((ownerbattingcard, index) =>
-                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                {ownerBattingCards?.map((ownerbattingcard) =>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {ownerbattingcard}
                                     </Card>
                                 )}
                             </div>
                             <div style={{ height: "125px", width: "1040px", margin: "auto auto 0px auto", display: "flex" }}>
-                                {ownerCards?.map((ownercard, index) =>
+                                {ownerCards?.map((ownercard) =>
                                     <>
                                         {turn === true && cardPick === true ?
-                                            <PickCard onClick={(e) => { setCard(ownercard); }} key={index} style={{ height: "140px", width: "95px", display: "flex", color: ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
-                                                {ownercard}
-                                            </PickCard> :
-                                            <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                            card === ownercard ?
+                                                <MyPickCard onClick={(e) => { setCard(ownercard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                                    {ownercard}
+                                                </MyPickCard> :
+                                                <PickCard onClick={(e) => { setCard(ownercard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                                    {ownercard}
+                                                </PickCard> :
+                                            <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                                 {ownercard}
                                             </Card>}
                                     </>
@@ -759,14 +764,14 @@ function Room() {
                             </GameTop>
                             {/* owner */}
                             <div style={{ height: "125px", width: "1040px", margin: "25px auto auto 2px", display: "flex" }}>
-                                {ownerCards?.map((guestcard, index) =>
-                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
+                                {ownerCards?.map((guestcard) =>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
                                     </Card>
                                 )}
                             </div>
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
-                                {ownerBattingCards?.map((guestbattingcard, index) =>
-                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", margin: "auto 0", marginLeft: "7px", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
+                                {ownerBattingCards?.map((guestbattingcard) =>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto 0", marginLeft: "7px", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
                                     </Card>
                                 )}
                             </div>
@@ -774,14 +779,14 @@ function Room() {
                             {middleView === true && gameEnd === false ?
                                 <MidBase>
                                     <div style={{ display: 'flex', margin: "auto 20px" }}>
-                                        {winnerList.map((item, i) => (
-                                            <div key={i} style={{ marginRight: "50px" }} >{item === ownerNickname ? <MidWinCircle></MidWinCircle> : <MidLoseCircle></MidLoseCircle>}</div>
+                                        {winnerList.map((item) => (
+                                            <div key={uuidv4()} style={{ marginRight: "50px" }} >{item === ownerNickname ? <MidWinCircle></MidWinCircle> : <MidLoseCircle></MidLoseCircle>}</div>
                                         ))}
                                     </div>
                                     <div style={{ color: "#3A3A3A", fontSize: "36px", display: "flex", margin: "auto" }}>{round - 1} 라운드</div>
                                     <div style={{ display: 'flex', margin: "auto 20px" }}>
-                                        {winnerList.map((item, i) => (
-                                            <div key={i} style={{ marginRight: "50px" }} >{item === guestNickname ? <MidWinCircle></MidWinCircle> : <MidLoseCircle></MidLoseCircle>}</div>
+                                        {winnerList.map((item) => (
+                                            <div key={uuidv4()} style={{ marginRight: "50px" }} >{item === guestNickname ? <MidWinCircle></MidWinCircle> : <MidLoseCircle></MidLoseCircle>}</div>
                                         ))}
                                     </div>
                                 </MidBase>
@@ -799,7 +804,7 @@ function Room() {
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto auto 40px auto" }}>카드를 선택해주세요.</div>
                                     {/* <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "0px auto auto auto" }}></div> */}
                                     <div style={{ fontSize: "26px", display: "flex", margin: "auto" }}>선택한 카드 {card >= 10 ? <span style={{ marginLeft: "10px", fontSize: "30px", color: "red" }}>없음</span> : <span style={{ marginLeft: "10px", fontSize: "30px", color: "red" }}> {card}</span>}</div>
-                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{batting !== 0 ? <span style={{ color: "black", marginRight: '20px' }}>라운드 배팅금액{batting}</span> : ''}남은시간 {timer - 1}초</div>
+                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{batting !== 0 ? <span style={{ color: "black", marginRight: '20px' }}>라운드 배팅금액 {batting}</span> : ''}남은시간 {timer - 1}초</div>
                                     <button onClick={() => {
                                         if (card !== 10) {
                                             socket.emit("turnEnd", {
@@ -834,26 +839,30 @@ function Room() {
                                 <TurnResultMid>
                                     <div style={{ width: "475px", height: "95px", display: "flex", flexDirection: "column", margin: "auto" }}>
                                         <div style={{ color: "#3A3A3A", fontSize: "36px", display: "flex", margin: "auto auto auto 0px" }}>{round - 1} 라운드</div>
-                                        <div style={{ color: "black", fontSize: "36px", margin: "auto 0px auto auto" }}>{TurnWinner === undefined ? <span>무승부</span> : <span>{TurnWinner}님 승리</span>}</div>
+                                        <div style={{ color: "black", fontSize: "36px", margin: "auto 0px auto auto" }}>{TurnWinner === undefined ? <span style={{ color: "red" }}>무승부!</span> : <span>{TurnWinner}님 승리</span>}</div>
                                     </div>
                                     {TurnWinner === undefined ? '' : <div style={{ display: "flex", color: "black", fontSize: "36px", margin: "auto" }}>획득 코인<div style={{ backgroundImage: 'url(' + Coin + ')', width: "40px", height: "40px", backgroundSize: "cover", marginTop: "3px" }}></div>x<span>{getCoin}</span></div>}
                                 </TurnResultMid> : ''}
                             {/* guest */}
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 10px auto", display: "flex" }}>
-                                {guestBattingCards?.map((guestbattingcard, index) =>
-                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                {guestBattingCards?.map((guestbattingcard) =>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {guestbattingcard}
                                     </Card>
                                 )}
                             </div>
                             <div style={{ height: "125px", width: "1040px", margin: "auto auto 0px auto", display: "flex" }}>
-                                {guestCards?.map((guestcard, index) =>
+                                {guestCards?.map((guestcard) =>
                                     <>
                                         {turn === true && cardPick === true ?
-                                            <PickCard onClick={(e) => { setCard(guestcard); }} key={index} style={{ height: "140px", width: "95px", display: "flex", color: guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
-                                                {guestcard}
-                                            </PickCard> :
-                                            <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                            card === guestcard ?
+                                                <MyPickCard onClick={(e) => { setCard(guestcard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                                    {guestcard}
+                                                </MyPickCard> :
+                                                <PickCard onClick={(e) => { setCard(guestcard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                                    {guestcard}
+                                                </PickCard> :
+                                            <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                                 {guestcard}
                                             </Card>}
                                     </>
@@ -908,28 +917,28 @@ function Room() {
                         // 방장구역
                         <>
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
-                                {guestBattingCards?.map((guestbattingcard, index) =>
-                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                {guestBattingCards?.map((guestbattingcard) =>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {guestbattingcard}
                                     </Card>
                                 )}
                             </div>
                             <MidBase>
                                 <div style={{ display: 'flex', margin: "auto 20px" }}>
-                                    {winnerList.map((item, i) => (
-                                        <div key={i} style={{ marginRight: "50px" }} >{item === guestNickname ? <MidWinCircle></MidWinCircle> : <MidLoseCircle></MidLoseCircle>}</div>
+                                    {winnerList.map((item) => (
+                                        <div key={uuidv4()} style={{ marginRight: "50px" }} >{item === guestNickname ? <MidWinCircle></MidWinCircle> : <MidLoseCircle></MidLoseCircle>}</div>
                                     ))}
                                 </div>
                                 <div style={{ color: "#3A3A3A", fontSize: "36px", display: "flex", margin: "auto" }}>총 {round - 1} 라운드</div>
                                 <div style={{ display: 'flex', margin: "auto 20px" }}>
-                                    {winnerList.map((item, i) => (
-                                        <div key={i} style={{ marginRight: "50px" }} >{item === ownerNickname ? <MidWinCircle></MidWinCircle> : <MidLoseCircle></MidLoseCircle>}</div>
+                                    {winnerList.map((item) => (
+                                        <div key={uuidv4()} style={{ marginRight: "50px" }} >{item === ownerNickname ? <MidWinCircle></MidWinCircle> : <MidLoseCircle></MidLoseCircle>}</div>
                                     ))}
                                 </div>
                             </MidBase>
                             <div style={{ height: "125px", width: "1040px", margin: "0px auto 105px auto", display: "flex" }}>
-                                {ownerBattingCards?.map((ownerbattingcard, index) =>
-                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                {ownerBattingCards?.map((ownerbattingcard) =>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {ownerbattingcard}
                                     </Card>
                                 )}
@@ -937,28 +946,28 @@ function Room() {
                         </> : <>
                             {/* //게스트구역 */}
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
-                                {ownerBattingCards?.map((ownerbattingcard, index) =>
-                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                {ownerBattingCards?.map((ownerbattingcard) =>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {ownerbattingcard}
                                     </Card>
                                 )}
                             </div>
                             <MidBase>
                                 <div style={{ display: 'flex', margin: "auto 20px" }}>
-                                    {winnerList.map((item, i) => (
-                                        <div key={i} style={{ marginRight: "50px" }} >{item === ownerNickname ? <MidWinCircle></MidWinCircle> : <MidLoseCircle></MidLoseCircle>}</div>
+                                    {winnerList.map((item) => (
+                                        <div key={uuidv4()} style={{ marginRight: "50px" }} >{item === ownerNickname ? <MidWinCircle></MidWinCircle> : <MidLoseCircle></MidLoseCircle>}</div>
                                     ))}
                                 </div>
                                 <div style={{ color: "#3A3A3A", fontSize: "36px", display: "flex", margin: "auto" }}>총 {round - 1} 라운드</div>
                                 <div style={{ display: 'flex', margin: "auto 20px" }}>
-                                    {winnerList.map((item, i) => (
-                                        <div key={i} style={{ marginRight: "50px" }} >{item === guestNickname ? <MidWinCircle></MidWinCircle> : <MidLoseCircle></MidLoseCircle>}</div>
+                                    {winnerList.map((item) => (
+                                        <div key={uuidv4()} style={{ marginRight: "50px" }} >{item === guestNickname ? <MidWinCircle></MidWinCircle> : <MidLoseCircle></MidLoseCircle>}</div>
                                     ))}
                                 </div>
                             </MidBase>
                             <div style={{ height: "125px", width: "1040px", margin: "0px auto 105px auto", display: "flex" }}>
-                                {guestBattingCards?.map((guestbattingcard, index) =>
-                                    <Card key={index} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                {guestBattingCards?.map((guestbattingcard) =>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 0", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {guestbattingcard}
                                     </Card>
                                 )}
@@ -1063,6 +1072,13 @@ let PickCard = styled.div`
     }
 `
 
+let MyPickCard = styled.div`
+    background-size: cover;   
+    background-position: center; 
+    transform: translateY(-25px);
+    border: 3px solid gold;
+`
+
 let UserList = styled.div`
     width: 918px;
     height: 25px;
@@ -1132,6 +1148,7 @@ let BattingMid = styled.form`
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 8px;
     input {
+        text-align:center;
         font-size: 18px;
         padding: 0 10px;
         width: 162px;
