@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { __signup, __checkEmail, __checkNickname, __confirmEmail } from "../../redux/modules/signupSlice";
 import "../assets/fonts/font.css"
+import Sign from "../../shared/image/Sign.png"
 
 const SignUpForm = () => {
     const dispatch = useDispatch();
@@ -131,6 +132,8 @@ const SignUpForm = () => {
     };
 
     return(
+        <>
+        <BackGroundImg>
         <Body>
             <Box>
                 <p className="title">THER Genius 회원가입</p>
@@ -249,7 +252,7 @@ const SignUpForm = () => {
                         >
                             사용하실 Password를 입력해주세요.
                             <PassWordInput
-                                type="text"
+                                type="password"
                                 name="password"
                                 aria-invalid={!isDirty ? undefined : errors.password ? "true" : "false"}
                                 {...register("password", {
@@ -306,9 +309,24 @@ const SignUpForm = () => {
                 </Form>
             </Box>
         </Body>
+        </BackGroundImg>
+        </>
     );
 };
 export default SignUpForm;
+
+const BackGroundImg = styled.div`
+    width: 100%;
+    height: 100%;
+    background-image: url(${Sign});
+    background-position: left top;
+    background-size: cover;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    position: relative;
+    z-index: 1;
+`
 
 const Body = styled.div`
   height: 700px;

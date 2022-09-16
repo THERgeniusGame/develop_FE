@@ -2,7 +2,9 @@ import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import socketio from 'socket.io-client';
 import { useParams, useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 import useInterval from "../components/useInterval.jsx";
+
 
 //이미지
 import RoomBackground from "../shared/image/RoomIMG/RoomBackground.png";
@@ -395,6 +397,7 @@ function Room() {
 
     return (
         <>
+        <Header />
             {gamestart === false ?
                 //대기방
                 <div style={{ width: "1440px", height: "1024px", backgroundImage: 'url(' + RoomBackground + ')', backgroundPosition: "center", backgroundSize: "auto", fontSize: "18px", margin: "0px auto" }}>

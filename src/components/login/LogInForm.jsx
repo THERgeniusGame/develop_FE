@@ -10,6 +10,9 @@ const LogInForm = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    const success = useSelector((state) => state.login.isLogin)
+    console.log(success)
+    
     const login = useSelector((state) => state.login)
     console.log(login);
 
@@ -21,11 +24,24 @@ const LogInForm = () => {
     } = useForm({ criteriaMode: "all", mode: "onChange" });
 
     const onSubmit = (data) => {
-        dispatch(__login(data))
-        navigate("/")
+        console.log("1", success)
+        dispatch(__login(data)).then(
+            navigate("/")
+        ).catch (
+            navigate("/login")
+        )
+            // console.log("2")
+            // if (
+            //     success === true
+            // ) {
+            //     console.log("3")
+            //     navigate("/") 
+            // }
+            // console.log("4")
     };
 
     return(
+        <>
         <Body>
             <BackGroundImg>
                 <Box>
@@ -64,7 +80,7 @@ const LogInForm = () => {
                             >
                                 Password
                                 <PassWordInput
-                                    type="text"
+                                    type="password"
                                     name="password"
                                     aria-invalid={!isDirty ? undefined : errors.password ? "true" : "false"}
                                     {...register("password", {
@@ -105,6 +121,7 @@ const LogInForm = () => {
                 </Box>
             </BackGroundImg>
         </Body>
+    </>
     );
 };
 export default LogInForm;
@@ -118,6 +135,8 @@ const BackGroundImg = styled.div`
     align-items: center;
     justify-content: center;
     display: flex;
+    position: relative;
+    z-index: 1;
 `
 
 const Image = styled.div`
