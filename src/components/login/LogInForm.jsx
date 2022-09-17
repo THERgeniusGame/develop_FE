@@ -11,10 +11,8 @@ const LogInForm = () => {
     const navigate = useNavigate();
 
     const success = useSelector((state) => state.login.isLogin)
-    console.log(success)
     
     const login = useSelector((state) => state.login)
-    console.log(login);
 
     const {
         register,
@@ -24,20 +22,11 @@ const LogInForm = () => {
     } = useForm({ criteriaMode: "all", mode: "onChange" });
 
     const onSubmit = (data) => {
-        console.log("1", success)
         dispatch(__login(data)).then(
             navigate("/")
         ).catch (
             navigate("/login")
         )
-            // console.log("2")
-            // if (
-            //     success === true
-            // ) {
-            //     console.log("3")
-            //     navigate("/") 
-            // }
-            // console.log("4")
     };
 
     return(

@@ -15,7 +15,11 @@ const Header = () => {
   //       return navigate("/login")
   //   }
   // }, [])
+  const token = localStorage.getItem("token");
 
+  if (token === undefined || token === null) {
+    navigate("/login")
+  }
   return (
    <>
     <HeaderBox>
