@@ -607,7 +607,7 @@ function Room() {
                             {middleView === false && turn === true && cardPick === false && TurnWinner === '' && gameEnd === false ?
                                 <BattingMid onSubmit={(e) => { e.preventDefault(); 0 !== +batting && +batting <= limitCoin ? setCardPick(true) : Swal.fire({ title: `배팅은 1개 부터 ${Math.floor(limitCoin)}개 까지 가능합니다!`, timer: 1500 }); }}>
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>배팅을 시작해주세요.</div>
-                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>남은시간 {timer - 15}초</div>
+                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{timer-15 > 0 ? <span>남은시간 {timer - 15}초</span> : <span>시간 종료</span>}</div>
                                     {/* <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "auto" }}></div> */}
                                     <div style={{ display: "flex", margin: "auto", fontSize: "18px" }}>배팅은 최대 {Math.floor(limitCoin)}개 까지 가능합니다.</div>
                                     <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => setBatting(e.target.value)}></input><span style={{ marginTop: "10px" }}>개</span><button style={{ marginLeft: "10px", marginTop: "3px" }}>배팅하기</button></div>
@@ -617,7 +617,7 @@ function Room() {
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto auto 40px auto" }}>카드를 선택해주세요.</div>
                                     {/* <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "0px auto auto auto" }}></div> */}
                                     <div style={{ fontSize: "26px", display: "flex", margin: "auto" }}>선택한 카드 {card >= 10 ? <span style={{ marginLeft: "10px", fontSize: "30px", color: "red" }}>없음</span> : <span style={{ marginLeft: "10px", fontSize: "30px", color: "red" }}> {card}</span>}</div>
-                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{batting !== 0 ? <span style={{ color: "black", marginRight: '20px' }}>라운드 배팅금액 {batting}개</span> : ''}남은시간 {timer - 1}초</div>
+                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{batting !== 0 ? <span style={{ color: "black", marginRight: '20px' }}>라운드 배팅금액 {batting}개</span> : ''}{timer > 0 ? <span>남은시간 {timer - 1}초</span> :<span>시간종료</span>}</div>
                                     <button onClick={() => {
                                         if (card !== 10) {
                                             socket.emit("turnEnd", {
@@ -646,7 +646,7 @@ function Room() {
                             {turn === false && middleView === false && TurnWinner === '' && gameEnd === false ?
                                 <TurnFalseMid>
                                     <div style={{ display: "flex", margin: "auto auto 50px auto", fontSize: "36px" }}>상대가 턴을 진행중입니다.</div>
-                                    <div style={{ display: "flex", margin: "0px auto auto auto", fontSize: "30px", color: "red" }}><span style={{ color: "black", marginRight: "10px" }}>남은시간</span> {timer}초</div>
+                                    <div style={{ display: "flex", margin: "0px auto auto auto", fontSize: "30px", color: "red" }}><span style={{ color: "black", marginRight: "10px" }}>남은시간</span> {timer > 0 ? <span>{timer}초</span> : <span>시간종료</span>}</div>
                                 </TurnFalseMid> : ''}
                             {TurnWinner !== '' && gameEnd === false ?
                                 <TurnResultMid>
@@ -794,7 +794,7 @@ function Room() {
                             {middleView === false && turn === true && cardPick === false && TurnWinner === '' && gameEnd === false ?
                                 <BattingMid onSubmit={(e) => { e.preventDefault(); 0 !== +batting && +batting <= limitCoin ? setCardPick(true) : Swal.fire({ title: `배팅은 1개 부터 ${Math.floor(limitCoin)}개 까지 가능합니다!`, timer: 1500 }); }}>
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>배팅을 시작해주세요.</div>
-                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>남은시간 {timer - 15}초</div>
+                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{timer-15 > 0 ? <span>남은시간 {timer - 15}초</span> : <span>시간종료</span>}</div>
                                     {/* <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "auto" }}></div> */}
                                     <div style={{ display: "flex", margin: "auto", fontSize: "18px" }}>배팅은 최대 {Math.floor(limitCoin)}개 까지 가능합니다.</div>
                                     <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => setBatting(e.target.value)}></input><span style={{ marginTop: "10px" }}>개</span><button style={{ marginLeft: "10px", marginTop: "3px" }}>배팅하기</button></div>
@@ -804,7 +804,7 @@ function Room() {
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto auto 40px auto" }}>카드를 선택해주세요.</div>
                                     {/* <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "0px auto auto auto" }}></div> */}
                                     <div style={{ fontSize: "26px", display: "flex", margin: "auto" }}>선택한 카드 {card >= 10 ? <span style={{ marginLeft: "10px", fontSize: "30px", color: "red" }}>없음</span> : <span style={{ marginLeft: "10px", fontSize: "30px", color: "red" }}> {card}</span>}</div>
-                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{batting !== 0 ? <span style={{ color: "black", marginRight: '20px' }}>라운드 배팅금액 {batting}개</span> : ''}남은시간 {timer - 1}초</div>
+                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{batting !== 0 ? <span style={{ color: "black", marginRight: '20px' }}>라운드 배팅금액 {batting}개</span> : ''}{timer > 0 ? <span>남은시간 {timer - 1}초</span> : <span>시간종료</span>}</div>
                                     <button onClick={() => {
                                         if (card !== 10) {
                                             socket.emit("turnEnd", {
@@ -833,7 +833,7 @@ function Room() {
                             {turn === false && middleView === false && TurnWinner === '' && gameEnd === false ?
                                 <TurnFalseMid>
                                     <div style={{ display: "flex", margin: "auto auto 50px auto", fontSize: "36px" }}>상대가 턴을 진행중입니다.</div>
-                                    <div style={{ display: "flex", margin: "0px auto auto auto", fontSize: "30px", color: "red" }}><span style={{ color: "black", marginRight: "10px" }}>남은시간</span> {timer}초</div>
+                                    <div style={{ display: "flex", margin: "0px auto auto auto", fontSize: "30px", color: "red" }}><span style={{ color: "black", marginRight: "10px" }}>남은시간</span> {timer > 0 ? <span>{timer}초</span> : <span>시간종료</span>}</div>
                                 </TurnFalseMid> : ''}
                             {TurnWinner !== '' && gameEnd === false ?
                                 <TurnResultMid>

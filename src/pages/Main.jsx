@@ -71,15 +71,16 @@ function Main() {
       Swal.fire({ title: '비밀번호가 다릅니다.', timer: 1500 });
     }
   }
-  console.log(HowToPage)
+
   //방 생성
   const [roomTitle, setRoomTitle] = useState('')
   const [roomLock, setRoomLock] = useState(false)
   const [roomPw, setRoomPw] = useState('')
   const [roomCategory] = useState(1) // 추후 카테고리 추가 가능 const [roomCategory, setRoomCategory] = useState(1)
+  const [disable, setDisable] = useState(false);
 
   const onsubmitHandle = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     if (roomTitle === '') {
       Swal.fire({ title: '방 이름을 입력해주세요.', timer: 1500 })
     } else if (roomLock === true && roomPw === '') {
@@ -187,7 +188,7 @@ function Main() {
               page={page}
               setPage={setPage}
             />
-            <MakeRoom onClick={() => { setMakeRoomModal(true) }}>
+            <MakeRoom onClick={() => { setMakeRoomModal(true); }}>
               <div style={{ display: "flex" }}>방만들기
                 <IoMdAdd style={{ marginLeft: "30px", fontSize: "22px" }} />
               </div>
@@ -234,7 +235,7 @@ function Main() {
                       </div>
                       <div style={{ "fontSize": "20px", "color": "gray", "display": "flex", margin: "0px auto auto auto" }}>
                         <span style={{ marginRight: "34px" }}>
-                          <button>방 만들기</button>
+                          <button disabled={disable} onClick={() => { onsubmitHandle(); setDisable(true);}}>방 만들기</button>
                         </span>
                         <span>
                           <button type="button" onClick={() => { setMakeRoomModal(!makeroomModal); setRoomLock(false); }}>돌아가기</button>
