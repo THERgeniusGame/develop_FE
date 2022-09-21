@@ -6,7 +6,6 @@ import Header from "../components/Header";
 import useInterval from "../components/useInterval.jsx";
 import { v4 as uuidv4 } from 'uuid';
 
-
 //이미지
 import RoomBackground from "../shared/image/RoomIMG/RoomBackground.png";
 import BackWhite from "../shared/image/RoomIMG/CardBackWhite.png";
@@ -19,7 +18,7 @@ import BigCoin from "../shared/image/RoomIMG/BigCoin.png"
 
 import Swal from 'sweetalert2'
 
-const socket = socketio.connect(process.env.REACT_APP_SURVER); //백서버
+const socket = socketio.connect("https://sparta-emil.shop"); //백서버
 
 function Room() {
     const navigate = useNavigate();
