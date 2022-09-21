@@ -14,17 +14,18 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout source code
-              uses: actions/checkout@master
+              uses: actions/checkout@release
 
             # 실행 속도를 빠르게 하기 위해 설치된 Node 모듈을 캐시하도록 설정합니다.
             - name: Generate Environment Variables File for Production # Github Repository Secrets를 통해 변수 파일을 생성
-              run: echo "REACT_APP_SERVER=$REACT_APP_SERVER" >> .env.production
-                   echo "REACT_APP_TOKENNAME=$REACT_APP_TOKENNAME" >> .env.production
-                   echo "REACT_APP_ENDPOINT=$REACT_APP_ENDPOINT" >> .env.production
+              run: 
+                echo "REACT_APP_SERVER=$REACT_APP_SERVER" >> .env.production
+                echo "REACT_APP_TOKENNAME=$REACT_APP_TOKENNAME" >> .env.production
+                echo "REACT_APP_ENDPOINT=$REACT_APP_ENDPOINT" >> .env.production
               env: 
-               REACT_APP_SERVER: ${{ secrets.REACT_APP_SERVER }}
-               REACT_APP_TOKENNAME: ${{ secrets.REACT_APP_TOKENNAME }}
-               REACT_APP_ENDPOINT: ${{ secrets.REACT_APP_ENDPOINT }}
+                REACT_APP_SERVER: ${{ secrets.REACT_APP_SERVER }}
+                REACT_APP_TOKENNAME: ${{ secrets.REACT_APP_TOKENNAME }}
+                REACT_APP_ENDPOINT: ${{ secrets.REACT_APP_ENDPOINT }}
             - name: Cache node modules
               uses: actions/cache@v2
               with:
@@ -39,15 +40,15 @@ jobs:
             - name: Build
               run: yarn build
               env:
-               REACT_APP_SERVER: ${{ secrets.REACT_APP_SERVER }}
-               REACT_APP_TOKENNAME: ${{ secrets.REACT_APP_TOKENNAME }}
-               REACT_APP_ENDPOINT: ${{ secrets.REACT_APP_ENDPOINT }}
-               CI: ""
+                REACT_APP_SERVER: ${{ secrets.REACT_APP_SERVER }}
+                REACT_APP_TOKENNAME: ${{ secrets.REACT_APP_TOKENNAME }}
+                REACT_APP_ENDPOINT: ${{ secrets.REACT_APP_ENDPOINT }}
+                CI: ""
 
             - name: Deploy
               env:
-                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_IAM_MANAGER_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_IAM_MANAGER_SECRET_ACCESS_KEY }}
               run: |
                   aws s3 cp \
                   --recursive \
