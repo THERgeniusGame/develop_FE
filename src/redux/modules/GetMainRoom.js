@@ -13,7 +13,7 @@ export const __GetMainRoom = createAsyncThunk(
     async (payload, api) => {
         try {
             const data = await axios.get(
-                process.env.REACT_APP_SURVER + `/api/room`,
+                process.env.REACT_APP_ENDPOINT + `/room`,
                 {
                     headers: {
                         authorization: `Bearer ${token}`,
