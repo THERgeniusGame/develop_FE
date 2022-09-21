@@ -14,7 +14,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout source code
-              uses: actions/checkout@release
+              uses: actions/checkout@master
 
             # 실행 속도를 빠르게 하기 위해 설치된 Node 모듈을 캐시하도록 설정합니다.
             - name: Generate Environment Variables File for Production # Github Repository Secrets를 통해 변수 파일을 생성
