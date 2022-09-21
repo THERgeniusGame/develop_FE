@@ -19,8 +19,8 @@ export const __login = createAsyncThunk(
             //토큰 localStorage에 저장하기
             localStorage.setItem("token", res.data)
             // console.log(res);
-            // (window.location.href="http://localhost:3000/")
-            (window.location.href="http://jjmndl.shop/")
+            // (window.location.href="https://localhost:3000/")
+            (window.location.href="https://jjmndl.shop/")
             return res.data
             
             // Swal.fire({
