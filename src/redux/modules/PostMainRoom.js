@@ -15,7 +15,7 @@ export const __PostMainRoom = createAsyncThunk(
   async (payload, api) => {
     try {
       const data = await axios.post(
-        process.env.REACT_APP_SURVER + `/api/room`, payload,
+        process.env.REACT_APP_ENDPOINT + `/room`, payload,
         {
           headers: {
             authorization: `Bearer ${token}`,
