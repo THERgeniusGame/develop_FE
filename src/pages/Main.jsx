@@ -39,7 +39,7 @@ function Main() {
   const Loading = useSelector((state) => state.getmainroom.isLoading);
   const [resp, setResp] = useState([]);
   const [lock, setLock] = useState("ALL");
-
+  console.log(rooms)
   //페이지네이션
   const [total, setTotal] = useState(0);
   const [limit] = useState(9);
@@ -589,7 +589,6 @@ let RoomList = styled.div`
 `
 
 let HowToBTN = styled.button`
-  margin-left: 20px;
   margin-top: 50px;
   font-style: normal;
   font-weight: 700;
