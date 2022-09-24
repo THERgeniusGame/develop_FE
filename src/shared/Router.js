@@ -3,6 +3,8 @@ import Main from "../pages/Main";
 import LogIn from "../pages/LogIn";
 import SignUp from "../pages/SignUp";
 import Room from "../pages/Room"
+import EditPw from "../pages/EditPw";
+
 
 const Router = () => {
   return (
@@ -11,6 +13,7 @@ const Router = () => {
       <Route path="/room/:roomId" element={<Room />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/login" element={<LogIn />} />
+      <Route path="/editpassword" element={<EditPw />} />
     </Routes>
   );
 };

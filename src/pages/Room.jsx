@@ -51,7 +51,7 @@ function Room() {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }
     const [report, setReport] = useState(false);
-    const [reportId, setReportId] = useState(0);
+    const [reportChat, setReportChat] = useState("");
 
     //진행
     const [ready, setReady] = useState(false); // 새로운 채팅
@@ -210,10 +210,6 @@ function Room() {
             navigate("/")
         });
 
-        socket.on("error", error => {
-            console.log(error.error);
-        });
-
         socket.on("turnEnd_room", turnEnd_room => {
             setBatting(0);
             setCard(10);
@@ -261,11 +257,6 @@ function Room() {
 
         });
 
-        socket.on("gameEnd", gameEnd => {
-            setGameEnd(true);
-            setGameWinner(gameEnd.winner);
-        });
-
         socket.on("turnResult", turnResult => {
             setTimer(45);
             winnerList.push(turnResult.winner);
@@ -303,6 +294,11 @@ function Room() {
             setTimeout(() => { setTurnWinner(''); setMiddleView(false); }, 15000);
         });
 
+        socket.on("gameEnd", gameEnd => {
+            setGameEnd(true);
+            setGameWinner(gameEnd.winner);
+        });
+        
     }, []);
 
     socket.on("gameStart_user", gameStart_user => {
@@ -315,10 +311,6 @@ function Room() {
         if (mynickname === ownerNickname) {
             setOwnerUserId(login_user.userId);
         }
-    });
-
-    socket.on("turnEnd_user", turnEnd_user => {
-
     });
 
     socket.on("gameStart_room", gameStart_room => {
@@ -368,7 +360,7 @@ function Room() {
             setLimitCoin(+turnResult.owner.coin / turnResult.owner.cards?.length);
         }
 
-        if (turnResult.owner.cards?.length === 0 && turnResult.guest.cards?.length === 0) {
+        if (turnResult.owner.cards?.length === 0 && turnResult.guest.cards?.length === 0 && turn === true) {
             socket.emit("gameEnd", {
                 owner: {
                     userId: ownerUserId,
@@ -391,6 +383,7 @@ function Room() {
                     win: guestWin,
                 },
             });
+            setTurn(false);
         }
     });
 
@@ -406,6 +399,20 @@ function Room() {
         }
     });
 
+    
+    socket.on("error", error => {
+        if (error.error === "Bad-Request") {
+            Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 1500 })
+        } 
+        else if(error.error === "Bad-Request") {Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 1500 })}
+        else if(error.error === "Expired-Token") {Swal.fire({ title: '로그인 유효시간이 경과하였습니다 다시 로그인해주세요.', timer: 1500 })}
+        else if(error.error === "Wrong-Url") {Swal.fire({ title: '존재하지 않는 방입니다.', timer: 1500 })}
+        else if(error.error === "None-User") {Swal.fire({ title: '존재하지 않는 유저입니다.', timer: 1500 })}
+        else if(error.error === "Not-Your-Turn") {Swal.fire({ title: '나의 턴이 아닙니다.', timer: 1500 })}
+        else if(error.error === "Err-Update-Result") {Swal.fire({ title: '결과를 가져오지 못했습니다.', timer: 1500 })}
+        else if(error.error === "Failed_ReportChat") {Swal.fire({ title: '채팅 신고에 실패했습니다.', timer: 1500 })}
+        else if(error.error === "Exist-ReportChat") {Swal.fire({ title: '이미 신고된 채팅입니다.', timer: 1500 })}
+    });
 
     return (
         <>
@@ -485,13 +492,17 @@ function Room() {
                             <span style={{ fontWeight: "700", marginBottom: "4px", marginLeft: "20px", display: "flex", width: "990px" }}>채팅</span>
                             <ChatWrapCss>
                                 {list.map((item) =>
-                                    item.nickname !== mynickname ?
-                                        <Chat key={uuidv4()} onClick={() => { setReport(true); setReportId(item.nickname === ownerNickname ? guestUserId : ownerUserId); }}>
+                                    item.nickname !== mynickname && item.nickname !== undefined && item.text !== "님이 입장하셨습니다." ?
+                                        <Chat key={uuidv4()} onClick={() => { setReport(true); setReportChat(item.text); }}>
                                             {item.nickname + " " + item.text}
                                         </Chat> :
-                                        <p key={uuidv4()}>
-                                            {item.nickname + " " + item.text}
-                                        </p>
+                                        item.nickname === undefined ?
+                                            <p key={uuidv4()}>
+                                                {item.text}
+                                            </p> :
+                                            <p key={uuidv4()}>
+                                                {item.nickname + " " + item.text}
+                                            </p>
                                 )}
                                 <div ref={messagesEndRef} />
                             </ChatWrapCss>
@@ -924,24 +935,24 @@ function Room() {
                     </div>}
 
             {/* win모달 */}
-            {winGame === true && gameEnd === true && gameWinner !== '' ?
+            {gameWinner !== '' && winGame === true && gameEnd === true ?
                 <WinModal>
                     <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>W</span></div><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px" }}><span style={{ display: "flex", margin: "auto" }}>I</span></div><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px" }}><span style={{ display: "flex", margin: "auto" }}>N</span></div></div>
-                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { window.location.reload(`/room/${params.roomId}`); }}>대기방으로</button><button onClick={(e) => { setresultModal(true); }}>게임 결과</button></div>
+                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { navigate("/") }}>대기실로</button><button onClick={(e) => { setresultModal(true); }}>게임 결과</button></div>
                 </WinModal> : ''
             }
             {/* lose모달 */}
-            {loseGame === true && gameEnd === true && gameWinner !== '' ?
+            {gameWinner !== '' && loseGame === true && gameEnd === true ?
                 <LoseModal>
                     <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>L</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color: "black" }}><span style={{ display: "flex", margin: "auto" }}>O</span></div><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px" }}><span style={{ display: "flex", margin: "auto" }}>S</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color: "black" }}><span style={{ display: "flex", margin: "auto" }}>E</span></div></div>
-                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { window.location.reload(`/room/${params.roomId}`); }}>대기방으로</button><button onClick={(e) => { setresultModal(true); }}>게임 결과</button></div>
+                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { navigate("/") }}>대기실로</button><button onClick={(e) => { setresultModal(true); }}>게임 결과</button></div>
                 </LoseModal> : ''
             }
             {/* draw모달 */}
-            {drawGame === true && gameEnd === true && gameWinner === '' ?
+            {gameWinner === '' && drawGame === true && gameEnd === true ?
                 <DrawModal>
                     <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>D</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color: "black" }}><span style={{ display: "flex", margin: "auto" }}>R</span></div><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px" }}><span style={{ display: "flex", margin: "auto" }}>A</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color: "black" }}><span style={{ display: "flex", margin: "auto" }}>W</span></div></div>
-                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { window.location.reload(`/room/${params.roomId}`); }}>대기방으로</button><button onClick={() => { setresultModal(true); }}>게임 결과</button></div>
+                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { navigate("/") }}>대기실로</button><button onClick={() => { setresultModal(true); }}>게임 결과</button></div>
                 </DrawModal> : ''
             }
             {/* 게임 결과 모달 */}
@@ -1068,9 +1079,10 @@ function Room() {
                 <ReportModal onClick={() => setReport(!report)}>
                     <button onClick={() => {
                         socket.emit("chatReport", {
-                            userid: reportId
+                            chat: reportChat
                         });
                     }}>신고하기</button>
+                    <button type={"button"} onClick={()=>{setReport(!report)}}>취소하기</button>
                 </ReportModal> : ''}
         </>
     );
