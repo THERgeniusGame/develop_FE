@@ -39,7 +39,7 @@ function Main() {
   const Loading = useSelector((state) => state.getmainroom.isLoading);
   const [resp, setResp] = useState([]);
   const [lock, setLock] = useState("ALL");
-  console.log(rooms)
+
   //페이지네이션
   const [total, setTotal] = useState(0);
   const [limit] = useState(9);
@@ -235,7 +235,7 @@ function Main() {
                       </div>
                       <div style={{ "fontSize": "20px", "color": "gray", "display": "flex", margin: "0px auto auto auto" }}>
                         <span style={{ marginRight: "34px" }}>
-                          <button disabled={disable} onClick={() => { onsubmitHandle(); setDisable(true);}}>방 만들기</button>
+                          <button disabled={disable} onClick={() => { onsubmitHandle(); setDisable(true); }}>방 만들기</button>
                         </span>
                         <span>
                           <button type="button" onClick={() => { setMakeRoomModal(!makeroomModal); setRoomLock(false); }}>돌아가기</button>
@@ -266,12 +266,12 @@ function Main() {
                                     HowToPage === 5 ? 'url(' + HowTo5 + ')' :
                                       HowToPage === 6 ? 'url(' + HowTo6 + ')' : '', backgroundRepeat: "no-repeat", backgroundSize: "cover"
                           }}></div>
-                          {HowToPage === 1 ? <div style={{ dispaly: "flex", margin: "auto", textAlign:"center", flexDirection:'column', fontSize:"20px" }}><span style={{marginTop:"35px"}}><span>TherGeniusGame</span>은 보이지 않는 상대의 카드를 유추해서 보다 높은 카드를 선택하여</span><span>승리하는 게임입니다. 이전 라운드의 승패여부와 상대방의 남은 카드의 홀짝, </span><span>배팅하는 코인의 갯수 등을 종합하여 카드를 유추합니다.</span></div> :
-                            HowToPage === 2 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign:"center", flexDirection:'column', fontSize:"19px" }}><span style={{marginTop:"55px"}}>두 플레이어의 카드는 홀수는 검은색, 짝수는 흰색인 0부터 9까지의 타일 10장으로 게임이 진행됩니다.</span><span>또한 코인으로 5대 5의 동점 상황에서 승자를 가리게됩니다.</span></div> :
-                              HowToPage === 3 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign:"center" }}><span style={{marginTop:"50px"}}>한 턴은 총 30초로 구성되어 있으며</span><span>우선 15초의 배팅 시간이 주어집니다.</span></div> :
-                                HowToPage === 4 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign:"center" }}><span style={{marginTop:"50px"}}>배팅을 한 이후에</span><span>다시 15초의 카드 선택 시간이 주어집니다.</span></div> :
-                                  HowToPage === 5 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign:"center" }}><span style={{marginTop:"50px"}}>두 사람이 차례를 마치면 한 라운드가 종료되고,</span><span>승자와 획득한 코인이 나타납니다.</span></div> :
-                                    HowToPage === 6 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign:"center" }}><span style={{marginTop:"37px"}}>총 10라운드가 진행되면 게임이 종료됩니다.</span><span>여기에서 "게임 결과" 버튼을 클릭하면</span><span>진행된 게임의 결과를 확인 할 수 있습니다.</span></div> : ''}
+                          {HowToPage === 1 ? <div style={{ dispaly: "flex", margin: "auto", textAlign: "center", flexDirection: 'column', fontSize: "20px" }}><span style={{ marginTop: "35px" }}><span>TherGeniusGame</span>은 보이지 않는 상대의 카드를 유추해서 보다 높은 카드를 선택하여</span><span>승리하는 게임입니다. 이전 라운드의 승패여부와 상대방의 남은 카드의 홀짝, </span><span>배팅하는 코인의 갯수 등을 종합하여 카드를 유추합니다.</span></div> :
+                            HowToPage === 2 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign: "center", flexDirection: 'column', fontSize: "19px" }}><span style={{ marginTop: "55px" }}>두 플레이어의 카드는 홀수는 검은색, 짝수는 흰색인 0부터 9까지의 타일 10장으로 게임이 진행됩니다.</span><span>또한 코인으로 5대 5의 동점 상황에서 승자를 가리게됩니다.</span></div> :
+                              HowToPage === 3 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign: "center" }}><span style={{ marginTop: "50px" }}>한 턴은 총 30초로 구성되어 있으며</span><span>우선 15초의 배팅 시간이 주어집니다.</span></div> :
+                                HowToPage === 4 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign: "center" }}><span style={{ marginTop: "50px" }}>배팅을 한 이후에</span><span>다시 15초의 카드 선택 시간이 주어집니다.</span></div> :
+                                  HowToPage === 5 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign: "center" }}><span style={{ marginTop: "50px" }}>두 사람이 차례를 마치면 한 라운드가 종료되고,</span><span>승자와 획득한 코인이 나타납니다.</span></div> :
+                                    HowToPage === 6 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign: "center" }}><span style={{ marginTop: "37px" }}>총 10라운드가 진행되면 게임이 종료됩니다.</span><span>여기에서 "게임 결과" 버튼을 클릭하면</span><span>진행된 게임의 결과를 확인 할 수 있습니다.</span></div> : ''}
                         </p>
                         <HowToHover>
                           <FaChevronRight style={{ fontSize: "50px", display: "flex", margin: "auto 0px auto auto" }} onClick={() => HowToPage < 6 ? setHowTopage(HowToPage + 1) : ''} />
