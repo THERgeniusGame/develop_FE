@@ -5,16 +5,71 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import "../components/assets/fonts/font.css"
 import Sign from "../shared/image/Sign.png"
-import { __EditPw } from "../redux/modules/EditPw";
+import Swal from 'sweetalert2'
+
+import { __SendDup, __EditPw } from "../redux/modules/EditPw";
 
 const EditPw = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const data = useSelector((state) => state.editpw);
-    useEffect(() => {
-        dispatch(__EditPw("JW@naver.com"))
-        console.log(data)
-    }, [])
+    const data = useSelector((state) => state.editpw.Dup);
+
+    const [checkEmail, setCheckEmail] = useState("");
+    const [checkEmailDup, setCheckEmailDup] = useState();
+    const [password, setPassword] = useState();
+    const [confirmPassword, setConfirmPassword] = useState();
+    const [Dup, setDup] = useState(false);
+
+    const emailPass = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/;
+    const regPass = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{8,16}$/;
+
+    const onclickGiveMail = () => {
+        if (emailPass.test(checkEmail) === true) {
+            dispatch(__SendDup(checkEmail))
+            Swal.fire({ title: '인증메일이 발송되었습니다.', timer: 1500 });
+        } else {
+            Swal.fire({ title: '이메일 형식을 확인해주세요.', timer: 1500 });
+        }
+    }
+
+    const onclickCheckDup = () => {
+        if (checkEmailDup !== undefined && checkEmailDup !== "") {
+            if (data?.data === +checkEmailDup) {
+                Swal.fire({ title: '이메일 인증에 성공했습니다.', timer: 1500 });
+                setDup(true);
+            } else {
+                Swal.fire({ title: '인증번호를 확인해주세요.', timer: 1500 });
+            }
+        } else {
+            Swal.fire({ title: '인증번호를 입력해주세요.', timer: 1500 });
+        }
+    }
+
+    const onclickSubmit = (e) => {
+        if (emailPass.test(checkEmail) !== true) {
+            Swal.fire({ title: '이메일 형식을 확인해주세요.', timer: 1500 });
+        } else {
+            if (data?.data !== +checkEmailDup) {
+                Swal.fire({ title: '인증번호를 확인해주세요.', timer: 1500 });
+            } else {
+                if (Dup === false) {
+                    Swal.fire({ title: '이메일을 인증해주세요.', timer: 1500 });
+                } else {
+                    if (regPass.test(password) !== true) {
+                        Swal.fire({ title: '비밀번호 형식을 확인해주세요.', timer: 1500 });
+                    } else {
+                        if (password !== confirmPassword) {
+                            Swal.fire({ title: '비밀번호가 서로 일치하지 않습니다.', timer: 1500 });
+                        } else {
+                            dispatch(__EditPw({email:checkEmail, emailConFirm:checkEmailDup, password, confirmPw:confirmPassword}))
+                            Swal.fire({ title: '비밀번호를 변경했습니다.', timer: 1500 });
+                            navigate("/login")
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     return (
         <>
@@ -22,7 +77,7 @@ const EditPw = () => {
                 <Body>
                     <Box>
                         <p className="title">THER Genius 비밀번호변경</p>
-                        <Form>
+                        <Form onSubmit={(e) => { e.preventDefault(); }}>
                             <Input>
                                 <Email
                                     style={{ color: "black" }}
@@ -31,18 +86,20 @@ const EditPw = () => {
                                         가입하신 E-Mail을 입력해주세요
                                     </div>
                                     <div className="email_container">
-                                        <EmailInput className="email_input"
-
+                                        <EmailInput
+                                            className="email_input"
+                                            value={checkEmail}
+                                            onChange={(e) => { setCheckEmail(e.target.value); }}
                                         />
                                         <Dupbtn
                                             type="button"
-                                            onclick={() => { dispatch(__EditPw("JW@naver.com")) }}
+                                            onClick={() => { onclickGiveMail(); }}
                                         >
                                             인증메일 전송
                                         </Dupbtn>
                                     </div>
-                                    <Message>
-                                        인증
+                                    <Message style={{color:emailPass.test(checkEmail) ? "black" : ""}}>
+                                        {emailPass.test(checkEmail) ? "" : checkEmail !== undefined && checkEmail !== "" ? "이메일을 정확히 입력해주세요." : ''}
                                     </Message>
                                 </Email>
 
@@ -54,17 +111,20 @@ const EditPw = () => {
                                     </div>
                                     <div className="emailConfirm_container">
                                         <EmailConfirmInput
-                                            type="text"
-                                            name="emailConfirm" //data를 뽑을때 key값이 됨 
+                                            type="number"
+                                            value={checkEmailDup}
+                                            onChange={(e) => { setCheckEmailDup(e.target.value); }}
                                         />
                                         <Dupbtn
                                             type="button"
+                                            onClick={() => { onclickCheckDup() }}
+
                                         >
-                                            인증하기
+                                            {Dup === false ? "인증하기" : "인증완료"}
                                         </Dupbtn>
                                     </div>
-                                    <Message>
-                                        ㅇㅇ
+                                    <Message style={{color:Dup === true ? "black" : "red"}}>
+                                    {Dup === false ? checkEmailDup !== undefined && checkEmailDup !== "" ? "인증번호를 인증해주세요." : '' : "이메일 인증을 완료했습니다."}
                                     </Message>
                                 </EmailConfirm>
                                 <PassWord
@@ -74,9 +134,11 @@ const EditPw = () => {
                                     <PassWordInput
                                         type="password"
                                         name="password"
+                                        value={password}
+                                        onChange={(e) => { setPassword(e.target.value); }}
                                     />
-                                    <Message>
-                                        22
+                                    <Message style={{color:regPass.test(password) ? "black" : "red"}}>
+                                        {regPass.test(password) ? "" : password !== undefined && password !== "" ? "비밀번호를 확인해주세요. (영문/숫자 포함 8~16자)" : ''}
                                     </Message>
                                 </PassWord>
 
@@ -85,24 +147,29 @@ const EditPw = () => {
                                 >
                                     Password를 확인해주세요.
                                     <PassWordConfirmInput
-
+                                        type="password"
+                                        name="password"
+                                        value={confirmPassword}
+                                        onChange={(e) => { setConfirmPassword(e.target.value); }}
                                     />
                                     <Message>
-                                        33
+                                        {password !== undefined && password !== "" ? password !== confirmPassword ? "비밀번호가 일치하지 않습니다." : '' : ''}
                                     </Message>
                                 </PassWordConfirm>
                             </Input>
 
                             <Btn>
                                 <CreateAccountBtn
-                                    type="submit"
+                                    type="button"
                                     style={{ color: "black" }}
+                                    onClick={() => navigate("/login")}
                                 >
                                     돌아가기
                                 </CreateAccountBtn>
                                 <CreateAccountBtn
                                     type="submit"
                                     style={{ color: "black" }}
+                                    onClick={() => { onclickSubmit(); }}
                                 >
                                     완료
                                 </CreateAccountBtn>
