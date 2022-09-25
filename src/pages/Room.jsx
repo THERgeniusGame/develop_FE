@@ -75,6 +75,7 @@ function Room() {
     const [getCoin, setGetCoin] = useState(0);
     const [unableBTN, setUnableBTN] = useState(false);
     const [winnerList, setWinnerList] = useState([]); // 라운드 결과 list
+    const [End, setEnd] = useState(false);
     //게스트 진행정보
     const [guestCards, setGuestCards] = useState([]);
     const [guestBattingCards, setGuestBattingCards] = useState([]);
@@ -297,8 +298,9 @@ function Room() {
         socket.on("gameEnd", gameEnd => {
             setGameEnd(true);
             setGameWinner(gameEnd.winner);
+            setTurn(false);
         });
-        
+
     }, []);
 
     socket.on("gameStart_user", gameStart_user => {
@@ -360,30 +362,35 @@ function Room() {
             setLimitCoin(+turnResult.owner.coin / turnResult.owner.cards?.length);
         }
 
+        const owner = turnResult.owner
+        const guest = turnResult.guest
+        
         if (turnResult.owner.cards?.length === 0 && turnResult.guest.cards?.length === 0 && turn === true) {
-            socket.emit("gameEnd", {
-                owner: {
-                    userId: ownerUserId,
-                    nickname: ownerNickname,
-                    socketId: ownersoketId,
-                    cards: ownerCards,
-                    battingCards: ownerBattingCards,
-                    coin: ownerCoin,
-                    result: ownerResult,
-                    win: ownerWin,
-                },
-                guest: {
-                    userId: guestUserId,
-                    nickname: guestNickname,
-                    socketId: guestsoketId,
-                    cards: guestCards,
-                    battingCards: guestBattingCards,
-                    coin: guestCoin,
-                    result: guestResult,
-                    win: guestWin,
-                },
-            });
-            setTurn(false);
+            if (End === false) {
+                socket.emit("gameEnd", {
+                    owner: {
+                        userId: owner.userId,
+                        nickname: owner.nickname,
+                        socketId: ownersoketId,
+                        cards: owner.cards,
+                        battingCards: owner.battingCards,
+                        coin: owner.coin,
+                        result: owner.result,
+                        win: owner.win,
+                    },
+                    guest: {
+                        userId: guest.userId,
+                        nickname: guest.nickname,
+                        socketId: guestsoketId,
+                        cards: guest.cards,
+                        battingCards: guest.battingCards,
+                        coin: guest.coin,
+                        result: guest.result,
+                        win: guest.win,
+                    },
+                });
+            setEnd(true);
+            } else {}
         }
     });
 
@@ -392,26 +399,24 @@ function Room() {
             setWinGame(true);
         } else if (gameEnd.loser === mynickname) {
             setLoseGame(true);
-        }
-
-        if (gameWinner === '') {
+        } else if (gameEnd.loser === '' && gameEnd.winner === '') {
             setDrawGame(true);
         }
     });
 
-    
+
     socket.on("error", error => {
         if (error.error === "Bad-Request") {
             Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 1500 })
-        } 
-        else if(error.error === "Bad-Request") {Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 1500 })}
-        else if(error.error === "Expired-Token") {Swal.fire({ title: '로그인 유효시간이 경과하였습니다 다시 로그인해주세요.', timer: 1500 })}
-        else if(error.error === "Wrong-Url") {Swal.fire({ title: '존재하지 않는 방입니다.', timer: 1500 })}
-        else if(error.error === "None-User") {Swal.fire({ title: '존재하지 않는 유저입니다.', timer: 1500 })}
-        else if(error.error === "Not-Your-Turn") {Swal.fire({ title: '나의 턴이 아닙니다.', timer: 1500 })}
-        else if(error.error === "Err-Update-Result") {Swal.fire({ title: '결과를 가져오지 못했습니다.', timer: 1500 })}
-        else if(error.error === "Failed_ReportChat") {Swal.fire({ title: '채팅 신고에 실패했습니다.', timer: 1500 })}
-        else if(error.error === "Exist-ReportChat") {Swal.fire({ title: '이미 신고된 채팅입니다.', timer: 1500 })}
+        }
+        else if (error.error === "Bad-Request") { Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 1500 }) }
+        else if (error.error === "Expired-Token") { Swal.fire({ title: '로그인 유효시간이 경과하였습니다 다시 로그인해주세요.', timer: 1500 }) }
+        else if (error.error === "Wrong-Url") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 1500 }) }
+        else if (error.error === "None-User") { Swal.fire({ title: '존재하지 않는 유저입니다.', timer: 1500 }) }
+        else if (error.error === "Not-Your-Turn") { Swal.fire({ title: '나의 턴이 아닙니다.', timer: 1500 }) }
+        else if (error.error === "Err-Update-Result") { Swal.fire({ title: '결과를 가져오지 못했습니다.', timer: 1500 }) }
+        else if (error.error === "Failed_ReportChat") { Swal.fire({ title: '채팅 신고에 실패했습니다.', timer: 1500 }) }
+        else if (error.error === "Exist-ReportChat") { Swal.fire({ title: '이미 신고된 채팅입니다.', timer: 1500 }) }
     });
 
     return (
@@ -428,7 +433,7 @@ function Room() {
                                     <div style={{ fontSize: "36px", width: "975px", margin: "auto auto 80px auto" }}>{ownerNickname}님의 게임방
                                         {unableBTN === false ?
                                             <Able style={{ float: "right" }}>
-                                                <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold", color: "red" }} onClick={() => { socket.emit("kick", { socketId: guestsoketId }); }}>추방하기</button>
+                                                <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold", color: "red" }} onClick={() => { setGuestNickname(""); socket.emit("kick", { socketId: guestsoketId }); Swal.fire({ title: '상대를 추방했습니다.', timer: 1500 }) }}>추방하기</button>
                                                 <button onClick={() => {
                                                     if (ready !== true) {
                                                         Swal.fire({ title: '상대가 아직 준비되지 않았습니다.', timer: 1500 })
@@ -457,7 +462,7 @@ function Room() {
                                         <div style={{ marginRight: "10px" }}>준비완료</div>
                                     </UserList>
                                     <UserList>{users.filter((user) => user.nickname !== ownerNickname)[0]?.nickname !== undefined ? <>
-                                        <div>{users.filter((user) => user.nickname !== ownerNickname)[0]?.nickname}</div>
+                                        <div>{guestNickname}</div>
                                         <div style={{ marginRight: "10px" }}>{ready ? "준비완료" : "준비중"}</div></> : ''}
                                     </UserList>
                                 </div> :
@@ -1082,7 +1087,7 @@ function Room() {
                             chat: reportChat
                         });
                     }}>신고하기</button>
-                    <button type={"button"} onClick={()=>{setReport(!report)}}>취소하기</button>
+                    <button type={"button"} onClick={() => { setReport(!report) }}>취소하기</button>
                 </ReportModal> : ''}
         </>
     );

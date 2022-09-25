@@ -100,11 +100,13 @@ const LogInForm = () => {
                         </div>
                             <ToSignUpBtn 
                                 type="button"
-                                onClick={() => {
-                                    navigate("/signup");
-                                }}
+                                style={{display:"flex"}}
                             >
-                                회원가입
+                                <Btn onClick={() => {
+                                    navigate("/signup");
+                                }}>회원가입</Btn> / <Btn onClick={() => {
+                                    navigate("/editpw");
+                                }}>비밀번호찾기</Btn>
                             </ToSignUpBtn>
                     </Form>
                 </Box>
@@ -239,18 +241,21 @@ const PassWord = styled.div`
     position: relative;
 `
 const Btn = styled.div`
-    
+    :hover {
+        color: red;
+    }
+    margin: 0 5px;
 `
 const ToSignUpBtn = styled.div`
     color: black;
     padding:10px;
     font-size:15px;
-    width:100px;
+    width:200px;
     margin:20px auto;
     display:block;
     cursor:pointer;
     border-radius: 0;
-    margin-left: 500px;
+    margin-left: 418px;
     margin-top:-5px;
 `
 
