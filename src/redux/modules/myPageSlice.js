@@ -38,14 +38,13 @@ export const __getMyRank = createAsyncThunk(
     async (thunkAPI) => {
         try {
             const res = await axios.get(process.env.REACT_APP_ENDPOINT + "/rank/my",
-            
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
             );
-            console.log(res)
+            console.log(res.data)
             console.log(res.data)
             return res.data
         } catch (err) {
