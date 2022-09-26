@@ -38,6 +38,7 @@ export const __getMyRank = createAsyncThunk(
     async (thunkAPI) => {
         try {
             const res = await axios.get(process.env.REACT_APP_ENDPOINT + "/rank/my",
+            
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -47,7 +48,6 @@ export const __getMyRank = createAsyncThunk(
             console.log(res)
             console.log(res.data)
             return res.data
-
         } catch (err) {
             console.log(err)
             return err
