@@ -15,7 +15,8 @@ export const __PostMainRoom = createAsyncThunk(
   async (payload, api) => {
     try {
       const data = await axios.post(
-        process.env.REACT_APP_SURVER + `/api/room`, payload,
+        "http://localhost3000/api/room", payload,
+        //process.env.REACT_APP_SURVER + `/api/room`, payload,
         {
           headers: {
             authorization: `Bearer ${token}`,
@@ -40,7 +41,7 @@ const postMainRoomSilce = createSlice({
   reducers: {},
   extraReducers: {
     [__PostMainRoom.pending]: (state) => {
-      state.isLoading = true; //
+      state.isLoading = true; 
     },
     [__PostMainRoom.fulfilled]: (state, action) => {
       state.data = action.payload;

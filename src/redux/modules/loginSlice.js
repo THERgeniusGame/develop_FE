@@ -13,14 +13,16 @@ const initialState = {
 export const __login = createAsyncThunk(
     "login", 
     async (payload, thunkAPI) => {
-        // console.log(payload) //payload에 값이 안들어오면 dispatch 확인하기
+        console.log(payload) //payload에 값이 안들어오면 dispatch 확인하기
         try {
             const res = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/login", payload);
+            //const res = await axios.post("http://localhost3000/api/user/login", payload)
             //토큰 localStorage에 저장하기
             localStorage.setItem("token", res.data)
-            // console.log(res);
-            // (window.location.href="http://localhost:3000/")
-            (window.location.href="http://jjmndl.shop/")
+            (window.location.href="http://localhost:3000/")
+            //(window.location.href=process.env.REACT_APP_SURVER)
+           //(window.location.href="http://52.78.158.219/")
+            console.log(res)
             return res.data
             
             // Swal.fire({
@@ -49,12 +51,12 @@ export const loginSlice = createSlice({
 
         //로그인 
         .addCase(__login.fulfilled, (state, action) => {
-            // console.log(action)
+            console.log(action)
             state.isPost = action
             state.isLogin = true;
         })
         .addCase(__login.rejected, (state, action) => {
-            // console.log(action)
+            console.log(action)
             state.isLogin = false;
         })
         .addCase(__login.pending, (state, action) => {

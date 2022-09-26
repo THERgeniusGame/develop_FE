@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import socketio from 'socket.io-client';
 import { useParams, useNavigate } from "react-router-dom";
-import Header from "../components/Header";
+import Header from "../components/Header.jsx";
 import useInterval from "../components/useInterval.jsx";
 import { v4 as uuidv4 } from 'uuid';
 

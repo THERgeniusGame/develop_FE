@@ -3,18 +3,12 @@ import styled from "styled-components";
 import Main from "../shared/image/Main.png";
 import { useNavigate } from "react-router-dom";
 import MypageModal from "./MypageModal";
+import { useRef } from "react";
 
 const Header = () => {
   const navigate = useNavigate()
   const [modal, setModal] = useState(false);
 
-  // useEffect(()=>{
-  //   const accessToken = localStorage.removeItem("token")
-  //   console.log(accessToken)
-  //   if (accessToken) {
-  //       return navigate("/login")
-  //   }
-  // }, [])
   const token = localStorage.getItem("token");
 
   if (token === undefined || token === null) {
@@ -22,41 +16,50 @@ const Header = () => {
   }
   return (
    <>
-    <HeaderBox>
-      <div className="logo">
-        <Logo
-          onClick={() => {navigate("/")}} />
-      </div>
-      <div className="mypage">
-        <Profile
-          onClick={(e) => { 
-            e.preventDefault()
-            setModal(!modal) 
-          }}
-        >
-          지니어스
-        </Profile>
-      </div>
+   {/* isOpen && <Modal ref={modalEl}> */}
+      <HeaderBox>
+        <div className="logo">
+          <Logo
+            onClick={() => {navigate("/")}} />
+        </div>
+        <div className="mypage">
+          <Profile
+            onClick={(e) => { 
+              e.preventDefault()
+              setModal(!modal) 
+            }}
+          >
+            지니어스
+          </Profile>
+        </div>
+       
+        {modal == true ?
+          <MypageModal 
+            setModal = {setModal}
+          />
+          : null
+        }
 
-      {modal == true ?
-        <MypageModal />
-        : null
-      }
-    </HeaderBox>
-
+      </HeaderBox>
+    
+ 
+    {/* </Modal> */}
    </>
   );
 };
 
 export default Header;
 
+const Modal = styled.div`
+  
+`
 const HeaderBox = styled.div`
   height: 56px;
   display: flex;
   width: 100%;
   flex-direction: row;
   justify-content: space-between;
-  margin: 0px auto;
+  //margin: 0px auto;
   position: relative;
   z-index: 4;
   //position: sticky;
@@ -85,6 +88,3 @@ const Profile = styled.div`
   margin-left: auto;
   cursor: pointer;
 `
-
-
-

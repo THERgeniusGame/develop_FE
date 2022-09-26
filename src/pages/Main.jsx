@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import Pagination from "../components/Pagenation"
+import PaginationHowTo from "../components/PagenationHowTo";
 import { __GetMainRoom } from "../redux/modules/GetMainRoom"
 import { __PostMainRoom } from "../redux/modules/PostMainRoom"
 import { useSelector } from "react-redux/es/exports";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
+import Pagination from "react-js-pagination"; 
 
 import Loadingimg from "../shared/image/Loading.png";
 import MainBackground from "../shared/image/MainIMG/MainBackground.png";
@@ -30,26 +31,31 @@ import { FaChevronRight } from 'react-icons/fa';
 
 
 function Main() {
-
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
-  const rooms = useSelector((state) => state.getmainroom.data.roomsInfo);
+  const rooms = useSelector((state) => state.getmainroom.data.result);
+  console.log(rooms)
   const Loading = useSelector((state) => state.getmainroom.isLoading);
   const [resp, setResp] = useState([]);
   const [lock, setLock] = useState("ALL");
 
   //페이지네이션
-  const [total, setTotal] = useState(0);
-  const [limit] = useState(9);
-  const [page, setPage] = useState(1);
+  const handlePageChange = (page) => { setPage(page); };
+  const [total, setTotal] = useState(0); //총 게시글 갯수
+  const [limit] = useState(9); //한 페이지 당 나타낼 데이터의 갯수
+  const [page, setPage] = useState(1); //현재 페이지
   const indexOfLastPost = page * limit;
   const indexOfFirstPost = indexOfLastPost - limit;
-  const currentCountings = resp?.slice(
+  const currentCountings = resp?.slice( //slice로 잘라서 새로운 배열을 만든다
     indexOfFirstPost,
     indexOfLastPost
   );
+  console.log(currentCountings)
+  const [MainPage, setMainPage] = useState(1); //추가부분
+
+  console.log(page)
 
   // 방 입장 
   const [roomsearch, setRoomsearch] = useState('');
@@ -92,22 +98,23 @@ function Main() {
   }
 
   useEffect(() => {
-    dispatch(__GetMainRoom());
+    dispatch(__GetMainRoom(page));
     if (rooms?.length === undefined) {
       setTotal(0);
     } else {
       setTotal(rooms?.length);
     }
     setResp(rooms);
-  }, [rooms?.length]);
+  }, [page, rooms?.length]);
 
   return (
     <>
       <Header />
+      <BGImg>
       {Loading === true ?
-
-        <div style={{ width: "1440px", height: "1024px", backgroundImage: 'url(' + MainBackground + ')', backgroundPosition: "center", backgroundSize: "auto", fontSize: "18px", margin: "0px auto" }}>
-          <div style={{ width: "1040px", height: "755px", margin: "0px auto" }}>
+      
+     //<div style={{ width: "1440px", height: "1024px", backgroundImage: 'url(' + MainBackground + ')', backgroundPosition: "center", backgroundSize: "auto", fontSize: "18px", margin: "0px auto" }}>
+          <div style={{ width: "1040px",  margin: "0px auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", width: "1040px", margin: "0px auto" }}>
               <div style={{ dispaly: "flex", flexWrap: "wrap" }}>
                 <HowToBTN onClick={() => setHowTo(true)}>플레이 방법</HowToBTN>
@@ -158,9 +165,9 @@ function Main() {
               <span>공개</span>
             </RoomList>
             <MainBody>
-              {currentCountings?.length === 0 ?
+              {rooms?.length === 0 ?
                 <>입장가능한 방이 없습니다.</> :
-                currentCountings?.map((room) => (
+                rooms?.map((room) => (
                   <RoomSelect key={room.roomId} onClick={(e) => {
                     setRoomId(room.roomId);
                     if (room.currentUsers >= 2) {
@@ -182,12 +189,37 @@ function Main() {
                   </RoomSelect>
                 ))}
             </MainBody>
-            <Pagination
-              total={total}
-              limit={limit}
-              page={page}
-              setPage={setPage}
-            />
+            
+            <PaginationContainer>
+              {/* <PaginationMyPage */}
+              <Pagination
+                activePage={page}
+                itemsCountPerPage={9}
+                totalItemsCount={450}
+                pageRangeDisplayed={5}
+                onChange={handlePageChange}
+                // activePage={page} // 현재 페이지
+                // itemsCountPerPage={9} //한 페이지 당 보여줄 리스트 룸의 개수
+                // totalItemsCount={total} // 총 룸의 개수
+                // pageRangeDisplayed={5} // pagenator 내에서 보여줄 페이지의 범위
+                // onChange={handlePageChange} // 페이지
+                // page={MainPage} //
+                // setPage={setMainPage} //
+                // total={9} //
+                // limit={300} //
+                // onClick={() => 
+                //   MainPage > 1 ? setMainPage(MainPage -1) : ''
+                // }
+                /> 
+            </PaginationContainer>
+              
+            {/* <Pagination
+              total={total} //총 데이터의 개수
+              limit={limit} //한 페이지에 띄울 데이터 개수
+              page={page} //현재 페이지
+              setPage={setPage} //페이지 변경
+            /> */}
+
             <MakeRoom onClick={() => { setMakeRoomModal(true); }}>
               <div style={{ display: "flex" }}>방만들기
                 <IoMdAdd style={{ marginLeft: "30px", fontSize: "22px" }} />
@@ -277,7 +309,7 @@ function Main() {
                           <FaChevronRight style={{ fontSize: "50px", display: "flex", margin: "auto 0px auto auto" }} onClick={() => HowToPage < 6 ? setHowTopage(HowToPage + 1) : ''} />
                         </HowToHover>
                       </span>
-                      <Pagination
+                      <PaginationHowTo
                         total={6}
                         limit={1}
                         page={HowToPage}
@@ -293,18 +325,90 @@ function Main() {
                 : ''
             }
           </div>
-        </div> :
+        // </div>
+        :
         <div style={{ paddingLeft: "270px", paddingRight: "270px" }}>
           <div style={{ width: "1440px", height: "1024px", display: "flex", backgroundImage: 'url(' + MainBackground + ')', backgroundPosition: "center", backgroundSize: "cover" }}>
             <div style={{ width: "250px", height: "350px", backgroundImage: 'url(' + Loadingimg + ')', backgroundPosition: "center", backgroundSize: "cover", margin: "auto", display: "flex", justifyContent: "center", alignItems: "center" }} />
           </div>
         </div>}
+        </BGImg>
     </>
   );
 
 }
 
 export default Main;
+
+const BGImg = styled.div`
+  width: 100%;
+  height: 1200px;
+  background-image: url(${MainBackground});
+  background-position: left top;
+  background-size: cover;
+  //align-items: center;
+  //justify-content: center;
+  //display: flex;
+  position: relative;
+  z-index: 1;
+`
+
+const PaginationContainer = styled.div`
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  ul.pagination li {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #e2e2e2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+  }
+
+  ul.pagination li:first-child{
+    border-radius: 5px 0 0 5px;
+  }
+
+  ul.pagination li:last-child{
+    border-radius: 0 5px 5px 0;
+  }
+  
+  ul.pagination li a {
+    text-decoration: none;
+    color: #000000;
+    font-size: 1rem;
+  }
+  
+  ul.pagination li.active a {
+    color: white;
+  }
+
+  ul.pagination li.active {
+    background-color: #000000;
+  }
+  
+  ul.pagination li a:hover,
+  ul.pagination li a.active {
+    color: #000000;
+  }
+  
+  .page-selection {
+    width: 48px;
+    height: 30px;
+    color: #000000;
+  }
+`
 
 let MainBody = styled.div`
  width: 1040px;
@@ -440,15 +544,15 @@ let Roomsearch = styled.form`
 `
 
 const PwModal = styled.form`
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 
@@ -589,8 +693,8 @@ let RoomList = styled.div`
 `
 
 let HowToBTN = styled.button`
-  margin-left: 20px;
-  margin-top: 50px;
+  margin-right: 30px;
+  margin-top: 80px;
   font-style: normal;
   font-weight: 700;
   font-size: 26px;

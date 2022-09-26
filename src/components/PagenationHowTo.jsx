@@ -5,43 +5,26 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 
-const Pagination = ({ total, limit, page, setPage }) => {
+const PaginationHowTo = ({ total, limit, page, setPage }) => {
     const numPages = Math.ceil(total / limit);
     const token = localStorage.getItem("token");
 
-    const [rooms, setRooms] = useState();
-    const [currentPage, setCurrentPage] = useState(1);
-    const [roomPerPage, setRoomPerPage] = useState(9);
-
-    useEffect(()=> {
-      const data = axios.get(
-        process.env.REACT_APP_SURVER + `/api/room`,
-        {
-          headers: {
-          authorization: `Bearer ${token}`,
-          },
-        }
-
-        )
-    }, [])
        
-
     return (
         <>
             <Nav>
-                
                 {Array(numPages)
                     .fill()
-                    .map((_, i) => (
+                    .map((_, idx) => (
                         <Button
-                            key={i + 1}
-                            onClick={() => setPage(i + 1)}
-                            aria-current={page === i + 1 ? "page" : null}
+                            key={idx + 1}
+                            onClick={() => setPage(idx + 1)}
+                            aria-current={page === idx + 1 ? "page" : null}
                         >
-                            {i + 1}
+                            {idx + 1}
                         </Button>
-                    ))}
-                
+                    ))
+                }
             </Nav>
         </>
     );
@@ -76,4 +59,4 @@ const Button = styled.button`
   }
 `;
 
-export default Pagination;
+export default PaginationHowTo;
