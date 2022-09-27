@@ -43,11 +43,11 @@ const MyPage = () => {
                     <UserName>
                         {myRank?.nickname} 님
                     </UserName>
-                    {/* <GoBack
-                      onClick={navigate('/')}
+                    <GoBack
+                      onClick={()=>navigate('/')}
                     >
                         돌아가기
-                    </GoBack> */}
+                    </GoBack>
                 </div>
                 <Score>
                   <div className="myscore">
