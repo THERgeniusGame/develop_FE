@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import "../components/assets/fonts/font.css"
-import Sign from "../shared/image/Sign.png"
+import SignUp from "../shared/image/SignUp.png"
 import Swal from 'sweetalert2'
 
 import { __SendDup, __EditPw } from "../redux/modules/EditPwSlice";
@@ -186,7 +186,7 @@ export default EditPw;
 const BackGroundImg = styled.div`
     width: 100%;
     height: 100%;
-    background-image: url(${Sign});
+    background-image: url(${SignUp});
     background-position: left top;
     background-size: cover;
     align-items: center;

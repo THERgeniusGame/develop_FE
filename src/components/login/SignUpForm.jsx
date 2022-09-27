@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { __signup, __checkEmail, __checkNickname, __confirmEmail } from "../../redux/modules/signupSlice";
+import { __signup, __checkNickname, __emailCheckConfirm } from "../../redux/modules/signupSlice";
+//import { __signup, __checkEmail, __checkNickname, __confirmEmail, __emailCheckConfirm } from "../../redux/modules/signupSlice";
 import "../assets/fonts/font.css"
-import Sign from "../../shared/image/Sign.png"
+import Img from "../../shared/image/SignUp.png";
 
 const SignUpForm = () => {
     const dispatch = useDispatch();
@@ -16,8 +17,8 @@ const SignUpForm = () => {
     const checkEmail = useSelector((state) => state.signup.DupEmail)
     const checkNickname = useSelector((state) => state.signup.DupNickname)
     const confirmEmail = useSelector((state) => state.signup.ConfirmEmail)
-   
-    const signup = useSelector((state) => state.signup.data)
+    const emailCheckConfirm = useSelector((state) => state.signup.EmailDupConfirm) // 통합
+    console.log(emailCheckConfirm) //status 200 or 400
 
     const {
         register,
@@ -28,33 +29,44 @@ const SignUpForm = () => {
         setError,
     } = useForm({ criteriaMode: "all", mode: "onChange" });
 
-    //이메일 중복확인
-    const onDupEmail = () => {
+    // [ 통합 ] 이메일 중복확인 & 인증 메일 전송
+    const onDupConfirmEmail = () => {
         const email = getValues("email")
             if (email !== "" && errors.email === undefined) {
-                dispatch(__checkEmail({email}));
-                if (checkEmail === false) {
+                dispatch(__emailCheckConfirm({email}));
+                if (emailCheckConfirm !== 200) {
                     setError(
                         "email",
                         { message: "중복된 이메일입니다." },
                         { shouldFocus: true }
                     );
-                }   
+                } 
+                // if (emailCheckConfirm !== 200) {
+                //     setError(
+                //         "email",
+                //         { message: "중복된 이메일입니다." },
+                //         { shouldFocus: true }
+                //     );
+                // }  
             } else {
                 setError(
                     "email",
-                    { message: "중복확인을 해주세요" },
+                    { message: "인증 메일을 전송해주세요" },  // { message: "중복확인을 해주세요" },
                     { shouldFocus: true }
                 );
-            }
+            } 
+            // else {
+                
+            // }
     };
+
 
     //email 중복확인 성공했을 때 메시지 띄워주기
     useEffect(() => {
-        if (checkEmail === true) {
+        if (emailCheckConfirm === 200) {
             setError("email", { message: "사용 가능한 이메일입니다" });
         }
-    }, [checkEmail]
+    }, [emailCheckConfirm]
     );
 
     //닉네임 중복확인 
@@ -62,7 +74,7 @@ const SignUpForm = () => {
         const nickname = getValues("nickname")
         if (nickname !== "" && errors.nickname === undefined) {
         dispatch(__checkNickname({nickname}))
-            if (checkEmail === false) {
+            if (checkNickname === false) {
                 setError(
                     "nickname",
                     { message: "중복된 닉네임입니다."},
@@ -84,17 +96,18 @@ const SignUpForm = () => {
         }
     }, [checkNickname]);
 
-    //이메일 인증 
-    const onEmailConfirm = () => {
-        const emailConfirm = getValues("email")
-        dispatch(__confirmEmail({email:emailConfirm}))
-    }
+    // //이메일 인증 
+    // const onEmailConfirm = () => {
+    //     const emailConfirm = getValues("email")
+    //     dispatch(__confirmEmail({email:emailConfirm}))
+    // }
 
-    //인증번호 확인
+    //이메일 인증번호 확인
     const onNumConfirm = () => {
         const NumConfirm = getValues("emailConfirm") 
         if (
-            confirmEmail == NumConfirm
+            //confirmEmail == NumConfirm
+            emailCheckConfirm == NumConfirm
         )
             {setError(
                 "emailConfirm",
@@ -127,6 +140,10 @@ const SignUpForm = () => {
         }
     };
 
+    const onClickDel = () => {
+        navigate('/login')
+    }
+
     return(
         <>
         <BackGroundImg>
@@ -136,28 +153,32 @@ const SignUpForm = () => {
                 <Form onSubmit={handleSubmit(onSubmit)}>
                     <Input>
                         <Email
-                            style={{ color: "black" }}
+                            style={{ color: "black", fontSize: "17px"}}
                         >
                             <div>
-                                사용하실 E-Mail을 입력해주세요
+                                사용하실 E-Mail을 입력해주세요.
                             </div>
                             <div className="email_container">
-                                <EmailInput className="email_input"
-                                    type="email"
-                                    name="email" //data를 뽑을때 key값이 됨 
-                                    aria-invalid={!isDirty ? undefined : errors.email ? "true" : "false"}
-                                    {...register("email", {      //email: ""
-                                        required: "이메일을 입력해주세요",
-                                        pattern:{
-                                            value:
-                                                /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i, //a~z, 0~9, @필수, .뒤에 2,3글자 더 필요
-                                            message:"올바른 이메일 형식이 아닙니다"
-                                        }
-                                    })}
-                                />
-                                <Dupbtn 
+                                <div>
+                                    <EmailInput className="email_input"
+                                        type="email"
+                                        name="email" //data를 뽑을때 key값이 됨 
+                                        aria-invalid={!isDirty ? undefined : errors.email ? "true" : "false"}
+                                        style= {{ fontSize: "16px" }}
+                                        {...register("email", {      //email: ""
+                                            required: "이메일을 입력해주세요",
+                                            pattern:{
+                                                value:
+                                                    /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i, //a~z, 0~9, @필수, .뒤에 2,3글자 더 필요
+                                                message:"올바른 이메일 형식이 아닙니다"
+                                            }
+                                        })}
+                                    />
+                                </div>
+                                {/* <Dupbtn 
                                     onClick={()=>{onDupEmail()}}
                                     type="button"
+                                    style={{ fontSize: "15px"}}
                                 >
                                     중복확인
                                 </Dupbtn>
@@ -165,17 +186,24 @@ const SignUpForm = () => {
                                     onClick={onEmailConfirm}
                                     type="button"
                                 >
+                                    인증메일전송
+                                </Dupbtn> */}
+                                <NewDupbtn
+                                     style={{ fontSize: "15px" }}
+                                     onClick={onDupConfirmEmail}
+                                     type="button"
+                                >
                                     인증메일 전송
-                                </Dupbtn>
+                                </NewDupbtn>
                             </div>
                             <Message>
-                                {errors.email && (<p style={{ fontSize: "14px" }}>{errors.email.message}</p>)}
+                                {errors.email && (<p style={{ fontSize: "15px" }}>{errors.email.message}</p>)}
                                 {errors.email && (<p style={{ color: "blue", marginTop: "-7px", fontSize : "14px"}}>{errors.email.message2}</p>)}
                             </Message>
                         </Email>
 
                         <EmailConfirm
-                            style={{ color: "black" }}
+                            style={{ color: "black", fontSize: "17px"}}
                         >
                             <div>
                                 이메일 주소로 발송된 보안 코드를 입력하세요.
@@ -185,6 +213,7 @@ const SignUpForm = () => {
                                     type="text"
                                     name="emailConfirm" //data를 뽑을때 key값이 됨 
                                     aria-invalid={!isDirty ? undefined : errors.emailConfirm ? "true" : "false"}
+                                    style= {{ fontSize: "16px" }}
                                     {...register("emailConfirm", {      //email: ""
                                         required: "인증번호를 입력해주세요",
                                     })} 
@@ -192,18 +221,19 @@ const SignUpForm = () => {
                                 <Dupbtn 
                                     onClick={onNumConfirm}
                                     type="button"
+                                    style={{ fontSize: "15px"}}
                                 >
                                     인증하기
                                 </Dupbtn>
                             </div>
                             <Message>
-                                {errors.emailConfirm && (<p style={{ fontSize: "14px" }}>{errors.emailConfirm.message}</p>)}
+                                {errors.emailConfirm && (<p style={{ fontSize: "15px" }}>{errors.emailConfirm.message}</p>)}
                                 {errors.emailConfirm && (<p style={{ color: "blue", marginTop: "-7px", fontSize: "14px" }}>{errors.emailConfirm.message2}</p>)}
                             </Message>
                         </EmailConfirm>
 
                         <NickName
-                            style={{ color: "black" }}
+                           style={{ color: "black", fontSize: "17px"}}
                         >
                             <div>
                                 사용하실 닉네임을 입력해주세요.
@@ -213,6 +243,7 @@ const SignUpForm = () => {
                                     type="text"
                                     name="nickname"
                                     aria-invalid={!isDirty ? undefined : errors.nickname ? "true" : "false"}
+                                    style= {{ fontSize: "16px" }}
                                     {...register("nickname", {      //nickname:""
                                             required: "닉네임을 입력해주세요",
                                             minLength: {
@@ -233,24 +264,27 @@ const SignUpForm = () => {
                                 />
                                 <Dupbtn 
                                     onClick={()=>{onDupNick()}}
-                                    type="button">
+                                    type="button"
+                                    style={{ fontSize: "15px"}}
+                                >
                                     중복확인
                                 </Dupbtn>
                             </div>
                             <Message>
-                                {errors.nickname && <p style={{ fontSize: "14px" }}>{errors.nickname.message}</p>}
+                                {errors.nickname && <p style={{ fontSize: "15px" }}>{errors.nickname.message}</p>}
                                 {errors.nickname && (<p style={{ color: "blue", marginTop: "-7px", fontSize: "14px" }}>{errors.nickname.message3}</p>)}
                             </Message>
                         </NickName>
                         
                         <PassWord
-                        style={{ color: "black" }}
+                            style={{ color: "black", fontSize: "17px"}}
                         >
                             사용하실 Password를 입력해주세요.
                             <PassWordInput
                                 type="password"
                                 name="password"
                                 aria-invalid={!isDirty ? undefined : errors.password ? "true" : "false"}
+                                style= {{ fontSize: "16px" }}
                                 {...register("password", {
                                     required: "비밀번호를 입력해주세요",
                                     minLength: {
@@ -269,16 +303,18 @@ const SignUpForm = () => {
                                 })}
                             />
                             <Message>
-                                {errors.password && <p style={{ fontSize: "14px" }}>{errors.password.message}</p>}
+                                {errors.password && <p style={{ fontSize: "15px" }}>{errors.password.message}</p>}
                             </Message>
                         </PassWord>
 
                         <PassWordConfirm
-                            style={{ color: "black" }}
+                           style={{ color: "black", fontSize: "17px"}}
                         >
                                 Password를 확인해주세요.
                             <PassWordConfirmInput
+                                type="password"
                                 aria-invalid={!isDirty ? undefined : errors.confirmPw ? "true" : "false"}
+                                style= {{ fontSize: "16px" }}
                                 {...register("confirmPw", {
                                     required: "비밀번호가 일치하지 않습니다",
                                     pattern: {
@@ -289,7 +325,7 @@ const SignUpForm = () => {
                                 })}
                             />
                             <Message>
-                                {errors.confirmPw && <p style={{ fontSize: "14px" }}>{errors.confirmPw.message}</p>}
+                                {errors.confirmPw && <p style={{ fontSize: "15px" }}>{errors.confirmPw.message}</p>}
                             </Message>
                         </PassWordConfirm>
                     </Input>
@@ -297,10 +333,16 @@ const SignUpForm = () => {
                     <Btn>
                         <CreateAccountBtn
                             type="submit" disabled={isSubmitting}
-                            style={{ color: "black"}}
+                            style={{ color: "black", fontSize: "15px"}}
                         >
                             완료
                         </CreateAccountBtn>
+                        <CancleBtn
+                            type="button" disabled={isSubmitting} onClick={onClickDel}
+                            style={{ color: "black", fontSize: "15px"}}
+                        >
+                            취소
+                        </CancleBtn>
                     </Btn>
                 </Form>
             </Box>
@@ -312,9 +354,9 @@ const SignUpForm = () => {
 export default SignUpForm;
 
 const BackGroundImg = styled.div`
-    width: 100%;
-    height: 100%;
-    background-image: url(${Sign});
+    width: 2000px;
+    height: 1200px;
+    background-image: url(${Img});
     background-position: left top;
     background-size: cover;
     align-items: center;
@@ -338,16 +380,17 @@ const Box = styled.div`
   padding:30px 0px;
   height: auto;
   width: auto;
-  margin-top: 100px;
   p {
     margin-bottom: 100px;
+    margin-top: -200px;
+    font-size: 30px;
   }
 `
 const Form = styled.form`
     
 `
 const Message = styled.div`
-    margin-top: -12px;
+    margin-top: -4px;
     //margin-bottom: -20px;
     font-size: smaller;
     margin-left: -5px;
@@ -380,7 +423,7 @@ const Input = styled.div`
 `
 const Dupbtn = styled.button`
     display:block;
-    width:85px;
+    width:120px;
     height: 45px;
     padding:15px;
     background:rgb(255, 255, 255);
@@ -389,23 +432,41 @@ const Dupbtn = styled.button`
     border: 1px solid rgba(169, 169, 169, 0.25);
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 8px;
+    text-align: center;
+    //transform: translate(-50%,-50%);
+`
+const NewDupbtn = styled.button`
+    display:block;
+    width:120px;
+    height: 45px;
+    //padding:15px;
+    background:rgb(255, 255, 255);
+    color: black;
+    cursor: pointer;
+    border: 1px solid rgba(169, 169, 169, 0.25);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    text-align: center;
 `
 const Email = styled.div`
     flex-direction: column;
     display: flex;
     margin-bottom: 40px;
     position: relative;
-    
+    .email_container {
+        align-items: center;
+    }
 `
 const EmailInput = styled.input`
     display:flex;
-    width:511px;
-    height: 10px;
+    width: 520px;
+    height: 13px;
     padding:15px;
     background:#fff;
     color: black;
     border-color: #A9A9A9;
     margin-right: 10px;
+    margin-top: 5px;
     border-radius: 7px;
     border: 1px solid rgba(169, 169, 169, 0.25);
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -417,16 +478,20 @@ const EmailConfirm = styled.div`
     flex-direction: column;
     position: relative;  
     margin-bottom: 40px;
+    .emailConfirm_container {
+        align-items: center;
+    }
 `
 
 const EmailConfirmInput = styled.input`
     display:flex;
-    width:511px;
-    height: 10px;
+    width: 520px;
+    height: 13px;
     padding:15px;
     background:#fff;
     color: black;
     margin-right: 10px;
+    margin-top: 5px;
     border-radius: 7px;
     font-size: small;
     border: 1px solid rgba(169, 169, 169, 0.25);
@@ -438,13 +503,17 @@ const NickName = styled.div`
     display: flex;
     position: relative;
     margin-bottom: 40px;
+    .nickname_container {
+        align-items: center;
+    }
 `
 const NickNameInput = styled.input`
-    display:block;
-    width:511px;
-    height: 10px;
+    display: block;
+    width: 520px;
+    height: 13px;
     padding:15px;
     margin-right: 10px;
+    margin-top: 5px;
     background:#fff;
     color: black;
     border-radius: 7px;
@@ -461,7 +530,7 @@ const PassWord = styled.div`
 const PassWordInput = styled.input`
     display: block;
     width: 655px;
-    height: 10px;
+    height: 13px;
     padding:15px;
     background:#fff;
     color: black;
@@ -471,6 +540,7 @@ const PassWordInput = styled.input`
     border: 1px solid rgba(169, 169, 169, 0.25);
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 8px;
+    margin-top: 5px;
 `
 const PassWordConfirm = styled.div`
     display: flex;
@@ -482,7 +552,7 @@ const PassWordConfirm = styled.div`
 const PassWordConfirmInput = styled.input`
     display:block;
     width:655px;
-    height: 10px;
+    height: 13px;
     padding:15px;
     background:#fff;
     color: black;
@@ -491,21 +561,38 @@ const PassWordConfirmInput = styled.input`
     border: 1px solid rgba(169, 169, 169, 0.25);
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 8px;
+    margin-top: 5px;
 `
 
 const Btn = styled.div`
-    
+    display: flex;
+    justify-content: center;
 `
-
+const CancleBtn = styled.button`
+    background-color: #fff;
+    border-color: #A9A9A9;
+    //padding:10px;
+    font-size:15px;
+    width: 132px;
+    height: 45px;
+    margin: 10px;
+    //margin:20px auto;
+    //display:block;
+    border: 1px solid rgba(169, 169, 169, 0.25);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    cursor:pointer;
+`
 const CreateAccountBtn = styled.button`
     background-color: #fff;
     border-color: #A9A9A9;
-    padding:10px;
-    font-size:15px;
-    width:132px;
+    margin: 10px;
+    //padding:10px;
+    font-size: 15px;
+    width: 132px;
     height: 45px;
-    margin:20px auto;
-    display:block;
+    //margin:20px auto;
+    //display:block;
     border: 1px solid rgba(169, 169, 169, 0.25);
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 8px;
