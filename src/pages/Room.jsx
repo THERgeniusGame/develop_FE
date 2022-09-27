@@ -18,7 +18,7 @@ import BigCoin from "../shared/image/RoomIMG/BigCoin.png"
 
 import Swal from 'sweetalert2'
 
-const socket = socketio.connect("https://sparta-emil.shop"); //백서버
+const socket = socketio.connect(process.env.REACT_APP_SERVER_URL); //백서버
 
 function Room() {
     const navigate = useNavigate();
@@ -1077,7 +1077,7 @@ function Room() {
                                 )}
                             </div>
                         </>}
-                    <button onClick={() => { window.location.reload(`/room/${params.roomId}`); }} style={{ width: "210px", height: "45px", background: "#FFFFFF", boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)", borderRadius: "8px", border: "0", marginBottom: "30px" }}>대기실로 이동하기</button>
+                    <button onClick={() => { navigate("/"); }} style={{ width: "210px", height: "45px", background: "#FFFFFF", boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)", borderRadius: "8px", border: "0", marginBottom: "30px" }}>대기실로 이동하기</button>
                 </ResultModal> : ''}
             {/* //신고하기 모달 */}
             {report === true ?
