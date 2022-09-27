@@ -18,7 +18,7 @@ import BigCoin from "../shared/image/RoomIMG/BigCoin.png"
 
 import Swal from 'sweetalert2'
 
-let socket = socketio.connect(process.env.REACT_APP_URL); //백서버
+let socket = socketio.connect("https://sparta-emil.shop"); //백서버
 
 function Room() {
     const navigate = useNavigate();

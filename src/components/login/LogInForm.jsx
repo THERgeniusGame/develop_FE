@@ -5,13 +5,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { __login } from "../../redux/modules/loginSlice";
 import Cards from "../../shared/image/Cards.png"
 import LoginScreen from "../../../src/shared/image/LoginScreen.png"
+import kakaoLogin from "../../../src/shared/image/kakaoLogin.png"
+
+const { Kakao } = window;
 
 const LogInForm = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const success = useSelector((state) => state.login.isLogin)
-    
+
     const login = useSelector((state) => state.login)
 
     const {
@@ -24,83 +27,106 @@ const LogInForm = () => {
     const onSubmit = (data) => {
         dispatch(__login(data)).then(
             navigate("/")
-        ).catch (
+        ).catch(
             navigate("/login")
         )
     };
 
-    return(
+    function kakaoLogin() {
+        Kakao.Auth.login({
+            success: function (response) {
+                Kakao.API.request({
+                    url: '/v2/user/me',
+                    success: function (response) {
+                        console.log(response)
+                        window.location.reload("/")
+                    },
+                    fail: function (error) {
+                        console.log(error)
+                    },
+                })
+            },
+            fail: function (error) {
+                console.log(error)
+            },
+        })
+    }
+
+    return (
         <>
-        <Body>
-            <BackGroundImg>
-                <Box>
-                    <div className="image">
-                        <Image />
-                    </div>
-                    <p className="title" style={{ color: "black" }}>THER Genius Brain Card Game</p>
-                    <Form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="input_btn_container">
-                            <Email
-                                style={{ color: "black" }}
-                            >
-                                <div>
-                                    E-mail
-                                </div>
-                                <EmailInput
-                                    type="text"
-                                    name="email"
-                                    aria-invalid={!isDirty ? undefined : errors.email ? "true" : "false"}
-                                    {...register("email", {
-                                        required: "이메일을 입력해주세요",
-                                        pattern:{
-                                            value:
-                                                /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i, //a~z, 0~9, @필수, .뒤에 2,3글자 더 필요
-                                            message:"올바른 이메일 형식이 아닙니다"
-                                        }
-                                    })}
-                                />
-                                <Message>
-                                    {errors.email && <p style={{ fontSize: "14px" }}>{errors.email.message}</p>}
-                                </Message>
-                            </Email>
-
-                            <PassWord
-                                style={{ color: "black" }}
-                            >
-                                Password
-                                <PassWordInput
-                                    type="password"
-                                    name="password"
-                                    aria-invalid={!isDirty ? undefined : errors.password ? "true" : "false"}
-                                    {...register("password", {
-                                        required: "비밀번호를 입력해주세요",
-                                        minLength: {
-                                            value: 8,
-                                            message: "영문/숫자 포함 8~16자로 입력해주세요",
-                                        },
-                                        maxLength: {
-                                            value: 16,
-                                            message: "영문/숫자 포함 8~16자로 입력해주세요",
-                                        },
-                                        pattern: {
-                                            value:
-                                            /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{8,16}$/,
-                                            message: "영문/숫자 포함 8~16자로 입력해주세요"
-                                        },
-                                    })}
-                                />
-                                <Message>
-                                    {errors.password && <p style={{ fontSize: "14px" }}>{errors.password.message}</p>}
-                                </Message>
-                            </PassWord>
-
-                            <LoginBtn>
-                                입장하기
-                            </LoginBtn>
+            <Body>
+                <BackGroundImg>
+                    <Box>
+                        <div className="image">
+                            <Image />
                         </div>
-                            <ToSignUpBtn 
+                        <p className="title" style={{ color: "black" }}>THER Genius Brain Card Game</p>
+                        <Form onSubmit={handleSubmit(onSubmit)}>
+                            <div className="input_btn_container">
+                                <Email
+                                    style={{ color: "black" }}
+                                >
+                                    <div>
+                                        E-mail
+                                    </div>
+                                    <EmailInput
+                                        type="text"
+                                        name="email"
+                                        aria-invalid={!isDirty ? undefined : errors.email ? "true" : "false"}
+                                        {...register("email", {
+                                            required: "이메일을 입력해주세요",
+                                            pattern: {
+                                                value:
+                                                    /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i, //a~z, 0~9, @필수, .뒤에 2,3글자 더 필요
+                                                message: "올바른 이메일 형식이 아닙니다"
+                                            }
+                                        })}
+                                    />
+                                    <Message>
+                                        {errors.email && <p style={{ fontSize: "14px" }}>{errors.email.message}</p>}
+                                    </Message>
+                                </Email>
+
+                                <PassWord
+                                    style={{ color: "black" }}
+                                >
+                                    Password
+                                    <PassWordInput
+                                        type="password"
+                                        name="password"
+                                        aria-invalid={!isDirty ? undefined : errors.password ? "true" : "false"}
+                                        {...register("password", {
+                                            required: "비밀번호를 입력해주세요",
+                                            minLength: {
+                                                value: 8,
+                                                message: "영문/숫자 포함 8~16자로 입력해주세요",
+                                            },
+                                            maxLength: {
+                                                value: 16,
+                                                message: "영문/숫자 포함 8~16자로 입력해주세요",
+                                            },
+                                            pattern: {
+                                                value:
+                                                    /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{8,16}$/,
+                                                message: "영문/숫자 포함 8~16자로 입력해주세요"
+                                            },
+                                        })}
+                                    />
+                                    <Message>
+                                        {errors.password && <p style={{ fontSize: "14px" }}>{errors.password.message}</p>}
+                                    </Message>
+                                </PassWord>
+
+                                <LoginBtn>
+                                    입장하기
+                                </LoginBtn>
+                                <KakaoLoginBtn onClick={() => { kakaoLogin(); }}>
+                                    
+                                </KakaoLoginBtn>
+                            </div>
+                            <ToSignUpBtn
                                 type="button"
-                                style={{display:"flex"}}
+                                style={{ display: "flex" }}
                             >
                                 <Btn onClick={() => {
                                     navigate("/signup");
@@ -108,11 +134,11 @@ const LogInForm = () => {
                                     navigate("/editpw");
                                 }}>비밀번호찾기</Btn>
                             </ToSignUpBtn>
-                    </Form>
-                </Box>
-            </BackGroundImg>
-        </Body>
-    </>
+                        </Form>
+                    </Box>
+                </BackGroundImg>
+            </Body>
+        </>
     );
 };
 export default LogInForm;
@@ -273,3 +299,18 @@ const LoginBtn = styled.button`
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 8px;
 `
+
+const KakaoLoginBtn = styled.button`
+    width: 300px;
+    height: 45px;
+    font-size:15px;
+    display:block;
+    cursor:pointer;
+    margin-top: 40px;
+    background-image: url(${kakaoLogin});
+    background-repeat: no-repeat;
+    border: none;
+    border-radius: 8px;
+`
+
+

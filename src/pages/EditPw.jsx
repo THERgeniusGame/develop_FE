@@ -7,7 +7,7 @@ import "../components/assets/fonts/font.css"
 import Sign from "../shared/image/Sign.png"
 import Swal from 'sweetalert2'
 
-import { __SendDup, __EditPw } from "../redux/modules/EditPw";
+import { __SendDup, __EditPw } from "../redux/modules/EditPwSlice";
 
 const EditPw = () => {
     const dispatch = useDispatch();
