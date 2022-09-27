@@ -67,26 +67,6 @@ const UserReport = () => {
                         제출하기
                     </Write>
                 </BugBox>
-                
-                <Answer>
-                    <AnswerTxt>
-                        답변
-                    </AnswerTxt>
-                    <AnswerResponse>
-                        저도 잘 모르겠네요
-                    </AnswerResponse>
-                </Answer>
-                
-                {/* <ReportMap>
-                    {allReport?.map((rank) => (
-                    <ReportList key={rank.rank}>
-                      <div className="reportPt">{rank?.rank} 버그 신고합니다 </div>
-                      <div className="nicknamePt">{rank.nickname}님 지니어스님</div>
-                      <div className="datePt">{rank.winavg} 1월2일 </div>
-                    </ReportList>
-                    ))}
-                </ReportMap> */}
-                
             </div>
           </ReportContainer>
         </BackgroundImg>
@@ -122,19 +102,13 @@ const BackgroundImg = styled.div`
     display: flex;
     position: relative;
     z-index: 1;
-    font-size: 200%;
-`
-const ReportBtn = styled.div`
-    
+    font-size: 200%;  
 `
 
 const BugBox = styled.div`
-    //background-color: #F3F3F3;
-    //box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 8px;
     border: 0;
     margin: 0 auto;
-    //padding-left: 20px;
     padding: 20px; 
     
     background: #F4F4F4;
@@ -143,7 +117,6 @@ const BugBox = styled.div`
     border-radius: 8px;
     width: 1037px;
     height: 468px;
-
 `
 
 const ContentTextArea = styled.textarea`
@@ -160,74 +133,10 @@ const Write = styled.button`
     margin-left: 920px;
     
 `
-const Answer = styled.div`
-    display: flex;
-    flex-direction: row;
-    width: 1060px;
-    height: 46px;
-    background-color: #F3F3F3;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 8px;
-    border: 0;
-    align-items: center;
-    margin-bottom: 10px;
-    margin: 0 auto;
-    margin-top: 100px;
-    margin-bottom: 80px;
-    padding-left: 20px;
-    .answerTxt {
-        color: rgba(0, 0, 0, 0.6)
-        
-    }
-`
-const AnswerTxt = styled.div`
-    margin-right: 20px;
-    color: rgba(0, 0, 0, 0.6)
-`
-const AnswerResponse = styled.div`
-    
-`
 const ReportContainer = styled.div`
     width: 100%;
     height: 100%;
-    //text-align: center;
-    //justify-content: center;
     .body {
         font-size: 70%;
-        /* justify-content: center;
-        align-items: center; */
     }
 `
-const ReportMap = styled.div`
-    display: flex;
-    flex-direction: row;
-    width: 849px;
-    height: 46px;
-    background-color: #F3F3F3;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 8px;
-    margin: 0px auto;
-    border: 0;
-    font-size: 70%;
-    align-items: center;
-    margin-bottom: 10px;
-    margin-left: 200px;
-    margin-right: 200px;
-    //gap: 120px;
-    justify-content: center;
-`
-const ReportList = styled.div`
-    
-    .reportPt {
-
-    }
-    .nickname {
-
-    }
-    .datePt {
-
-    }
-`
-
-// const Pagination = styled.div`
-  

@@ -16,7 +16,6 @@ const Header = () => {
   }
   return (
    <>
-   {/* isOpen && <Modal ref={modalEl}> */}
       <HeaderBox>
         <div className="logo">
           <Logo
@@ -41,9 +40,6 @@ const Header = () => {
         }
 
       </HeaderBox>
-    
- 
-    {/* </Modal> */}
    </>
   );
 };

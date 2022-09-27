@@ -364,7 +364,7 @@ function Room() {
 
         const owner = turnResult.owner
         const guest = turnResult.guest
-        
+
         if (turnResult.owner.cards?.length === 0 && turnResult.guest.cards?.length === 0 && turn === true) {
             if (End === false) {
                 socket.emit("gameEnd", {
@@ -389,8 +389,8 @@ function Room() {
                         win: guest.win,
                     },
                 });
-            setEnd(true);
-            } else {}
+                setEnd(true);
+            } else { }
         }
     });
 
@@ -407,16 +407,16 @@ function Room() {
 
     socket.on("error", error => {
         if (error.error === "Bad-Request") {
-            Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 1500 })
+            Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 3000 })
         }
-        else if (error.error === "Bad-Request") { Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 1500 }) }
-        else if (error.error === "Expired-Token") { Swal.fire({ title: '로그인 유효시간이 경과하였습니다 다시 로그인해주세요.', timer: 1500 }) }
-        else if (error.error === "Wrong-Url") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 1500 }) }
-        else if (error.error === "None-User") { Swal.fire({ title: '존재하지 않는 유저입니다.', timer: 1500 }) }
-        else if (error.error === "Not-Your-Turn") { Swal.fire({ title: '나의 턴이 아닙니다.', timer: 1500 }) }
-        else if (error.error === "Err-Update-Result") { Swal.fire({ title: '결과를 가져오지 못했습니다.', timer: 1500 }) }
-        else if (error.error === "Failed_ReportChat") { Swal.fire({ title: '채팅 신고에 실패했습니다.', timer: 1500 }) }
-        else if (error.error === "Exist-ReportChat") { Swal.fire({ title: '이미 신고된 채팅입니다.', timer: 1500 }) }
+        else if (error.error === "Bad-Request") { Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 3000 }) }
+        else if (error.error === "Expired-Token") { Swal.fire({ title: '로그인 유효시간이 경과하였습니다 다시 로그인해주세요.', timer: 3000 }) }
+        else if (error.error === "Wrong-Url") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); navigate("/"); }
+        else if (error.error === "None-User") { Swal.fire({ title: '존재하지 않는 유저입니다.', timer: 3000 }) }
+        else if (error.error === "Not-Your-Turn") { Swal.fire({ title: '나의 턴이 아닙니다.', timer: 3000 }) }
+        else if (error.error === "Err-Update-Result") { Swal.fire({ title: '결과를 가져오지 못했습니다.', timer: 3000 }) }
+        else if (error.error === "Failed_ReportChat") { Swal.fire({ title: '채팅 신고에 실패했습니다.', timer: 3000 }) }
+        else if (error.error === "Exist-ReportChat") { Swal.fire({ title: '이미 신고된 채팅입니다.', timer: 3000 }) }
     });
 
     return (

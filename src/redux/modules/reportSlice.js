@@ -13,10 +13,11 @@ const token = localStorage.getItem("token");
 
 // GET 신고목록 리스트 ( 신고 메인페이지 )
 export const __getReportList = createAsyncThunk(
-    "GET_REPORT_LIST", 
-    async (thunkAPI) => {
+    "GET_REPORT_LIST",
+    async (payload, thunkAPI) => {
+        console.log(payload)
         try {
-            const res = await axios.get(process.env.REACT_APP_ENDPOINT + "/report",
+            const res = await axios.get(process.env.REACT_APP_ENDPOINT + `/report?page=${payload}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -35,7 +36,9 @@ export const __getReportList = createAsyncThunk(
 export const __getReport = createAsyncThunk(
     "GET_REPORT_PAGE",
     async (reportId, thunkAP) => {
+        console.log(reportId)
         try {
+            console.log(reportId)
             const res = await axios.get(process.env.REACT_APP_ENDPOINT + `/report/${reportId}`,
                 {
                     headers: {
@@ -53,7 +56,7 @@ export const __getReport = createAsyncThunk(
 
 // GET 신고답변 per page ( 신고 상세페이지 )
 export const __getAnswer = createAsyncThunk(
-    "GET_REPORT_ANSWER", 
+    "GET_REPORT_ANSWER",
     async (reportId, thunkAPI) => {
         try {
             const res = await axios.get(process.env.REACT_APP_ENDPOINT + `/report/${reportId}/comment`,
@@ -74,16 +77,16 @@ export const __getAnswer = createAsyncThunk(
 
 // POST 신고목록 ( 신고페이지 )
 export const __postReport = createAsyncThunk(
-    "POST_REPORT", 
+    "POST_REPORT",
     async (payload, thunkAPI) => {
         console.log(payload) //payload에 값이 안들어오면 dispatch 확인하기
         try {
             const res = await axios.post(process.env.REACT_APP_ENDPOINT + "/report", payload,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
             );
             console.log(res.data)
             return res.data
@@ -94,6 +97,67 @@ export const __postReport = createAsyncThunk(
     });
 
 
+
+// 신고 수정
+export const __EditReport = createAsyncThunk(
+    "report/editReport",
+    async (payload, thunkAPI) => {
+        console.log(payload.reportId, payload.reportTitle, payload.reportContent)
+        try {
+            const data = await axios.patch(process.env.REACT_APP_ENDPOINT + `/report/${payload.reportId}`, { reportId: payload.reportId, reportTitle: payload.reportTitle, reportContent: payload.reportContent },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            ).then((res) => {
+                console.log(res)
+            })
+        } catch (err) {
+            return err
+        }
+    });
+
+// 신고 삭제
+export const __deleteReport = createAsyncThunk(
+    "report/deleteReport",
+    async (payload, thunkAPI) => {
+        console.log(payload)
+        try {
+            const data = await axios.delete(process.env.REACT_APP_ENDPOINT + `/report/${payload}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            ).then((res) => {
+                console.log(res)
+            })
+        } catch (err) {
+            return err
+        }
+    });
+
+// 신고 수정
+export const __EditReportContent = createAsyncThunk(
+    "report/editReportContent",
+    async (payload, thunkAPI) => {
+        console.log(payload, payload.reportId, payload.commentContent)
+        try {
+            const data = await axios.patch(process.env.REACT_APP_ENDPOINT + `/report/${payload.reportId}/comment`, { commentContent:payload.commentContent },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            ).then((res) => {
+                console.log(res)
+            })
+        } catch (err) {
+            return err
+        }
+    });
+
 //slice
 export const reportSlice = createSlice({
     name: "report",
@@ -103,49 +167,65 @@ export const reportSlice = createSlice({
     extraReducers: (builder) => {
         builder
 
-        // GET 신고목록 (신고 메인페이지)
-        .addCase(__getReportList.fulfilled, (state, action) => {
-            //console.log(action.payload)
-            state.getReport = action.payload
-        })
-        .addCase(__getReportList.rejected, (state, action) => {
-            //console.log(action)
+            // GET 신고목록 (신고 메인페이지)
+            .addCase(__getReportList.fulfilled, (state, action) => {
+                //console.log(action.payload)
+                state.getReport = action.payload
+            })
+            .addCase(__getReportList.rejected, (state, action) => {
+                //console.log(action)
 
-        })
-        .addCase(__getReportList.pending, (state, action) => {
+            })
+            .addCase(__getReportList.pending, (state, action) => {
 
-        })
+            })
 
-        // GET 신고 상세페이지 content
-        .addCase(__getReport.fulfilled, (state, action) => {
-            console.log(action)
-            state.getReport = action.payload
-        })
-        .addCase(__getReport.rejected, (state, action) => {
-            console.log(action)
+            // GET 신고 상세페이지 content
+            .addCase(__getReport.fulfilled, (state, action) => {
+                console.log(action)
+                state.getReport = action.payload
+            })
+            .addCase(__getReport.rejected, (state, action) => {
+                console.log(action)
 
-        })
+            })
 
-        // GET 신고 상세페이지 answer
-        .addCase(__getAnswer.fulfilled, (state, action) => {
-            console.log(action)
-            state.getReport = action.payload
-        })
-        .addCase(__getAnswer.rejected, (state, action) => {
-            console.log(action)
-        })
-        
-        // POST 신고목록 ( 신고페이지 )
-        .addCase(__postReport.fulfilled, (state, action) => {
-            console.log(action)
-            state = action
-        })
-        .addCase(__postReport.rejected, (state, action) => {
-            console.log(action)
+            // GET 신고 상세페이지 answer
+            .addCase(__getAnswer.fulfilled, (state, action) => {
+                console.log(action)
+                state.getReport = action.payload
+            })
+            .addCase(__getAnswer.rejected, (state, action) => {
+                console.log(action)
+            })
 
-        })
+            // POST 신고목록 ( 신고페이지 )
+            .addCase(__postReport.fulfilled, (state, action) => {
+                console.log(action)
+                state = action
+            })
+            .addCase(__postReport.rejected, (state, action) => {
+                console.log(action)
 
-        
+            })
+            // 리포트 수정
+            .addCase(__EditReport.fulfilled, (state, action) => {
+            })
+            .addCase(__EditReport.rejected, (state, action) => {
+
+            })
+            // 리포트 삭제
+            .addCase(__deleteReport.fulfilled, (state, action) => {
+            })
+            .addCase(__deleteReport.rejected, (state, action) => {
+
+            })
+            // 리포트 댓글 삭제
+            .addCase(__EditReportContent.fulfilled, (state, action) => {
+            })
+            .addCase(__EditReportContent.rejected, (state, action) => {
+
+            })
     },
 });
 
