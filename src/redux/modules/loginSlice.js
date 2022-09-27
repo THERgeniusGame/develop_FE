@@ -16,20 +16,9 @@ export const __login = createAsyncThunk(
         console.log(payload) //payload에 값이 안들어오면 dispatch 확인하기
         try {
             const res = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/login", payload);
-            //const res = await axios.post("http://localhost3000/api/user/login", payload)
-            //토큰 localStorage에 저장하기
             localStorage.setItem("token", res.data)
-            (window.location.href="http://localhost:3000/")
-            //(window.location.href=process.env.REACT_APP_SURVER)
-           //(window.location.href="http://52.78.158.219/")
-            console.log(res)
+            (window.location.href="https://thergenius.com/login")
             return res.data
-            
-            // Swal.fire({
-            //     icon: "success",
-            //     title: "로그인 되었습니다!",
-            //   })
-
         } catch (err) {
             console.log(err)
             Swal.fire({
