@@ -5,14 +5,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { __login } from "../../redux/modules/loginSlice";
 import Cards from "../../shared/image/Cards.png"
 import LoginScreen from "../../../src/shared/image/LoginScreen.png"
+import kakaoLogin from "../../../src/shared/image/kakaoLogin.png"
+
+const { Kakao } = window;
 
 const LogInForm = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const success = useSelector((state) => state.login.isLogin)
-    console.log(success)
-    
     const login = useSelector((state) => state.login)
     console.log(login)
 
@@ -27,12 +28,32 @@ const LogInForm = () => {
         console.log(data)
         dispatch(__login(data)).then(
             navigate("/")
-        ).catch (
+        ).catch(
             navigate("/login")
         )
     };
 
-    return(
+    function kakaoLogin() {
+        Kakao.Auth.login({
+            success: function (response) {
+                Kakao.API.request({
+                    url: '/v2/user/me',
+                    success: function (response) {
+                        console.log(response)
+                        window.location.reload("/")
+                    },
+                    fail: function (error) {
+                        console.log(error)
+                    },
+                })
+            },
+            fail: function (error) {
+                console.log(error)
+            },
+        })
+    }
+
+    return (
         <>
         <Body>
             <BackGroundImg>
@@ -315,3 +336,18 @@ const LoginBtn = styled.button`
     border-radius: 8px;
     font-size: larger;
 `
+
+const KakaoLoginBtn = styled.button`
+    width: 300px;
+    height: 45px;
+    font-size:15px;
+    display:block;
+    cursor:pointer;
+    margin-top: 40px;
+    background-image: url(${kakaoLogin});
+    background-repeat: no-repeat;
+    border: none;
+    border-radius: 8px;
+`
+
+

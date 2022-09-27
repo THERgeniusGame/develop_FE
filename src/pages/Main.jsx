@@ -107,6 +107,13 @@ function Main() {
     setResp(rooms);
   }, [page, rooms?.length]);
 
+  // useEffect(() => {
+  //   const kakao = localStorage.getItem('kakao_8bf1782f1cc6a7819be6cbe6487c057d');
+
+  //   if (kakao !== undefined || kakao !== "" || kakao !== null) {
+  //     localStorage.setItem("token", kakao)
+  //   }
+  // }, [])
   return (
     <>
       <Header />
