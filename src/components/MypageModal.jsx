@@ -3,7 +3,7 @@ import React from "react";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 
-const MypageModal = () => {
+const MypageModal = ({setModal}) => {
   const navigate = useNavigate()
   
   const logout = () => {
@@ -18,9 +18,13 @@ const MypageModal = () => {
 
     return(
         <>
+        <ModalBackGround onClick={() => setModal(false)}></ModalBackGround>
             <Modal>
                 <div>
-                    <div className="page">마이페이지</div>
+                    <div className="page"
+                      onClick={() => {navigate('/mypage')}}
+                      // onClick={() => setModal(false)}
+                    >마이페이지(랭킹)</div>
                     <hr/>
                     <div className="logout"
                       onClick={logout}
@@ -32,10 +36,19 @@ const MypageModal = () => {
 }
 export default MypageModal;
 
+const ModalBackGround = styled.div`
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 22;
+`
 const Modal = styled.div`
-   position: absolute;
+  position: absolute;
   //display: none;
-  //z-index: 5;
+  z-index: 25;
   top: 70%;
   left: 77%;
   background: white;
