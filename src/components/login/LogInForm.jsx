@@ -15,7 +15,6 @@ const LogInForm = () => {
 
     const success = useSelector((state) => state.login.isLogin)
     const login = useSelector((state) => state.login)
-    console.log(login)
 
     const {
         register,
@@ -25,7 +24,6 @@ const LogInForm = () => {
     } = useForm({ criteriaMode: "all", mode: "onChange" });
 
     const onSubmit = (data) => {
-        console.log(data)
         dispatch(__login(data)).then(
             navigate("/")
         ).catch(
@@ -35,7 +33,7 @@ const LogInForm = () => {
 
     const token = localStorage.getItem("token");
 
-    if (token !== undefined || token !== null) {
+    if (token !== undefined && token !== null) {
         navigate("/")
     }
 
@@ -134,7 +132,7 @@ const LogInForm = () => {
                             <FindPWBtn
                                 type="button"
                                 onClick={() => {
-                                    navigate("/signup");
+                                    navigate("/EditPw");
                                 }}
                             >
                                 비밀번호 변경/찾기
@@ -167,16 +165,6 @@ const BackGroundImg = styled.div`
     display: flex;
     position: relative;
     z-index: 1;
-    /* width: 100%;
-    height: 100%;
-    background-image: url(${LoginScreen});
-    background-position: left top;
-    background-size: cover;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    position: relative;
-    z-index: 1; */
 `
 
 const Image = styled.div`
@@ -305,9 +293,7 @@ const PassWord = styled.div`
     position: relative;
     margin-top: 5px;
 `
-const Btn = styled.div`
-    
-`
+
 const FindPWBtn = styled.div`
     color: black;
     font-size: 20px;

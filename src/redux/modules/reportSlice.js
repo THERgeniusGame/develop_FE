@@ -15,7 +15,6 @@ const token = localStorage.getItem("token");
 export const __getReportList = createAsyncThunk(
     "GET_REPORT_LIST",
     async (payload, thunkAPI) => {
-        console.log(payload)
         try {
             const res = await axios.get(process.env.REACT_APP_ENDPOINT + `/report?page=${payload}`,
                 {
@@ -24,10 +23,8 @@ export const __getReportList = createAsyncThunk(
                     },
                 }
             );
-            //console.log(res.data.reportList)
             return res.data.reportList
         } catch (err) {
-            //console.log(err)
             return err
         }
     });
@@ -36,9 +33,7 @@ export const __getReportList = createAsyncThunk(
 export const __getReport = createAsyncThunk(
     "GET_REPORT_PAGE",
     async (reportId, thunkAP) => {
-        console.log(reportId)
         try {
-            console.log(reportId)
             const res = await axios.get(process.env.REACT_APP_ENDPOINT + `/report/${reportId}`,
                 {
                     headers: {
@@ -46,10 +41,8 @@ export const __getReport = createAsyncThunk(
                     },
                 }
             );
-            //console.log(res.data)
             return res.data
         } catch (err) {
-            //console.log(err)
             return err
         }
     });
@@ -66,10 +59,8 @@ export const __getAnswer = createAsyncThunk(
                     },
                 }
             );
-            console.log(res)
             return res.data
         } catch (err) {
-            console.log(err)
             return err
         }
     });
@@ -79,7 +70,6 @@ export const __getAnswer = createAsyncThunk(
 export const __postReport = createAsyncThunk(
     "POST_REPORT",
     async (payload, thunkAPI) => {
-        console.log(payload) //payload에 값이 안들어오면 dispatch 확인하기
         try {
             const res = await axios.post(process.env.REACT_APP_ENDPOINT + "/report", payload,
                 {
@@ -88,10 +78,8 @@ export const __postReport = createAsyncThunk(
                     },
                 }
             );
-            console.log(res.data)
             return res.data
         } catch (err) {
-            console.log(err)
             return err
         }
     });
@@ -163,12 +151,9 @@ export const reportSlice = createSlice({
 
             // GET 신고목록 (신고 메인페이지)
             .addCase(__getReportList.fulfilled, (state, action) => {
-                //console.log(action.payload)
                 state.getReport = action.payload
             })
             .addCase(__getReportList.rejected, (state, action) => {
-                //console.log(action)
-
             })
             .addCase(__getReportList.pending, (state, action) => {
 
@@ -176,30 +161,24 @@ export const reportSlice = createSlice({
 
             // GET 신고 상세페이지 content
             .addCase(__getReport.fulfilled, (state, action) => {
-                console.log(action)
                 state.getReport = action.payload
             })
             .addCase(__getReport.rejected, (state, action) => {
-                console.log(action)
 
             })
 
             // GET 신고 상세페이지 answer
             .addCase(__getAnswer.fulfilled, (state, action) => {
-                console.log(action)
                 state.getReport = action.payload
             })
             .addCase(__getAnswer.rejected, (state, action) => {
-                console.log(action)
             })
 
             // POST 신고목록 ( 신고페이지 )
             .addCase(__postReport.fulfilled, (state, action) => {
-                console.log(action)
                 state = action
             })
             .addCase(__postReport.rejected, (state, action) => {
-                console.log(action)
 
             })
             // 리포트 수정

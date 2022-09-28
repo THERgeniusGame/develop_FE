@@ -11,21 +11,17 @@ const token = localStorage.getItem("token");
 export const __GetMainRoom = createAsyncThunk(
     "getmainroom/getMainroom",
     async (payload, api) => {
-        console.log(payload)
         try {
             const response = await axios.get(
                 process.env.REACT_APP_ENDPOINT + `/room?page=${payload}`,
-                //`http://localhost3000/api/room?page=${payload}`,
                 {
                     headers: {
                         authorization: `Bearer ${token}`,
                     },
                 }
                 )
-                console.log(response)
             return api.fulfillWithValue(response.data.roomsInfo);
         } catch (e) {
-            console.log(e)
             return api.rejectWithValue(e);
         }
     }

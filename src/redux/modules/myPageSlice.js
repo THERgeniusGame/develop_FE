@@ -23,11 +23,9 @@ export const __getMyPage = createAsyncThunk(
                     },
                 }
             );
-            console.log(res)
             return res.data
 
         } catch (err) {
-            //console.log(err)
             return err
         }
     });
@@ -44,11 +42,8 @@ export const __getMyRank = createAsyncThunk(
                     },
                 }
             );
-            console.log(res.data)
-            console.log(res.data)
             return res.data
         } catch (err) {
-            console.log(err)
             return err
         }
     });
@@ -66,7 +61,6 @@ export const myPageSlice = createSlice({
         .addCase(__getMyPage.fulfilled, (state, action) => {
             //state.allRank = [...action.payload];
             state.allRank = action.payload;
-            console.log(action)
         })
         .addCase(__getMyPage.rejected, (state, action) => {
             state.allRank = action.payload;
@@ -77,11 +71,9 @@ export const myPageSlice = createSlice({
 
         //마이 랭킹 조회
         .addCase(__getMyRank.fulfilled, (state, action) => {
-            console.log(action)
             state.myRank = action.payload;
         })
         .addCase(__getMyRank.rejected, (state, action) => {
-            console.log(action)
             state.myRank = action.payload;
         })
     },
