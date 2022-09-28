@@ -16,7 +16,7 @@ export const __login = createAsyncThunk(
         try {
             const res = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/login", payload);
             localStorage.setItem("token", res.data)
-            (window.location.href="https://www.thergenius.com/login")
+            (window.location.href="https://www.thergenius.com")
             return res.data
         } catch (err) {
             // Swal.fire({
