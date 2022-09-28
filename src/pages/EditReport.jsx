@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 
 import { __EditReport } from "../redux/modules/reportSlice";
 
+import Swal from 'sweetalert2'
 
 const EditReport = () => {
     const navigate = useNavigate();
@@ -20,11 +21,11 @@ const EditReport = () => {
             [name]: value,
         });
     };
-    
+
     const params = useParams();
     const reportId = params.reportId;
 
-    
+
     const [inputs, setInputs] = useState({
         reportTitle: "",
         reportContent: "",
@@ -32,7 +33,15 @@ const EditReport = () => {
     });
 
     const onSubmitHandler = () => {
-        dispatch(__EditReport(inputs))
+        if (inputs.reportTitle === "") {
+            Swal.fire({ title: '제목을 입력해주세요.', timer: 2000 });
+        } else if (inputs.reportContent === "") {
+            Swal.fire({ title: '내용을 입력해주세요.', timer: 2000 });
+        } else {
+            dispatch(__EditReport(inputs));
+            navigate(`/report/${reportId}`);
+            Swal.fire({ title: '수정이 완료 되었습니다.', timer: 2000 });
+        }
     }
 
     return (
@@ -60,7 +69,7 @@ const EditReport = () => {
                     </div>
                     <Write>
                         <button onClick={onSubmitHandler} style={{ display: "flex", margin: "auto" }}>제출하기</button>
-                        <button onClick={()=>{navigate(`/report/${reportId}`)}} style={{ display: "flex", margin: "auto" }}>취소하기</button>
+                        <button onClick={() => { navigate(`/report/${reportId}`) }} style={{ display: "flex", margin: "auto" }}>취소하기</button>
                     </Write>
                 </ReportContainer>
             </BackgroundImg>
