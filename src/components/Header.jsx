@@ -17,8 +17,7 @@ const Header = () => {
     Swal.fire({ title: '로그인이 필요합니다.', timer: 2000 });
     navigate("/login")
   } 
-  
-  console.log(token)
+
   return (
    <>
       <HeaderBox>
