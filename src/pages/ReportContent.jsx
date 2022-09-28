@@ -30,7 +30,7 @@ const ReportContent = () => {
 
     const onclickHandle = () => {
         if (editInput === "") {
-            alert("빈칸채우셈")
+            Swal.fire({ title: '내용을 입력해주세요.', timer: 3000 });
         } else {
             setEditRequest(!editRequest);
             dispatch(__EditReportContent({reportId, commentContent:editInput}))
@@ -60,8 +60,8 @@ const ReportContent = () => {
                             </ContentTextArea>
                         </BugBox>
                         <Btns>
-                            {getReport.my ? <button style={{ display: "flex", margin: "auto" }} onClick={() => { dispatch(__deleteReport(reportId)) }}>삭제하기</button> : ''}
-                            {getReport.my ? <button style={{ display: "flex", margin: "auto" }} onClick={() => { navigate(`/editReport/${reportId}`) }}>수정하기</button> : ''}
+                            {getReport.my ? <button style={{ display: "flex", margin: "auto" }} onClick={() => { dispatch(__deleteReport(reportId)); navigate(`/report`); }}>삭제하기</button> : ''}
+                            {getReport.my ? <button style={{ display: "flex", margin: "auto" }} onClick={() => { navigate(`/editReport/${reportId}`); }}>수정하기</button> : ''}
                             <button style={{ display: "flex", margin: "auto" }} onClick={() => { navigate("/report") }}>돌아가기</button>
                         </Btns>
                         <Answer>
@@ -70,7 +70,7 @@ const ReportContent = () => {
                             </AnswerTxt>
                             <AnswerResponse>
                                 <div style={{ width: "885px", overflow: "hidden", padding: "5px" }}>{editRequest === true ? <input value={editInput} onChange={(e) => { setEditInput(e.target.value) }} style={{ height: "22px", padding: "3px", width: "850px" }}></input> : getReport.reportContent}</div>
-                                <div>{getReport.admin === false ? <Btn onClick={() => editRequest === true ? onclickHandle() : setEditRequest(!editRequest)} style={{ display: "flex", borderRadius: "9px", padding: "7px", marginTop: editRequest === true ? "3px" : '' }}>답변 수정하기</Btn> : ''}</div>
+                                <div>{getReport.admin === true ? <Btn onClick={() => editRequest === true ? onclickHandle() : setEditRequest(!editRequest)} style={{ display: "flex", borderRadius: "9px", padding: "7px", marginTop: editRequest === true ? "3px" : '' }}>답변 수정하기</Btn> : ''}</div>
                             </AnswerResponse>
                         </Answer>
                     </div>

@@ -102,16 +102,14 @@ export const __postReport = createAsyncThunk(
 export const __EditReport = createAsyncThunk(
     "report/editReport",
     async (payload, thunkAPI) => {
-        console.log(payload.reportId, payload.reportTitle, payload.reportContent)
         try {
-            const data = await axios.patch(process.env.REACT_APP_ENDPOINT + `/report/${payload.reportId}`, { reportId: payload.reportId, reportTitle: payload.reportTitle, reportContent: payload.reportContent },
+            const data = await axios.put(process.env.REACT_APP_ENDPOINT + `/report/${payload.reportId}`, { reportId: payload.reportId, reportTitle: payload.reportTitle, reportContent: payload.reportContent },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 }
             ).then((res) => {
-                console.log(res)
             })
         } catch (err) {
             return err
@@ -122,7 +120,6 @@ export const __EditReport = createAsyncThunk(
 export const __deleteReport = createAsyncThunk(
     "report/deleteReport",
     async (payload, thunkAPI) => {
-        console.log(payload)
         try {
             const data = await axios.delete(process.env.REACT_APP_ENDPOINT + `/report/${payload}`,
                 {
@@ -131,7 +128,6 @@ export const __deleteReport = createAsyncThunk(
                     },
                 }
             ).then((res) => {
-                console.log(res)
             })
         } catch (err) {
             return err
@@ -142,16 +138,14 @@ export const __deleteReport = createAsyncThunk(
 export const __EditReportContent = createAsyncThunk(
     "report/editReportContent",
     async (payload, thunkAPI) => {
-        console.log(payload, payload.reportId, payload.commentContent)
         try {
-            const data = await axios.patch(process.env.REACT_APP_ENDPOINT + `/report/${payload.reportId}/comment`, { commentContent:payload.commentContent },
+            const data = await axios.put(process.env.REACT_APP_ENDPOINT + `/report/${payload.reportId}/comment`, { commentContent:payload.commentContent },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 }
             ).then((res) => {
-                console.log(res)
             })
         } catch (err) {
             return err
