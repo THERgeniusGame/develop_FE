@@ -18,7 +18,6 @@ const SignUpForm = () => {
     const checkNickname = useSelector((state) => state.signup.DupNickname)
     const confirmEmail = useSelector((state) => state.signup.ConfirmEmail)
     const emailCheckConfirm = useSelector((state) => state.signup.EmailDupConfirm) // 통합
-    console.log(emailCheckConfirm) //status 200 or 400
 
     const {
         register,

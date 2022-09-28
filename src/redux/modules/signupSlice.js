@@ -21,11 +21,9 @@ export const __signup = createAsyncThunk(
         try {
             //const response = await axios.post("http://localhost3000/api/user/signup", payload)
             const response = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/signup", payload)
-            console.log(response);
             return Swal.fire("회원가입이 완료되었습니다!", "success");
            
         } catch (err) {
-            console.log(err);
             Swal.fire({
                 icon: "error",
                 title: "이미 가입한 이메일입니다.",
@@ -38,16 +36,9 @@ export const __emailCheckConfirm = createAsyncThunk(
     "EMAIL_CHECK_CONFIRM",
     async (payload, thunkAPI) => {
         try {
-            console.log(payload)
             const res = await axios.post(process.env.REACT_APP_ENDPOINT + "/mail", payload)
-            // if (res.status === 200){
-            //     return true
-            // }
-            console.log(res)
-            console.log(res.data) //인증메일 번호
             return res.status
         } catch (err) {
-            console.log(err)
             return err
         }
     }
@@ -60,10 +51,8 @@ export const __checkNickname = createAsyncThunk(
         try {
             //const response = await axios.post("http://localhost3000/api/user/checknickname", payload)
             const response = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/checknickname", payload)
-            // console.log(response) //
             return true;
         } catch (err) {
-            console.log(err)
             return false
         }
         //중복확인 결과에 따라 alert 후 상태 저장
@@ -87,22 +76,18 @@ export const signupSlice = createSlice({
             
             //닉네임 중복검사
             .addCase(__checkNickname.fulfilled, (state, action) => {
-                //console.log(action)
                 //중복확인 상태 저장
                 state.DupNickname = action.payload;
             })
             .addCase(__checkNickname.rejected, (state, action) => {
-                // console.log(action)
                 state.DupNickname = action.payload;
             })
             
             // 이메일 중복검사 & 인증메일 발송 통합
             .addCase(__emailCheckConfirm.fulfilled, (state, action) => {
-                console.log(action)
                 state.EmailDupConfirm = action.payload
             })
             .addCase(__emailCheckConfirm.rejected, (state, action) => {
-                console.log(action)
                 state.EmailDupConfirm = action.payload
             })
     },

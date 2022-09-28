@@ -36,7 +36,7 @@ function Main() {
   const dispatch = useDispatch();
 
   const rooms = useSelector((state) => state.getmainroom.data.result);
-  console.log(rooms)
+
   const Loading = useSelector((state) => state.getmainroom.isLoading);
   const [resp, setResp] = useState([]);
   const [lock, setLock] = useState("ALL");
@@ -52,10 +52,8 @@ function Main() {
     indexOfFirstPost,
     indexOfLastPost
   );
-  console.log(currentCountings)
-  const [MainPage, setMainPage] = useState(1); //추가부분
 
-  console.log(page)
+  const [MainPage, setMainPage] = useState(1); //추가부분
 
   // 방 입장 
   const [roomsearch, setRoomsearch] = useState('');
@@ -115,7 +113,13 @@ function Main() {
           <div style={{ width: "1040px", margin: "0px auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", width: "1040px", margin: "0px auto" }}>
               <div style={{ dispaly: "flex", flexWrap: "wrap" }}>
-                <HowToBTN onClick={() => setHowTo(true)}>플레이 방법</HowToBTN>
+                <div>
+                  <HowToBTN onClick={() => setHowTo(true)}>플레이 방법</HowToBTN>
+                    <a rel="noopener noreferrer"
+                      target='_blank'
+                      href="https://docs.google.com/forms/d/e/1FAIpQLSeH2i8vTglp-0rKPPf50c43A_TFD5FPMZapDV7AU8nUh2mFoA/viewform">
+                        <HowToBTN style={{width:"250px"}}>치킨먹으러 가기!</HowToBTN></a>
+                </div>
                 <ChoosLock style={{ marginTop: "40px" }}>
                   {lock === "ALL" ?
                     <button onClick={(e) => { setResp(rooms); setLock("ALL") }}>전체방</button> :
@@ -441,6 +445,7 @@ let MakeRoom = styled.div`
 `
 
 let ChoosLock = styled.div`
+  width: 320px;
   display: flex;
   flex-direction: row;
   align-items: center;

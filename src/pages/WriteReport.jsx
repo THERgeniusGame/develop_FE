@@ -1,20 +1,17 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useSelector } from "react-redux/es/exports";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Background from "../shared/image/RoomIMG/RoomBackground.png";
 
-import { __getReport, __postReport } from "../redux/modules/reportSlice";
+import { __postReport } from "../redux/modules/reportSlice";
 
+import Swal from 'sweetalert2'
 
 const UserReport = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
-    const getAllReport = useSelector((state) => state.report.getReport)
-    console.log(getAllReport)
 
     const onChange = (e) => {
         const { value, name } = e.target;
@@ -28,50 +25,52 @@ const UserReport = () => {
         reportTitle: "",
         reportContent: "",
     });
-    console.log(inputs)
-    
+
 
     const onSubmitHandler = () => {
-        console.log()
-        dispatch(__postReport(inputs)).then(
-            navigate("/report")
-        ).catch(
-            console.log("신고 post에러")
-        )
+        if (inputs.reportTitle === "") {
+            Swal.fire({ title: '제목을 입력해주세요.', timer: 1500 });
+        } else if (inputs.reportContent === "") {
+            Swal.fire({ title: '내용을 입력해주세요.', timer: 1500 });
+        } else {
+            Swal.fire({ title: '신고를 완료했습니다.', timer: 1500 });
+            dispatch(__postReport(inputs)).then(
+                navigate("/report")
+            )
+        }
     }
-    
-  return (
-    <>
-      <Header />
-      <BackgroundImg>
-          <ReportContainer>
-            <div className="body">
-                <TitleInput 
-                    style={{ fontSize:20 }} 
-                    placeholder="제목"
-                    onChange={onChange}
-                    name="reportTitle"
-                />
-                <BugBox>
-                    버그
-                    <ContentTextArea
-                        style={{ fontSize:20 }} 
-                        placeholder="문제 상황을 작성해주세요"
-                        name="reportContent"
-                        onChange={onChange}
-                    >
-                    </ContentTextArea>
-                    <Write
-                        onClick={onSubmitHandler}
-                    >
-                        제출하기
+
+    return (
+        <>
+            <Header />
+            <BackgroundImg>
+                <ReportContainer>
+                    <div className="body">
+                        <TitleInput
+                            style={{ fontSize: 20 }}
+                            placeholder="제목"
+                            onChange={onChange}
+                            name="reportTitle"
+                        />
+                        <BugBox>
+                            버그
+                            <ContentTextArea
+                                style={{ fontSize: 20 }}
+                                placeholder="문제 상황을 작성해주세요"
+                                name="reportContent"
+                                onChange={onChange}
+                            >
+                            </ContentTextArea>
+                        </BugBox>
+                    </div>
+                    <Write>
+                        <button onClick={onSubmitHandler} style={{ display: "flex", margin: "auto" }}>제출하기</button>
+                        <button onClick={() => { navigate(`/report`) }} style={{ display: "flex", margin: "auto" }}>취소하기</button>
                     </Write>
-                </BugBox>
-            </div>
-          </ReportContainer>
-        </BackgroundImg>
-    </>
-  );
+                </ReportContainer>
+            </BackgroundImg>
+        </>
+    );
 };
 
 export default UserReport;
@@ -129,9 +128,31 @@ const ContentTextArea = styled.textarea`
     border-radius: 8px;
     margin-top: 15px;
 `
-const Write = styled.button`
-    margin-left: 920px;
-    
+const Write = styled.div`
+    display: flex;
+    margin: 30px auto;
+    width: 50%;
+
+    button{
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 30px auto;   
+      font-style: normal;
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 22px;
+      width: 335px;
+      height: 45px;
+      background: #F4F4F4;
+      border: 1px solid rgba(169, 169, 169, 0.25);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+        :hover {
+        background-color: #BAB7B7;
+        cursor: pointer;
+              }
+    }
 `
 const ReportContainer = styled.div`
     width: 100%;

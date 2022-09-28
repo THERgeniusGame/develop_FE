@@ -14,10 +14,8 @@ const MyPage = () => {
     const navigate = useNavigate();
 
     const allRank = useSelector((state) => state.getMyPage.allRank)
-    console.log(allRank)
 
     const myRank = useSelector((state) => state.getMyPage.myRank)
-    console.log(myRank)
 
     //페이지네이션 - 랭킹페이지
     const [page, setPage] = useState(1); //현재 페이지
