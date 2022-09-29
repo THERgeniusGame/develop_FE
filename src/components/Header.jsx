@@ -58,10 +58,8 @@ const HeaderBox = styled.div`
   width: 100%;
   flex-direction: row;
   justify-content: space-between;
-  //margin: 0px auto;
   position: relative;
-  z-index: 1;
-  //position: sticky;
+  z-index: 4;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   
   div {
