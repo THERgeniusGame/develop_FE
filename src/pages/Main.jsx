@@ -42,9 +42,9 @@ function Main() {
   const [resp, setResp] = useState([]);
   const [lock, setLock] = useState("ALL"); 
 
-  const clickLock = useSelector((state) => state.lock.lock)
-
-  const clickUnLock = useSelector((state) => state.lock.unLock)
+  const clickLock = useSelector((state) => state?.lock?.lock?.result)
+console.log(clickLock)
+  const clickUnLock = useSelector((state) => state?.lock?.unLock)
   
 
   //페이지네이션
@@ -127,7 +127,8 @@ function Main() {
             [name] : value
         });
     };
-
+console.log(clickUnLock)
+console.log(clickLock)
   return (
     <>
       <Header />

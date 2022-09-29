@@ -15,7 +15,6 @@ export const __login = createAsyncThunk(
     async (payload, thunkAPI) => {
         try {
             const res = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/login", payload);
-            //토큰 localStorage에 저장하기
             localStorage.setItem("token", res.data)
             (window.location.href=process.env.REACT_APP_SURVER)
             console.log(res)
