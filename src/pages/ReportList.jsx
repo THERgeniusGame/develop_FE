@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { __getReportList } from "../redux/modules/reportSlice.js"
 import Header from "../components/Header";
 import Pagination from "react-js-pagination";
-import PaginationMyPage from "../components/PagenationMainPage";
 
 import Loadingimg from "../shared/image/Loading.png";
 import ReportImg from "../shared/image/MainIMG/MainBackground.png";
@@ -20,8 +19,7 @@ const ReportList = () => {
   const allReport = useSelector((state) => state.report.getReport)
   console.log(allReport)
 
-  const [page, setPage] = useState(1); //현재 페이지
-  const [reportId, setReportId] = useState(0); //?
+  const [page, setPage] = useState(1); //현재 페이지x
 
   //페이지네이션
   const handlePageChange = (page) => { setPage(page); };

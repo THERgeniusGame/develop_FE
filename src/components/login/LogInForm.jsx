@@ -140,16 +140,6 @@ const BackGroundImg = styled.div`
     display: flex;
     position: relative;
     z-index: 1;
-    /* width: 100%;
-    height: 100%;
-    background-image: url(${LoginScreen});
-    background-position: left top;
-    background-size: cover;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    position: relative;
-    z-index: 1; */
 `
 
 const Image = styled.div`
@@ -278,9 +268,6 @@ const PassWord = styled.div`
     position: relative;
     margin-top: 5px;
 `
-const Btn = styled.div`
-    
-`
 const FindPWBtn = styled.div`
     color: black;
     font-size: 20px;
@@ -293,7 +280,6 @@ const ToSignUpBtn = styled.div`
     color: black;
     font-size: 20px;
     width:100px;
-    //margin:20px auto;
     display:block;
     cursor:pointer;
     border-radius: 0;

@@ -9,17 +9,15 @@ const initialState = {
     DupEmail: false,
     DupNickname: false,
     ConfirmEmail: false,
-    EmailDupConfirm: false,
+    EmailDupConfirm: null,
+    CheckNum: null,
 };
-
-//이메일 중복확인 없애고 중복된이메일이면 경고 문구 띄우기 
 
 //회원가입
 export const __signup = createAsyncThunk(
     "signup", 
     async (payload, thunkAPI) => {
         try {
-            //const response = await axios.post("http://localhost3000/api/user/signup", payload)
             const response = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/signup", payload)
             console.log(response);
             return Swal.fire("회원가입이 완료되었습니다!", "success");
@@ -40,15 +38,13 @@ export const __emailCheckConfirm = createAsyncThunk(
         try {
             console.log(payload)
             const res = await axios.post(process.env.REACT_APP_ENDPOINT + "/mail", payload)
-            // if (res.status === 200){
-            //     return true
-            // }
             console.log(res)
             console.log(res.data) //인증메일 번호
-            return res.status
+            Swal.fire("인증번호 발송에 성공했습니다!", "", "success")
+           return res.data
         } catch (err) {
-            console.log(err)
-            return err
+            Swal.fire("중복된 이메일입니다!", "", "error")
+            return false
         }
     }
 )
@@ -58,15 +54,12 @@ export const __checkNickname = createAsyncThunk(
     "signup/checknickname",
     async (payload, thunkAPI) => {
         try {
-            //const response = await axios.post("http://localhost3000/api/user/checknickname", payload)
             const response = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/checknickname", payload)
-            // console.log(response) //
             return true;
         } catch (err) {
             console.log(err)
             return false
         }
-        //중복확인 결과에 따라 alert 후 상태 저장
     }
 );
 
@@ -87,7 +80,6 @@ export const signupSlice = createSlice({
             
             //닉네임 중복검사
             .addCase(__checkNickname.fulfilled, (state, action) => {
-                //console.log(action)
                 //중복확인 상태 저장
                 state.DupNickname = action.payload;
             })
@@ -99,11 +91,16 @@ export const signupSlice = createSlice({
             // 이메일 중복검사 & 인증메일 발송 통합
             .addCase(__emailCheckConfirm.fulfilled, (state, action) => {
                 console.log(action)
-                state.EmailDupConfirm = action.payload
+                state.CheckNum = action.payload;
+                state.EmailDupConfirm = true;
             })
             .addCase(__emailCheckConfirm.rejected, (state, action) => {
                 console.log(action)
-                state.EmailDupConfirm = action.payload
+                state.EmailDupConfirm = false;
+            })
+            .addCase(__emailCheckConfirm.pending, (state, action) => {
+                console.log(action)
+                state.EmailDupConfirm = "Loading";
             })
     },
 });

@@ -15,12 +15,12 @@ export const __login = createAsyncThunk(
     async (payload, thunkAPI) => {
         console.log(payload) //payload에 값이 안들어오면 dispatch 확인하기
         try {
-            const res = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/login", payload);
-            //const res = await axios.post("http://localhost3000/api/user/login", payload)
+            //const res = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/login", payload); //바꾸기
+            const res = await axios.post("http://localhost3000/api/user/login", payload)
             //토큰 localStorage에 저장하기
             localStorage.setItem("token", res.data)
-            (window.location.href="http://localhost:3000/")
-            //(window.location.href=process.env.REACT_APP_SURVER)
+            //(window.location.href="http://localhost:3000/")
+            (window.location.href=process.env.REACT_APP_SURVER)
            //(window.location.href="http://52.78.158.219/")
             console.log(res)
             return res.data
@@ -32,10 +32,10 @@ export const __login = createAsyncThunk(
 
         } catch (err) {
             console.log(err)
-            Swal.fire({
-                icon: "error",
-                title: "이메일, 비밀번호가 일치하지 않습니다",
-            });
+            // Swal.fire({
+            //     icon: "error",
+            //     title: "이메일, 비밀번호가 일치하지 않습니다",
+            // });
             return err
         }
     });
