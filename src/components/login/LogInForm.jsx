@@ -295,22 +295,28 @@ const PassWord = styled.div`
 `
 
 const FindPWBtn = styled.div`
-    color: black;
-    font-size: 20px;
+    color: #545454;
+    font-size: 16px;
     display:block;
     cursor:pointer;
     border-radius: 0;
     margin-left: -90px;
+    :hover{
+        color : red;
+    }
 `
 const ToSignUpBtn = styled.div`
     color: black;
-    font-size: 20px;
+    font-size: 16px;
     width:100px;
     //margin:20px auto;
     display:block;
     cursor:pointer;
     border-radius: 0;
-    margin-right: -115px;
+    margin-right: -128px;
+    :hover{
+        color: red;
+    }
 `
 
 const LoginBtn = styled.button`

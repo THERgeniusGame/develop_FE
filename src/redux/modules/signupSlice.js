@@ -39,6 +39,9 @@ export const __emailCheckConfirm = createAsyncThunk(
             const res = await axios.post(process.env.REACT_APP_ENDPOINT + "/mail", payload)
             return res.status
         } catch (err) {
+            if(err.response.data === "Already-Member"){
+                Swal.fire({ title: '이미 가입된 이메일입니다.', timer: 1500 });
+            }
             return err
         }
     }

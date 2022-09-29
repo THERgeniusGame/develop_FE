@@ -26,7 +26,6 @@ const EditPw = () => {
     const onclickGiveMail = () => {
         if (emailPass.test(checkEmail) === true) {
             dispatch(__SendDup(checkEmail))
-            Swal.fire({ title: '인증메일이 발송되었습니다.', timer: 1500 });
         } else {
             Swal.fire({ title: '이메일 형식을 확인해주세요.', timer: 1500 });
         }
@@ -248,15 +247,16 @@ const Input = styled.div`
 `
 const Dupbtn = styled.button`
     display:block;
-    width:85px;
+    width:120px;
     height: 45px;
-    padding: 8px 15px;
+    //padding:15px;
     background:rgb(255, 255, 255);
     color: black;
     cursor: pointer;
     border: 1px solid rgba(169, 169, 169, 0.25);
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 8px;
+    text-align: center;
 `
 const Email = styled.div`
     flex-direction: column;
@@ -267,7 +267,7 @@ const Email = styled.div`
 `
 const EmailInput = styled.input`
     display:flex;
-    width:560px;
+    width:520px;
     height: 10px;
     padding:15px;
     color: black;
@@ -288,7 +288,7 @@ const EmailConfirm = styled.div`
 
 const EmailConfirmInput = styled.input`
     display:flex;
-    width:560px;
+    width:520px;
     height: 10px;
     padding:15px;
     color: black;
