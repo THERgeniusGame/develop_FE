@@ -293,7 +293,6 @@ const PassWord = styled.div`
     position: relative;
     margin-top: 5px;
 `
-
 const FindPWBtn = styled.div`
     color: #545454;
     font-size: 16px;
@@ -309,7 +308,6 @@ const ToSignUpBtn = styled.div`
     color: black;
     font-size: 16px;
     width:100px;
-    //margin:20px auto;
     display:block;
     cursor:pointer;
     border-radius: 0;
