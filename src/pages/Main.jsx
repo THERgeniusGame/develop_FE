@@ -831,7 +831,7 @@ let HowToModal = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 2;
+    z-index: 5;
     div {
       width: 864px;
       height: 233px;
