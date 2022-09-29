@@ -24,18 +24,9 @@ export const __login = createAsyncThunk(
            //(window.location.href="http://52.78.158.219/")
             console.log(res)
             return res.data
-            
-            // Swal.fire({
-            //     icon: "success",
-            //     title: "로그인 되었습니다!",
-            //   })
 
         } catch (err) {
             console.log(err)
-            // Swal.fire({
-            //     icon: "error",
-            //     title: "이메일, 비밀번호가 일치하지 않습니다",
-            // });
             return err
         }
     });
