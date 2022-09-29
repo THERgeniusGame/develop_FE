@@ -20,13 +20,8 @@ export const __login = createAsyncThunk(
             (window.location.href=process.env.REACT_APP_SURVER)
             console.log(res)
             return res.data
-<<<<<<< HEAD
-
         } catch (err) {
             console.log(err)
-=======
-        } catch (err) {
->>>>>>> 62165f33ddac877c0cb90d9ed00100c12f902494
             return err
         }
     });

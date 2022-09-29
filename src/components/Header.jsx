@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Main from "../shared/image/Main.png";
 import { useNavigate } from "react-router-dom";
 import MypageModal from "./MypageModal";
-import { useRef } from "react";
 
 import Swal from 'sweetalert2'
 
