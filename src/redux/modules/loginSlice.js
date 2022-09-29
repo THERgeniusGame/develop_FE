@@ -20,13 +20,7 @@ export const __login = createAsyncThunk(
             });
             return res.data
         } catch (err) {
-            if (err.response.data === "Check-EmailorPw") {
-                Swal.fire({ title: '계정이 일치하지 않습니다.', timer: 1500 });
-            }
-            // Swal.fire({
-            //     icon: "error",
-            //     title: "이메일, 비밀번호가 일치하지 않습니다",
-            // });
+            console.log(err)
             return err
         }
     });
