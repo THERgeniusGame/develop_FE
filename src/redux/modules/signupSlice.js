@@ -9,15 +9,17 @@ const initialState = {
     DupEmail: false,
     DupNickname: false,
     ConfirmEmail: false,
-    EmailDupConfirm: null,
-    CheckNum: null,
+    EmailDupConfirm: false,
 };
+
+//이메일 중복확인 없애고 중복된이메일이면 경고 문구 띄우기 
 
 //회원가입
 export const __signup = createAsyncThunk(
     "signup", 
     async (payload, thunkAPI) => {
         try {
+            //const response = await axios.post("http://localhost3000/api/user/signup", payload)
             const response = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/signup", payload)
             return Swal.fire("회원가입이 완료되었습니다!", "success");
            
@@ -35,12 +37,12 @@ export const __emailCheckConfirm = createAsyncThunk(
     async (payload, thunkAPI) => {
         try {
             const res = await axios.post(process.env.REACT_APP_ENDPOINT + "/mail", payload)
-            Swal.fire("인증번호 발송에 성공했습니다!", "", "success")
-           return res.data
+            return res.status
         } catch (err) {
-            Swal.fire("중복된 이메일입니다!", "", "error")
-            return false
-
+            if(err.response.data === "Already-Member"){
+                Swal.fire({ title: '이미 가입된 이메일입니다.', timer: 1500 });
+            }
+            return err
         }
     }
 )
@@ -50,18 +52,20 @@ export const __checkNickname = createAsyncThunk(
     "signup/checknickname",
     async (payload, thunkAPI) => {
         try {
+            //const response = await axios.post("http://localhost3000/api/user/checknickname", payload)
             const response = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/checknickname", payload)
             return true;
         } catch (err) {
             return false
         }
+        //중복확인 결과에 따라 alert 후 상태 저장
     }
 );
 
 
 //slice
 export const signupSlice = createSlice({
-    name: "signup",
+    name: "signup", //store에 등록하는 이름
     initialState,
     reducers: {},
 
@@ -84,15 +88,10 @@ export const signupSlice = createSlice({
             
             // 이메일 중복검사 & 인증메일 발송 통합
             .addCase(__emailCheckConfirm.fulfilled, (state, action) => {
-                state.CheckNum = action.payload;
-                state.EmailDupConfirm = true;
+                state.EmailDupConfirm = action.payload
             })
             .addCase(__emailCheckConfirm.rejected, (state, action) => {
-                state.EmailDupConfirm = false;
-            })
-            .addCase(__emailCheckConfirm.pending, (state, action) => {
-                state.EmailDupConfirm = "Loading";
-
+                state.EmailDupConfirm = action.payload
             })
     },
 });

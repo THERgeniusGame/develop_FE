@@ -15,12 +15,17 @@ export const __login = createAsyncThunk(
     async (payload, thunkAPI) => {
         try {
             const res = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/login", payload);
-            //토큰 localStorage에 저장하기
             localStorage.setItem("token", res.data)
-            (window.location.href=process.env.REACT_APP_SURVER)
-            console.log(res)
+            (window.location.href="https://www.thergenius.com")
             return res.data
         } catch (err) {
+            if (err.response.data === "Check-EmailorPw") {
+                Swal.fire({ title: '계정이 일치하지 않습니다.', timer: 1500 });
+            }
+            // Swal.fire({
+            //     icon: "error",
+            //     title: "이메일, 비밀번호가 일치하지 않습니다",
+            // });
             return err
         }
     });

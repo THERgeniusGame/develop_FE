@@ -15,7 +15,8 @@ const ReportList = () => {
 
   const allReport = useSelector((state) => state?.report?.getReport)
 
-  const [page, setPage] = useState(1); //현재 페이지x
+  const [page, setPage] = useState(1); //현재 페이지
+  const [reportId, setReportId] = useState(0); //?
 
   //페이지네이션
   const handlePageChange = (page) => { setPage(page); };

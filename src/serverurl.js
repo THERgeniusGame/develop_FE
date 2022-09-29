@@ -1,0 +1,1 @@
+export const serverUrl = "http://15.164.95.144"
