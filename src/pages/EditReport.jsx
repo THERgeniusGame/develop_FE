@@ -4,12 +4,13 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Background from "../shared/image/RoomIMG/RoomBackground.png";
+import { useParams } from "react-router-dom";
 
-import { __postReport } from "../redux/modules/reportSlice";
+import { __EditReport } from "../redux/modules/reportSlice";
 
 import Swal from 'sweetalert2'
 
-const UserReport = () => {
+const EditReport = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -21,22 +22,25 @@ const UserReport = () => {
         });
     };
 
+    const params = useParams();
+    const reportId = params.reportId;
+
+
     const [inputs, setInputs] = useState({
         reportTitle: "",
         reportContent: "",
+        reportId
     });
-
 
     const onSubmitHandler = () => {
         if (inputs.reportTitle === "") {
-            Swal.fire({ title: '제목을 입력해주세요.', timer: 1500 });
+            Swal.fire({ title: '제목을 입력해주세요.', timer: 2000 });
         } else if (inputs.reportContent === "") {
-            Swal.fire({ title: '내용을 입력해주세요.', timer: 1500 });
+            Swal.fire({ title: '내용을 입력해주세요.', timer: 2000 });
         } else {
-            Swal.fire({ title: '신고를 완료했습니다.', timer: 1500 });
-            dispatch(__postReport(inputs)).then(
-                navigate("/report")
-            )
+            dispatch(__EditReport(inputs));
+            navigate(`/report/${reportId}`);
+            Swal.fire({ title: '수정이 완료 되었습니다.', timer: 2000 });
         }
     }
 
@@ -65,7 +69,7 @@ const UserReport = () => {
                     </div>
                     <Write>
                         <button onClick={onSubmitHandler} style={{ display: "flex", margin: "auto" }}>제출하기</button>
-                        <button onClick={() => { navigate(`/report`) }} style={{ display: "flex", margin: "auto" }}>취소하기</button>
+                        <button onClick={() => { navigate(`/report/${reportId}`) }} style={{ display: "flex", margin: "auto" }}>취소하기</button>
                     </Write>
                 </ReportContainer>
             </BackgroundImg>
@@ -73,7 +77,7 @@ const UserReport = () => {
     );
 };
 
-export default UserReport;
+export default EditReport;
 
 const TitleInput = styled.input`
     display: flex;

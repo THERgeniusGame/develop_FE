@@ -5,16 +5,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { __login } from "../../redux/modules/loginSlice";
 import Cards from "../../shared/image/Cards.png"
 import LoginScreen from "../../../src/shared/image/LoginScreen.png"
+// import kakaoLogin from "../../../src/shared/image/kakaoLogin.png"
+
+// const { Kakao } = window;
 
 const LogInForm = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const success = useSelector((state) => state.login.isLogin)
-    console.log(success)
-    
     const login = useSelector((state) => state.login)
-    console.log(login)
 
     const {
         register,
@@ -24,107 +24,132 @@ const LogInForm = () => {
     } = useForm({ criteriaMode: "all", mode: "onChange" });
 
     const onSubmit = (data) => {
-        console.log(data)
         dispatch(__login(data)).then(
             navigate("/")
-        ).catch (
+        ).catch(
             navigate("/login")
         )
     };
 
-    return(
-        <>
-        <Body>
-            <BackGroundImg>
-                <Box>
-                    <div className="image">
-                        <Image />
-                    </div>
-                    <p className="title" style={{ color: "black" }}>THER Genius Brain Card Game</p>
-                    <Form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="input_btn_container">
-                            <Email
-                                style={{ color: "black" , fontSize: "20px"}}
-                            >
-                                <div>
-                                    E-mail
-                                </div>
-                                <EmailInput
-                                    type="text"
-                                    name="email"
-                                    aria-invalid={!isDirty ? undefined : errors.email ? "true" : "false"}
-                                    style= {{ fontSize: "17px" }}
-                                    {...register("email", {
-                                        required: "이메일을 입력해주세요",
-                                        pattern:{
-                                            value:
-                                                /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i, //a~z, 0~9, @필수, .뒤에 2,3글자 더 필요
-                                            message:"올바른 이메일 형식이 아닙니다"
-                                        }
-                                    })}
-                                />
-                                <Message>
-                                    {errors.email && <p style={{ fontSize: "14px" }}>{errors.email.message}</p>}
-                                </Message>
-                            </Email>
+    const token = localStorage.getItem("token");
 
-                            <PassWord
-                                style={{ color: "black", fontSize:"20px" }}
-                            >
-                                Password
-                                <PassWordInput
-                                    type="password"
-                                    name="password"
-                                    aria-invalid={!isDirty ? undefined : errors.password ? "true" : "false"}
-                                    style= {{ fontSize: "17px" }}
-                                    {...register("password", {
-                                        required: "비밀번호를 입력해주세요",
-                                        minLength: {
-                                            value: 8,
-                                            message: "영문/숫자 포함 8~16자로 입력해주세요",
-                                        },
-                                        maxLength: {
-                                            value: 16,
-                                            message: "영문/숫자 포함 8~16자로 입력해주세요",
-                                        },
-                                        pattern: {
-                                            value:
-                                            /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{8,16}$/,
-                                            message: "영문/숫자 포함 8~16자로 입력해주세요"
-                                        },
-                                    })}
-                                />
-                                <Message>
-                                    {errors.password && <p style={{ fontSize: "14px" }}>{errors.password.message}</p>}
-                                </Message>
-                            </PassWord>
-                            <LoginBtn>
-                                입장하기
-                            </LoginBtn>
+    if (token !== undefined && token !== null) {
+        navigate("/")
+    }
+
+    // function kakaoLogin() {
+    //     Kakao.Auth.login({
+    //         success: function (response) {
+    //             Kakao.API.request({
+    //                 url: '/v2/user/me',
+    //                 success: function (response) {
+    //                     console.log(response)
+    //                     window.location.reload("/")
+    //                 },
+    //                 fail: function (error) {
+    //                     console.log(error)
+    //                 },
+    //             })
+    //         },
+    //         fail: function (error) {
+    //             console.log(error)
+    //         },
+    //     })
+    // }
+
+    return (
+        <>
+            <Body>
+                <BackGroundImg>
+                    <Box>
+                        <div className="image">
+                            <Image />
                         </div>
-                    </Form>
-                    <MoveBtn>
-                        <FindPWBtn 
-                            type="button"
-                            onClick={() => {
-                                navigate("/signup");
-                            }}
-                        >
-                            비밀번호 변경/찾기
-                        </FindPWBtn>
-                        <ToSignUpBtn 
-                            type="button"
-                            onClick={() => {
-                                navigate("/signup");
-                            }}
-                        >
-                            회원가입
-                        </ToSignUpBtn>
-                    </MoveBtn>
-                </Box>
-            </BackGroundImg>
-        </Body>
-    </>
+                        <p className="title" style={{ color: "black" }}>THER Genius Brain Card Game</p>
+                        <Form onSubmit={handleSubmit(onSubmit)}>
+                            <div className="input_btn_container">
+                                <Email
+                                    style={{ color: "black", fontSize: "20px" }}
+                                >
+                                    <div>
+                                        E-mail
+                                    </div>
+                                    <EmailInput
+                                        type="text"
+                                        name="email"
+                                        aria-invalid={!isDirty ? undefined : errors.email ? "true" : "false"}
+                                        style={{ fontSize: "17px" }}
+                                        {...register("email", {
+                                            required: "이메일을 입력해주세요",
+                                            pattern: {
+                                                value:
+                                                    /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i, //a~z, 0~9, @필수, .뒤에 2,3글자 더 필요
+                                                message: "올바른 이메일 형식이 아닙니다"
+                                            }
+                                        })}
+                                    />
+                                    <Message>
+                                        {errors.email && <p style={{ fontSize: "14px" }}>{errors.email.message}</p>}
+                                    </Message>
+                                </Email>
+
+                                <PassWord
+                                    style={{ color: "black", fontSize: "20px" }}
+                                >
+                                    Password
+                                    <PassWordInput
+                                        type="password"
+                                        name="password"
+                                        aria-invalid={!isDirty ? undefined : errors.password ? "true" : "false"}
+                                        style={{ fontSize: "17px" }}
+                                        {...register("password", {
+                                            required: "비밀번호를 입력해주세요",
+                                            minLength: {
+                                                value: 8,
+                                                message: "영문/숫자 포함 8~16자로 입력해주세요",
+                                            },
+                                            maxLength: {
+                                                value: 16,
+                                                message: "영문/숫자 포함 8~16자로 입력해주세요",
+                                            },
+                                            pattern: {
+                                                value:
+                                                    /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{8,16}$/,
+                                                message: "영문/숫자 포함 8~16자로 입력해주세요"
+                                            },
+                                        })}
+                                    />
+                                    <Message>
+                                        {errors.password && <p style={{ fontSize: "14px" }}>{errors.password.message}</p>}
+                                    </Message>
+                                </PassWord>
+                                <LoginBtn>
+                                    입장하기
+                                </LoginBtn>
+                            </div>
+                        </Form>
+                        <MoveBtn>
+                            <FindPWBtn
+                                type="button"
+                                onClick={() => {
+                                    navigate("/EditPw");
+                                }}
+                            >
+                                비밀번호 변경/찾기
+                            </FindPWBtn>
+                            <ToSignUpBtn
+                                type="button"
+                                onClick={() => {
+                                    navigate("/signup");
+                                }}
+                            >
+                                회원가입
+                            </ToSignUpBtn>
+                        </MoveBtn>
+                    </Box>
+                </BackGroundImg>
+            </Body>
+        </>
     );
 };
 export default LogInForm;
@@ -269,21 +294,27 @@ const PassWord = styled.div`
     margin-top: 5px;
 `
 const FindPWBtn = styled.div`
-    color: black;
-    font-size: 20px;
+    color: #545454;
+    font-size: 16px;
     display:block;
     cursor:pointer;
     border-radius: 0;
     margin-left: -90px;
+    :hover{
+        color : red;
+    }
 `
 const ToSignUpBtn = styled.div`
     color: black;
-    font-size: 20px;
+    font-size: 16px;
     width:100px;
     display:block;
     cursor:pointer;
     border-radius: 0;
-    margin-right: -115px;
+    margin-right: -128px;
+    :hover{
+        color: red;
+    }
 `
 
 const LoginBtn = styled.button`
@@ -301,3 +332,18 @@ const LoginBtn = styled.button`
     border-radius: 8px;
     font-size: larger;
 `
+
+// const KakaoLoginBtn = styled.button`
+//     width: 300px;
+//     height: 45px;
+//     font-size:15px;
+//     display:block;
+//     cursor:pointer;
+//     margin-top: 40px;
+//     background-image: url(${kakaoLogin});
+//     background-repeat: no-repeat;
+//     border: none;
+//     border-radius: 8px;
+// `
+
+

@@ -3,12 +3,11 @@ import React from "react";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 
-const MypageModal = ({setModal}) => {
+const MypageModal = ({ setModal }) => {
   const navigate = useNavigate()
-  
+
   const logout = () => {
     localStorage.removeItem("token")
-      //localStorage.setItem("token", null);
     Swal.fire({
       icon: "success",
       title: "로그아웃 되었습니다!",
@@ -16,23 +15,30 @@ const MypageModal = ({setModal}) => {
     navigate('/login')
   }
 
-    return(
-        <>
-        <ModalBackGround onClick={() => setModal(false)}></ModalBackGround>
-            <Modal>
-                <div>
-                    <div className="page"
-                      onClick={() => {navigate('/mypage')}}
-                      // onClick={() => setModal(false)}
-                    >마이페이지(랭킹)</div>
-                    <hr/>
-                    <div className="logout"
-                      onClick={logout}
-                    >로그아웃</div>
-                </div>
-            </Modal>
-        </>
-    )
+  return (
+    <>
+      <ModalBackGround onClick={() => setModal(false)}></ModalBackGround>
+      <Modal>
+        <div>
+          <div className="page"
+            onClick={() => { navigate('/mypage') }}
+          >마이페이지(랭킹)</div>
+          <hr />
+          <div
+            className="report"
+            style={{ margin: "10px 0" }}
+            onClick={()=>{
+              // navigate("/report");
+              Swal.fire({ title: '준비중인 기능입니다.', timer: 2000 });
+              setModal(!Modal);
+              }}>신고하기</div>
+          <div className="logout"
+            onClick={logout}
+          >로그아웃</div>
+        </div>
+      </Modal>
+    </>
+  )
 }
 export default MypageModal;
 
@@ -56,13 +62,17 @@ const Modal = styled.div`
   border: 1px solid #ccc;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
   width: 180px;
-  height: 65px;
+  height: 97px;
 
   .page {
     cursor: pointer;
   }
 
   .logout {
+    cursor: pointer;
+  }
+
+  .report{
     cursor: pointer;
   }
 `

@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import MypageModal from "./MypageModal";
 import { useRef } from "react";
 
+import Swal from 'sweetalert2'
+
 const Header = () => {
   const navigate = useNavigate()
   const [modal, setModal] = useState(false);
@@ -12,11 +14,12 @@ const Header = () => {
   const token = localStorage.getItem("token");
 
   if (token === undefined || token === null) {
+    Swal.fire({ title: '로그인이 필요합니다.', timer: 2000 });
     navigate("/login")
-  }
+  } 
+
   return (
    <>
-   {/* isOpen && <Modal ref={modalEl}> */}
       <HeaderBox>
         <div className="logo">
           <Logo
@@ -41,9 +44,6 @@ const Header = () => {
         }
 
       </HeaderBox>
-    
- 
-    {/* </Modal> */}
    </>
   );
 };
@@ -61,7 +61,7 @@ const HeaderBox = styled.div`
   justify-content: space-between;
   //margin: 0px auto;
   position: relative;
-  z-index: 4;
+  z-index: 1;
   //position: sticky;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   

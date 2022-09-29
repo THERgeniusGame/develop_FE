@@ -14,10 +14,8 @@ const MyPage = () => {
     const navigate = useNavigate();
 
     const allRank = useSelector((state) => state.getMyPage.allRank)
-    console.log(allRank)
 
     const myRank = useSelector((state) => state.getMyPage.myRank)
-    console.log(myRank)
 
     //페이지네이션 - 랭킹페이지
     const [page, setPage] = useState(1); //현재 페이지
@@ -135,12 +133,7 @@ const RankList = styled.div`
   margin-bottom: 15px;
   margin-left: 200px;
   margin-right: 200px;
-  //gap: 120px;
   justify-content: center;
-  /* :hover {
-    background-color:rgba(169, 169, 169, 0.25);;
-    cursor: pointer;
-  } */
   .rankPt {
     width: 100px;
     justify-content: flex-end;
@@ -161,12 +154,9 @@ const GoBack = styled.button`
   background-color: #fff;
   border-color: #A9A9A9;
   margin: 10px;
-  //padding:10px;
   font-size: 15px;
   width: 132px;
   height: 45px;
-  //margin:20px auto;
-  //display:block;
   border: 1px solid rgba(169, 169, 169, 0.25);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 8px;
@@ -198,16 +188,11 @@ const MyRanking = styled.div`
 `
 const Rank = styled.div`
   font-size: 200%;
-  //justify-content: center;
   align-items: center;
   margin-left: 100px;
   height: 480px;
   .ranktxt {
     margin-bottom: 40px;
-  }
-  .rankmap {
-   //justify-content: space-evenly;
-    //justify-content: center;
   }
 `
 const PaginationContainer = styled.div`

@@ -11,7 +11,6 @@ const token = localStorage.getItem("token");
 export const __GetMainRoom = createAsyncThunk(
     "getmainroom/getMainroom",
     async (payload, api) => {
-        //console.log(payload)
         try {
             const response = await axios.get(
                 process.env.REACT_APP_ENDPOINT + `/room?page=${payload}`,
@@ -23,7 +22,6 @@ export const __GetMainRoom = createAsyncThunk(
                 )
             return api.fulfillWithValue(response.data.roomsInfo);
         } catch (e) {
-            console.log(e)
             return api.rejectWithValue(e);
         }
     }
@@ -47,5 +45,4 @@ const getMainRoomSlice = createSlice({
 
 export const { } = getMainRoomSlice.actions;
 export default getMainRoomSlice.reducer;
-
 
