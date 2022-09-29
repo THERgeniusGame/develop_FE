@@ -20,7 +20,6 @@ export const __login = createAsyncThunk(
             });
             return res.data
         } catch (err) {
-            console.log(err)
             return err
         }
     });

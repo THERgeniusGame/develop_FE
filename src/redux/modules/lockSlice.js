@@ -25,7 +25,6 @@ export const __unLock = createAsyncThunk(
             )
             return res.data
         } catch (err) {
-            console.log(err);
             return err
         };
 });
@@ -44,7 +43,6 @@ export const __lock = createAsyncThunk(
             )
            return res.data
         } catch (err) {
-            console.log(err);
         };
 });
 
