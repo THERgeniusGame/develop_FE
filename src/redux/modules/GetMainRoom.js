@@ -3,8 +3,8 @@ import axios from "axios";
 
 const initialState = {
     data: [],
-    isLoading: false, //
-    error: null, //
+    isLoading: false,
+    error: null,
 };
 
 const token = localStorage.getItem("token");
@@ -26,7 +26,6 @@ export const __GetMainRoom = createAsyncThunk(
         }
     }
 );
-//페이지네이션 get 요청
 
 const getMainRoomSlice = createSlice({
     name: "getmainroom",
@@ -46,3 +45,4 @@ const getMainRoomSlice = createSlice({
 
 export const { } = getMainRoomSlice.actions;
 export default getMainRoomSlice.reducer;
+

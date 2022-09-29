@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Main from "../shared/image/Main.png";
 import { useNavigate } from "react-router-dom";
 import MypageModal from "./MypageModal";
-import { useRef } from "react";
 
 import Swal from 'sweetalert2'
 
@@ -13,11 +12,11 @@ const Header = () => {
 
   const token = localStorage.getItem("token");
 
-  if (token === undefined || token === null) {
+  if ( token === null || token === undefined ) {
     Swal.fire({ title: '로그인이 필요합니다.', timer: 2000 });
     navigate("/login")
   } 
-
+  
   return (
    <>
       <HeaderBox>
@@ -59,10 +58,9 @@ const HeaderBox = styled.div`
   width: 100%;
   flex-direction: row;
   justify-content: space-between;
-  //margin: 0px auto;
   position: relative;
   z-index: 4;
-  //position: sticky;
+
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   
   div {

@@ -11,7 +11,8 @@ const MypageModal = ({ setModal }) => {
     Swal.fire({
       icon: "success",
       title: "로그아웃 되었습니다!",
-    })
+      timer: 3000
+    } ,);
     navigate('/login')
   }
 
