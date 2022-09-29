@@ -1,13 +1,14 @@
 import styled from "styled-components";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { __login } from "../../redux/modules/loginSlice";
+import { __login, __kakaoLogin } from "../../redux/modules/loginSlice";
 import Cards from "../../shared/image/Cards.png"
 import LoginScreen from "../../../src/shared/image/LoginScreen.png"
-// import kakaoLogin from "../../../src/shared/image/kakaoLogin.png"
+import kakaoLogin from "../../../src/shared/image/kakaoLogin.png"
 
-// const { Kakao } = window;
+const { Kakao } = window;
 
 const LogInForm = () => {
     const dispatch = useDispatch();
@@ -31,32 +32,31 @@ const LogInForm = () => {
         )
     };
 
-    const token = localStorage.getItem("token");
-
-    if (token !== undefined && token !== null) {
-        navigate("/")
+    function kakaoLogin() {
+        Kakao.Auth.login({
+            success: function (response) {
+                Kakao.API.request({
+                    url: '/v2/user/me',
+                    success: function (response) {
+                        const password = response.id;
+                        const email = response.kakao_account.email;
+                        const nickname = response.kakao_account.profile.nickname;
+                        dispatch(__kakaoLogin({ email, nickname, password }));
+                    },
+                    fail: function (error) {
+                    },
+                })
+            },
+            fail: function (error) {
+            },
+        })
     }
-
-    // function kakaoLogin() {
-    //     Kakao.Auth.login({
-    //         success: function (response) {
-    //             Kakao.API.request({
-    //                 url: '/v2/user/me',
-    //                 success: function (response) {
-    //                     console.log(response)
-    //                     window.location.reload("/")
-    //                 },
-    //                 fail: function (error) {
-    //                     console.log(error)
-    //                 },
-    //             })
-    //         },
-    //         fail: function (error) {
-    //             console.log(error)
-    //         },
-    //     })
-    // }
-
+    const token = localStorage.getItem("token");
+    useEffect(() => {
+        if (token !== null && token !== undefined ){
+            window.location.replace("/")
+        }
+    }, [])
     return (
         <>
             <Body>
@@ -126,6 +126,7 @@ const LogInForm = () => {
                                 <LoginBtn>
                                     입장하기
                                 </LoginBtn>
+                                {/* <KakaoLoginBtn onClick={() => { kakaoLogin(); }}/> */}
                             </div>
                         </Form>
                         <MoveBtn>
@@ -293,24 +294,28 @@ const PassWord = styled.div`
     position: relative;
     margin-top: 5px;
 `
-
 const FindPWBtn = styled.div`
-    color: black;
-    font-size: 20px;
+    color: #545454;
+    font-size: 16px;
     display:block;
     cursor:pointer;
     border-radius: 0;
     margin-left: -90px;
+    :hover{
+        color : red;
+    }
 `
 const ToSignUpBtn = styled.div`
     color: black;
-    font-size: 20px;
+    font-size: 16px;
     width:100px;
-    //margin:20px auto;
     display:block;
     cursor:pointer;
     border-radius: 0;
-    margin-right: -115px;
+    margin-right: -128px;
+    :hover{
+        color: red;
+    }
 `
 
 const LoginBtn = styled.button`
@@ -329,17 +334,17 @@ const LoginBtn = styled.button`
     font-size: larger;
 `
 
-// const KakaoLoginBtn = styled.button`
-//     width: 300px;
-//     height: 45px;
-//     font-size:15px;
-//     display:block;
-//     cursor:pointer;
-//     margin-top: 40px;
-//     background-image: url(${kakaoLogin});
-//     background-repeat: no-repeat;
-//     border: none;
-//     border-radius: 8px;
-// `
+const KakaoLoginBtn = styled.button`
+    width: 300px;
+    height: 45px;
+    font-size:15px;
+    display:block;
+    cursor:pointer;
+    margin-top: 40px;
+    background-image: url(${kakaoLogin});
+    background-repeat: no-repeat;
+    border: none;
+    border-radius: 8px;
+`
 
 
