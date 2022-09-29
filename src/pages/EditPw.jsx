@@ -4,10 +4,10 @@ import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import "../components/assets/fonts/font.css"
-import Sign from "../shared/image/Sign.png"
+import SignUp from "../shared/image/SignUp.png"
 import Swal from 'sweetalert2'
 
-import { __SendDup, __EditPw } from "../redux/modules/EditPw";
+import { __SendDup, __EditPw } from "../redux/modules/EditPwSlice";
 
 const EditPw = () => {
     const dispatch = useDispatch();
@@ -26,7 +26,6 @@ const EditPw = () => {
     const onclickGiveMail = () => {
         if (emailPass.test(checkEmail) === true) {
             dispatch(__SendDup(checkEmail))
-            Swal.fire({ title: '인증메일이 발송되었습니다.', timer: 1500 });
         } else {
             Swal.fire({ title: '이메일 형식을 확인해주세요.', timer: 1500 });
         }
@@ -186,7 +185,7 @@ export default EditPw;
 const BackGroundImg = styled.div`
     width: 100%;
     height: 100%;
-    background-image: url(${Sign});
+    background-image: url(${SignUp});
     background-position: left top;
     background-size: cover;
     align-items: center;
@@ -248,15 +247,16 @@ const Input = styled.div`
 `
 const Dupbtn = styled.button`
     display:block;
-    width:85px;
+    width:120px;
     height: 45px;
-    padding: 8px 15px;
+    //padding:15px;
     background:rgb(255, 255, 255);
     color: black;
     cursor: pointer;
     border: 1px solid rgba(169, 169, 169, 0.25);
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 8px;
+    text-align: center;
 `
 const Email = styled.div`
     flex-direction: column;
@@ -267,7 +267,7 @@ const Email = styled.div`
 `
 const EmailInput = styled.input`
     display:flex;
-    width:560px;
+    width:520px;
     height: 10px;
     padding:15px;
     color: black;
@@ -288,7 +288,7 @@ const EmailConfirm = styled.div`
 
 const EmailConfirmInput = styled.input`
     display:flex;
-    width:560px;
+    width:520px;
     height: 10px;
     padding:15px;
     color: black;

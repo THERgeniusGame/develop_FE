@@ -3,8 +3,8 @@ import axios from "axios";
 
 const initialState = {
     data: [],
-    isLoading: false, //
-    error: null, //
+    isLoading: false,
+    error: null,
 };
 
 const token = localStorage.getItem("token");
@@ -12,15 +12,15 @@ export const __GetMainRoom = createAsyncThunk(
     "getmainroom/getMainroom",
     async (payload, api) => {
         try {
-            const data = await axios.get(
-                process.env.REACT_APP_ENDPOINT + `/room`,
+            const response = await axios.get(
+                process.env.REACT_APP_ENDPOINT + `/room?page=${payload}`,
                 {
                     headers: {
                         authorization: `Bearer ${token}`,
                     },
                 }
-            )
-            return api.fulfillWithValue(data.data);
+                )
+            return api.fulfillWithValue(response.data.roomsInfo);
         } catch (e) {
             return api.rejectWithValue(e);
         }
@@ -45,3 +45,4 @@ const getMainRoomSlice = createSlice({
 
 export const { } = getMainRoomSlice.actions;
 export default getMainRoomSlice.reducer;
+
