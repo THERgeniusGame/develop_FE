@@ -16,7 +16,7 @@ const SignUpForm = () => {
     const checkNickname = useSelector((state) => state.signup.DupNickname)
     const emailCheckConfirm = useSelector((state) => state.signup.EmailDupConfirm) 
     const checkNum = useSelector((state) => state.signup.CheckNum)
-    console.log(checkNum)
+    const confirmEmail = useSelector((state) => state.signup.ConfirmEmail)
 
     const {
         register,

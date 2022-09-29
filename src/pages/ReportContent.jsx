@@ -8,7 +8,7 @@ import Pagination from "react-js-pagination";
 import Background from "../shared/image/RoomIMG/RoomBackground.png";
 import { useParams } from "react-router-dom";
 
-import { __getAnswer, __getReport, __postReport } from "../redux/modules/reportSlice";
+import { __getAnswer, __getReport, __deleteReport, __EditReportContent } from "../redux/modules/reportSlice";
 
 import Swal from 'sweetalert2'
 
@@ -18,35 +18,34 @@ const ReportContent = () => {
     const dispatch = useDispatch();
 
     const getReport = useSelector((state) => state.report.getReport)
-   console.log(getReport)
 
-    const getContent = useSelector((state) => state)
-    console.log(getContent)
-
-    const getAnswer = useSelector((state) => state) //reportId 찾기
-    //console.log(getAnswer)
-    
     const { reportId } = useParams();
-    //console.log(reportId)
 
     useEffect(() => {
         dispatch(__getReport(reportId), __getAnswer(reportId)) //reportId가 slice로 넘어감
-    },[])
-    
-    // useEffect(() => {
-    //     dispatch(__getAnswer(reportId)) //reportId가 slice로 넘어감
-    // },[])
+    }, [])
 
-  return (
-    <>
-      <Header />
-      <BackgroundImg>
-          <ReportContainer>
-            <div className="body">
-                {/* {allReport?.map((content) => ( */}
-                    {/* <ContentMap key={content.reportId}> */}
-                        <TitleInput 
-                            style={{ fontSize:20 }}
+    const [editRequest, setEditRequest] = useState(false);
+    const [editInput, setEditInput] = useState("");
+
+    const onclickHandle = () => {
+        if (editInput === "") {
+            Swal.fire({ title: '내용을 입력해주세요.', timer: 3000 });
+        } else {
+            setEditRequest(!editRequest);
+            dispatch(__EditReportContent({reportId, commentContent:editInput}))
+            setEditInput("");
+        }
+    }
+
+    return (
+        <>
+            <Header />
+            <BackgroundImg>
+                <ReportContainer>
+                    <div className="body">
+                        <TitleInput
+                            style={{ fontSize: 20 }}
                             name="title"
                         >
                             {getReport.reportTitle}
@@ -54,46 +53,34 @@ const ReportContent = () => {
                         <BugBox>
                             버그
                             <ContentTextArea
-                                style={{ fontSize:20 }} 
+                                style={{ fontSize: 20 }}
                                 name="content"
                             >
                                 {getReport.reportContent}
                             </ContentTextArea>
                         </BugBox>
-                    {/* </ContentMap> */}
-                {/* ))} */}
-                
-                
-                <Answer>
-                    <AnswerTxt>
-                        {}
-                    </AnswerTxt>
-                    <AnswerResponse>
-                        저도 잘 모르겠네요
-                    </AnswerResponse>
-                </Answer>
-                
-                {/* <ReportMap>
-                    {allReport?.map((rank) => (
-                    <ReportList key={rank.rank}>
-                      <div className="reportPt">{rank?.rank} 버그 신고합니다 </div>
-                      <div className="nicknamePt">{rank.nickname}님 지니어스님</div>
-                      <div className="datePt">{rank.winavg} 1월2일 </div>
-                    </ReportList>
-                    ))}
-                </ReportMap> */}
-                
-            </div>
-          </ReportContainer>
-        </BackgroundImg>
-    </>
-  );
+                        <Btns>
+                            {getReport.my ? <button style={{ display: "flex", margin: "auto" }} onClick={() => { dispatch(__deleteReport(reportId)); navigate(`/report`); }}>삭제하기</button> : ''}
+                            {getReport.my ? <button style={{ display: "flex", margin: "auto" }} onClick={() => { navigate(`/editReport/${reportId}`); }}>수정하기</button> : ''}
+                            <button style={{ display: "flex", margin: "auto" }} onClick={() => { navigate("/report") }}>돌아가기</button>
+                        </Btns>
+                        <Answer>
+                            <AnswerTxt>
+                                답변
+                            </AnswerTxt>
+                            <AnswerResponse>
+                                <div style={{ width: "885px", overflow: "hidden", padding: "5px" }}>{editRequest === true ? <input value={editInput} onChange={(e) => { setEditInput(e.target.value) }} style={{ height: "22px", padding: "3px", width: "850px" }}></input> : getReport.reportContent}</div>
+                                <div>{getReport.admin === true ? <Btn onClick={() => editRequest === true ? onclickHandle() : setEditRequest(!editRequest)} style={{ display: "flex", borderRadius: "9px", padding: "7px", marginTop: editRequest === true ? "3px" : '' }}>답변 수정하기</Btn> : ''}</div>
+                            </AnswerResponse>
+                        </Answer>
+                    </div>
+                </ReportContainer>
+            </BackgroundImg>
+        </>
+    );
 };
 
 export default ReportContent;
-const ContentMap = styled.div`
-    
-`
 
 const TitleInput = styled.div`
     display: flex;
@@ -123,17 +110,11 @@ const BackgroundImg = styled.div`
     z-index: 1;
     font-size: 200%;
 `
-const ReportBtn = styled.div`
-    
-`
 
 const BugBox = styled.div`
-    //background-color: #F3F3F3;
-    //box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 8px;
     border: 0;
     margin: 0 auto;
-    //padding-left: 20px;
     padding: 20px; 
     
     background: #F4F4F4;
@@ -155,10 +136,6 @@ const ContentTextArea = styled.div`
     border-radius: 8px;
     margin-top: 15px;
 `
-const Write = styled.button`
-    margin-left: 920px;
-    
-`
 const Answer = styled.div`
     display: flex;
     flex-direction: row;
@@ -171,7 +148,7 @@ const Answer = styled.div`
     align-items: center;
     margin-bottom: 10px;
     margin: 0 auto;
-    margin-top: 100px;
+    margin-top: 45px;
     margin-bottom: 80px;
     padding-left: 20px;
     .answerTxt {
@@ -184,49 +161,47 @@ const AnswerTxt = styled.div`
     color: rgba(0, 0, 0, 0.6)
 `
 const AnswerResponse = styled.div`
-    
+    display: flex;
+    justify-content: space-between;
 `
 const ReportContainer = styled.div`
     width: 100%;
     height: 100%;
-    //text-align: center;
-    //justify-content: center;
     .body {
         font-size: 70%;
-        /* justify-content: center;
-        align-items: center; */
     }
 `
-const ReportMap = styled.div`
+
+const Btns = styled.div`
     display: flex;
-    flex-direction: row;
-    width: 849px;
-    height: 46px;
-    background-color: #F3F3F3;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 8px;
-    margin: 0px auto;
-    border: 0;
-    font-size: 70%;
-    align-items: center;
-    margin-bottom: 10px;
-    margin-left: 200px;
-    margin-right: 200px;
-    //gap: 120px;
-    justify-content: center;
-`
-const ReportList = styled.div`
-    
-    .reportPt {
+    margin: 30px auto;
+    width: 50%;
 
-    }
-    .nickname {
-
-    }
-    .datePt {
-
+    button{
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 30px auto;   
+      font-style: normal;
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 22px;
+      width: 220px;
+      height: 45px;
+      background: #F4F4F4;
+      border: 1px solid rgba(169, 169, 169, 0.25);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+        :hover {
+        background-color: #BAB7B7;
+        cursor: pointer;
+              }
     }
 `
 
-// const Pagination = styled.div`
-  
+const Btn = styled.button`
+    :hover {
+    background-color: #BAB7B7;
+    cursor: pointer;
+            }
+`

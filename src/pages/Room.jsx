@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import socketio from 'socket.io-client';
 import { useParams, useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 import useInterval from "../components/useInterval.jsx";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -18,7 +17,7 @@ import BigCoin from "../shared/image/RoomIMG/BigCoin.png"
 
 import Swal from 'sweetalert2'
 
-let socket = socketio.connect(process.env.REACT_APP_URL); //백서버
+let socket = socketio.connect("https://sparta-emil.shop"); //백서버
 
 function Room() {
     const navigate = useNavigate();
@@ -364,7 +363,7 @@ function Room() {
 
         const owner = turnResult.owner
         const guest = turnResult.guest
-        
+
         if (turnResult.owner.cards?.length === 0 && turnResult.guest.cards?.length === 0 && turn === true) {
             if (End === false) {
                 socket.emit("gameEnd", {
@@ -389,8 +388,8 @@ function Room() {
                         win: guest.win,
                     },
                 });
-            setEnd(true);
-            } else {}
+                setEnd(true);
+            } else { }
         }
     });
 
@@ -407,21 +406,22 @@ function Room() {
 
     socket.on("error", error => {
         if (error.error === "Bad-Request") {
-            Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 1500 })
+            Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 3000 })
         }
-        else if (error.error === "Bad-Request") { Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 1500 }) }
-        else if (error.error === "Expired-Token") { Swal.fire({ title: '로그인 유효시간이 경과하였습니다 다시 로그인해주세요.', timer: 1500 }) }
-        else if (error.error === "Wrong-Url") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 1500 }) }
-        else if (error.error === "None-User") { Swal.fire({ title: '존재하지 않는 유저입니다.', timer: 1500 }) }
-        else if (error.error === "Not-Your-Turn") { Swal.fire({ title: '나의 턴이 아닙니다.', timer: 1500 }) }
-        else if (error.error === "Err-Update-Result") { Swal.fire({ title: '결과를 가져오지 못했습니다.', timer: 1500 }) }
-        else if (error.error === "Failed_ReportChat") { Swal.fire({ title: '채팅 신고에 실패했습니다.', timer: 1500 }) }
-        else if (error.error === "Exist-ReportChat") { Swal.fire({ title: '이미 신고된 채팅입니다.', timer: 1500 }) }
+        else if (error.error === "Bad-Request") { Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 3000 }) }
+        else if (error.error === "Expired-Token") { Swal.fire({ title: '로그인 유효시간이 경과하였습니다 다시 로그인해주세요.', timer: 3000 }); navigate("/login"); }
+        else if (error.error === "Wrong-Url") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); navigate("/"); }
+        else if (error.error === "None-User") { Swal.fire({ title: '존재하지 않는 유저입니다.', timer: 3000 }) }
+        else if (error.error === "Not-Your-Turn") { Swal.fire({ title: '나의 턴이 아닙니다.', timer: 3000 }) }
+        else if (error.error === "Err-Update-Result") { Swal.fire({ title: '결과를 가져오지 못했습니다.', timer: 3000 }) }
+        else if (error.error === "Failed_ReportChat") { Swal.fire({ title: '채팅 신고에 실패했습니다.', timer: 3000 }) }
+        else if (error.error === "Exist-ReportChat") { Swal.fire({ title: '이미 신고된 채팅입니다.', timer: 3000 }) }
+        else if (error.error === "None-Exist-Owner") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); navigate("/"); }
+        else if (error.error === "Failed-ChatLog") { Swal.fire({ title: '채팅을 불러오지 못했습니다.', timer: 3000 }) }
     });
 
     return (
         <>
-            <Header />
             {gamestart === false ?
                 //대기방
                 <div style={{ width: "1440px", height: "1024px", backgroundImage: 'url(' + RoomBackground + ')', backgroundPosition: "center", backgroundSize: "auto", fontSize: "18px", margin: "0px auto" }}>
@@ -497,17 +497,21 @@ function Room() {
                             <span style={{ fontWeight: "700", marginBottom: "4px", marginLeft: "20px", display: "flex", width: "990px" }}>채팅</span>
                             <ChatWrapCss>
                                 {list.map((item) =>
-                                    item.nickname !== mynickname && item.nickname !== undefined && item.text !== "님이 입장하셨습니다." ?
+                                    item.nickname !== mynickname && item.nickname !== undefined && item.text !== "님이 입장하셨습니다." && item.text !== "님이 퇴장하셨습니다." ?
                                         <Chat key={uuidv4()} onClick={() => { setReport(true); setReportChat(item.text); }}>
-                                            {item.nickname + " " + item.text}
+                                            {item.nickname + " : " + item.text}
                                         </Chat> :
                                         item.nickname === undefined ?
                                             <p key={uuidv4()}>
                                                 {item.text}
                                             </p> :
-                                            <p key={uuidv4()}>
-                                                {item.nickname + " " + item.text}
-                                            </p>
+                                            item.text !== "님이 입장하셨습니다." && item.text !== "님이 퇴장하셨습니다." ?
+                                                <p key={uuidv4()}>
+                                                    {item.nickname + " : " + item.text}
+                                                </p> :
+                                                <p key={uuidv4()}>
+                                                    {item.nickname + " " + item.text}
+                                                </p>
                                 )}
                                 <div ref={messagesEndRef} />
                             </ChatWrapCss>
@@ -1158,6 +1162,7 @@ let ChatBody = styled.div`
 `
 
 let ChatWrapCss = styled.div`
+    font-size: 18px;
     overflow-y: scroll;
     width: 960px;
     height: 400px;
@@ -1168,11 +1173,13 @@ let ChatWrapCss = styled.div`
     border-radius: 8px;
     padding: 10px;
     p {
+        font-size: 18px;
         height:5px;
     }
 `
 
 let Chat = styled.p`
+    font-size: 18px;
     :hover {
         color:red;
         cursor: pointer;

@@ -19,11 +19,9 @@ export const __signup = createAsyncThunk(
     async (payload, thunkAPI) => {
         try {
             const response = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/signup", payload)
-            console.log(response);
             return Swal.fire("회원가입이 완료되었습니다!", "success");
            
         } catch (err) {
-            console.log(err);
             Swal.fire({
                 icon: "error",
                 title: "이미 가입한 이메일입니다.",
@@ -36,15 +34,13 @@ export const __emailCheckConfirm = createAsyncThunk(
     "EMAIL_CHECK_CONFIRM",
     async (payload, thunkAPI) => {
         try {
-            console.log(payload)
             const res = await axios.post(process.env.REACT_APP_ENDPOINT + "/mail", payload)
-            console.log(res)
-            console.log(res.data) //인증메일 번호
             Swal.fire("인증번호 발송에 성공했습니다!", "", "success")
            return res.data
         } catch (err) {
             Swal.fire("중복된 이메일입니다!", "", "error")
             return false
+
         }
     }
 )
@@ -57,7 +53,6 @@ export const __checkNickname = createAsyncThunk(
             const response = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/checknickname", payload)
             return true;
         } catch (err) {
-            console.log(err)
             return false
         }
     }
@@ -66,7 +61,7 @@ export const __checkNickname = createAsyncThunk(
 
 //slice
 export const signupSlice = createSlice({
-    name: "signup", //store에 등록하는 이름
+    name: "signup",
     initialState,
     reducers: {},
 
@@ -84,23 +79,20 @@ export const signupSlice = createSlice({
                 state.DupNickname = action.payload;
             })
             .addCase(__checkNickname.rejected, (state, action) => {
-                // console.log(action)
                 state.DupNickname = action.payload;
             })
             
             // 이메일 중복검사 & 인증메일 발송 통합
             .addCase(__emailCheckConfirm.fulfilled, (state, action) => {
-                console.log(action)
                 state.CheckNum = action.payload;
                 state.EmailDupConfirm = true;
             })
             .addCase(__emailCheckConfirm.rejected, (state, action) => {
-                console.log(action)
                 state.EmailDupConfirm = false;
             })
             .addCase(__emailCheckConfirm.pending, (state, action) => {
-                console.log(action)
                 state.EmailDupConfirm = "Loading";
+
             })
     },
 });
