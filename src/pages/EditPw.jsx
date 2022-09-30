@@ -13,7 +13,6 @@ const EditPw = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const data = useSelector((state) => state.editpw.Dup);
-
     const [checkEmail, setCheckEmail] = useState("");
     const [checkEmailDup, setCheckEmailDup] = useState();
     const [password, setPassword] = useState();

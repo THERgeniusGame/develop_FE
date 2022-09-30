@@ -43,8 +43,9 @@ function Main() {
   const [lock, setLock] = useState("ALL");
 
   const clickLock = useSelector((state) => state?.lock?.lock?.result)
-  const clickUnLock = useSelector((state) => state?.lock?.unLock)
+  const clickUnLock = useSelector((state) => state?.lock?.unLock?.result)
 
+  const token = localStorage.getItem("token")
 
   //페이지네이션
   const handlePageChange = (page) => { setPage(page) };
@@ -125,6 +126,7 @@ function Main() {
       [name]: value
     });
   };
+
   return (
     <>
       <Header />
@@ -189,7 +191,7 @@ function Main() {
                   }
                 </ChooseLock>
               </div>
-              {/* <Roomsearch
+              <Roomsearch
                 style={{ marginTop: "140px" }}
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -214,7 +216,7 @@ function Main() {
                     <FaSearch style={{ paddingRight: "20px", fontSize: "18", padding: "10px" }} />
                   </SearchBtn>
                 </div>
-              </Roomsearch> */}
+              </Roomsearch>
             </div>
             <RoomList style={{ display: "flex", flexDirection: "row", paddingTop: "15px", padding: "10px", marginBottom: "5px" }}>
               <span style={{ marginRight: "145px" }}>번호</span>
@@ -250,7 +252,7 @@ function Main() {
               })) : null}
 
               {/* 비공개방 */}
-              {lock === "Lock" && lock !== "unLock" && lock !== "ALL" && clickLock.length !== 0 ? (clickLock?.map((room) => {
+              {lock === "Lock" && lock !== "unLock" && lock !== "ALL" && clickLock?.length !== 0 ? (clickLock?.map((room) => {
                 return (
                   <RoomsList
                     room={room}
@@ -262,7 +264,7 @@ function Main() {
               })) : null}
 
               {/* 공개방 */}
-              {lock === "unLock" && lock !== "Lock" && lock !== "ALL" && clickUnLock.message !== "No-room" ? (clickUnLock?.map((room) => {
+              {lock === "unLock" && lock !== "Lock" && lock !== "ALL" && clickUnLock?.message !== "No-room" ? (clickUnLock?.map((room) => {
                 return (
                   <RoomsList
                     room={room}
