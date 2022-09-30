@@ -53,7 +53,6 @@ function Main() {
   const [page, setPage] = useState({
     page: 1,
   })
-  // console.log(page.page)
   
   const [unLockPage, setUnLockPage] = useState(1);
   const [lockPage, setLockPage] = useState(1);
@@ -99,7 +98,6 @@ function Main() {
   }
 
   useEffect(() => {
-    console.log(page)
     dispatch(__GetMainRoom(page.page));
     dispatch(__search(page.page));
     dispatch(__unLock(unLockPage));

@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import Pagination from "react-js-pagination";
 import ProfileBackGround from "../shared/image/profilebackground.jpg"
 
-import Swal from 'sweetalert2'
 import { __getMyPage, __getMyRank } from "../redux/modules/myPageSlice";
 
 const MyPage = () => {
@@ -14,7 +13,6 @@ const MyPage = () => {
     const navigate = useNavigate();
 
     const allRank = useSelector((state) => state.getMyPage.allRank)
-    console.log(allRank)
     const myRank = useSelector((state) => state.getMyPage.myRank)
 
     //페이지네이션 - 랭킹페이지

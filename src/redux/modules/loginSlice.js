@@ -39,10 +39,6 @@ export const __kakaoLogin = createAsyncThunk(
             });
             return res.data
         } catch (err) {
-            // Swal.fire({
-            //     icon: "error",
-            //     title: "이메일, 비밀번호가 일치하지 않습니다",
-            // });
             return err
         }
     });
