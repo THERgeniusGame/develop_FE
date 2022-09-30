@@ -20,7 +20,6 @@ export const __signup = createAsyncThunk(
         try {
             const response = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/signup", payload)
             return Swal.fire("회원가입이 완료되었습니다!", "success");
-           
         } catch (err) {
             Swal.fire({
                 icon: "error",

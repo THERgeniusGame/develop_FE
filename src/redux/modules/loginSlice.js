@@ -20,6 +20,9 @@ export const __login = createAsyncThunk(
             });
             return res.data
         } catch (err) {
+            if (err.response.data === "Check-EmailorPw"){
+                Swal.fire({ title: '존재하지 않는 회원입니다.', timer: 1500 });
+            }
             return err
         }
     });
