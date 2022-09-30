@@ -57,6 +57,7 @@ const LogInForm = () => {
             window.location.replace("/")
         }
     }, [])
+    
     return (
         <>
             <Body>
@@ -126,7 +127,7 @@ const LogInForm = () => {
                                 <LoginBtn>
                                     입장하기
                                 </LoginBtn>
-                                {/* <KakaoLoginBtn onClick={() => { kakaoLogin(); }}/> */}
+                                <KakaoLoginBtn onClick={() => { kakaoLogin(); }}/>
                             </div>
                         </Form>
                         <MoveBtn>
