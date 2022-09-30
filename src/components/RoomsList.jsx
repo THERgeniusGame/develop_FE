@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import LockImg from "../shared/image/MainIMG/LockImg.png";
 import UnLockImg from "../shared/image/MainIMG/UnLockImg.png";
 
-const RoomsList = ({room, setRoomId, setRoompw, setPwModal}) => {
+const RoomsList = ({room, setRoomId, setRoomPw, setPwModal}) => {
 
     const navigate = useNavigate();
     
@@ -17,7 +17,7 @@ const RoomsList = ({room, setRoomId, setRoompw, setPwModal}) => {
             Swal.fire({ title: '인원이 꽉 찼습니다.', timer: 1500 })
             } else {
             if (room.roomLock === true) {
-                setRoompw(room.roomPw);
+                setRoomPw(room.roomPw);
                 setPwModal(true);
             } else {
                 navigate(`room/${room.roomId}`)
