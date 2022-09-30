@@ -236,7 +236,7 @@ function Main() {
                   ></RoomsList>
                 )
 
-              })) : "입장 가능한 방이 없습니다."}
+              })) : null}
 
               {/* 전체방 + 검색 O */}
               {lock === "ALL" && lock !== "Lock" && lock !== "unLock" && searchStatus === true ? (searchRoom?.map((room) => {
