@@ -19,6 +19,7 @@ import Swal from 'sweetalert2'
 
 let socket = socketio.connect("https://sparta-emil.shop"); //백서버
 
+
 function Room() {
     const navigate = useNavigate();
 
@@ -89,6 +90,17 @@ function Room() {
     const [ownerWin, setOwnerWin] = useState(0);
     //타이머
     const [timer, setTimer] = useState(0);
+    
+    window.addEventListener('beforeunload', (event) => {
+          if(mynickname) {
+              // 표준에 따라 기본 동작 방지
+              event.preventDefault();
+              // Chrome에서는 returnValue 설정이 필요함
+              event.returnValue = 'ㅇㅇ';
+              
+          }
+    });
+
 
     if (timer === 0 && gamestart === true && turn === true) {
         socket.emit("turnEnd", {
@@ -450,7 +462,7 @@ function Room() {
                                                         setUnableBTN(true);
                                                     }
                                                 }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>게임시작</button>
-                                                <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { socket.emit("forceDisconnect"); navigate("/"); }}>나가기</button>
+                                                <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { socket.emit("forceDisconnect"); window.location.replace("/"); }}>나가기</button>
                                             </Able> :
                                             <Unable style={{ float: "right" }}>
                                                 <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>추방하기</button>
@@ -477,7 +489,7 @@ function Room() {
                                         {unableBTN === false ?
                                             <Able style={{ float: "right" }}>
                                                 <button onClick={() => { if (unableBTN === false) { socket.emit("ready", { ready: !ready }); } else { Swal.fire({ title: "이미 게임이 시작되었습니다!", timer: 1500 }); } }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
-                                                <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { setGuestNickname(""); socket.emit("forceDisconnect"); navigate("/"); }}>나가기</button>
+                                                <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { setGuestNickname(""); socket.emit("forceDisconnect"); window.location.replace("/"); }}>나가기</button>
                                             </Able> :
                                             <Unable style={{ float: "right" }}>
                                                 <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
@@ -611,7 +623,7 @@ function Room() {
                                             },
                                         });
                                         socket.emit("forceDisconnect");
-                                        navigate("/");
+                                        window.location.replace("/");
                                     }}>나가기</button>
                                 </div>
                             </GameTop>
@@ -817,7 +829,7 @@ function Room() {
                                             },
                                         });
                                         socket.emit("forceDisconnect");
-                                        navigate("/");
+                                        window.location.replace("/");
                                     }}>나가기</button>
                                 </div>
                             </GameTop>

@@ -126,7 +126,6 @@ function Main() {
       [name]: value
     });
   };
-console.log(token)
   return (
     <>
       <Header />
