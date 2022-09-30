@@ -109,7 +109,6 @@ const EditPw = () => {
                                     </div>
                                     <div className="emailConfirm_container">
                                         <EmailConfirmInput
-                                            type="number"
                                             value={checkEmailDup}
                                             onChange={(e) => { setCheckEmailDup(e.target.value); }}
                                         />
