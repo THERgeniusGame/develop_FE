@@ -90,15 +90,15 @@ function Room() {
     //타이머
     const [timer, setTimer] = useState(0);
 
-    window.addEventListener('beforeunload', (event) => {
-        if (mynickname) {
-            // 표준에 따라 기본 동작 방지
-            event.preventDefault();
-            // Chrome에서는 returnValue 설정이 필요함
-            event.returnValue = 'ㅇㅇ';
+    // window.addEventListener('beforeunload', (event) => {
+    //     if (mynickname) {
+    //         // 표준에 따라 기본 동작 방지
+    //         event.preventDefault();
+    //         // Chrome에서는 returnValue 설정이 필요함
+    //         event.returnValue = '';
 
-        }
-    });
+    //     }
+    // });
 
 
     if (timer === 0 && gamestart === true && turn === true) {
@@ -934,7 +934,7 @@ function Room() {
                             {/* guest */}
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 10px auto", display: "flex" }}>
                                 {guestBattingCards?.map((guestbattingcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {guestbattingcard}
                                     </Card>
                                 )}
