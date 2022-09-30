@@ -480,7 +480,7 @@ function Room() {
                                     </UserList>
                                     <UserList>{users.filter((user) => user.nickname !== ownerNickname)[0]?.nickname !== undefined ? <>
                                         <div>{guestNickname}</div>
-                                        <div style={{ marginRight: "10px" }}>{ready ? "준비완료" : "준비중"}</div></> : ''}
+                                        <div style={{ marginRight: "10px" }}>{ready ? "준비완료" : guestNickname !== null && guestNickname !== undefined && guestNickname !== "" ? "준비중" : ''}</div></> : ''}
                                     </UserList>
                                 </div> :
                                 //게스트 구역
