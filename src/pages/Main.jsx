@@ -134,7 +134,6 @@ function Main() {
         {Loading === true ?
           <div style={{ width: "1040px", margin: "0px auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", width: "1040px", margin: "0px auto" }}>
-
               <div style={{ dispaly: "flex", flexWrap: "wrap" }}>
                 <div>
                   <HowToBTN onClick={() => setHowTo(true)}>플레이 방법</HowToBTN>
@@ -227,7 +226,7 @@ function Main() {
             </RoomList>
             <MainBody>
               {/* 전체방 + 검색 X */}
-              {lock === "ALL" && lock !== "Lock" && lock !== "unLock" && searchStatus === false ? (rooms?.map((room) => {
+              {lock === "ALL" && lock !== "Lock" && lock !== "unLock" && searchStatus === false && rooms !== undefined ? (rooms?.map((room) => {
                 return (
                   <RoomsList
                     room={room}
@@ -237,7 +236,7 @@ function Main() {
                   ></RoomsList>
                 )
 
-              })) : null}
+              })) : "입장 가능한 방이 없습니다."}
 
               {/* 전체방 + 검색 O */}
               {lock === "ALL" && lock !== "Lock" && lock !== "unLock" && searchStatus === true ? (searchRoom?.map((room) => {
