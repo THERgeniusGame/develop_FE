@@ -14,7 +14,7 @@ const MyPage = () => {
     const navigate = useNavigate();
 
     const allRank = useSelector((state) => state.getMyPage.allRank)
-
+    console.log(allRank)
     const myRank = useSelector((state) => state.getMyPage.myRank)
 
     //페이지네이션 - 랭킹페이지
@@ -67,17 +67,24 @@ const MyPage = () => {
             <div className="body">
                 <Rank>
                   <div className="ranktxt">
-                     랭킹 
+                     🏆 랭킹 🏆
                   </div>
-                  <div className="rankmap">
-                    {allRank?.map((rank) => (
-                    <RankList key={rank.rank}>
-                      <div className="rankPt">{rank?.rank}</div>
-                      <div className="nicknamePt">{rank.nickname}님</div>
-                      <div className="winavgPt">{rank.winavg}</div>
-                    </RankList>
-                    ))}
-                  </div>
+                  <Body>
+                    <div className="rankmap">
+                    <Bar>
+                      <div className="rankPt1">순위</div>
+                      <div className="nicknamePt1">닉네임</div>
+                      <div className="winPt1">전적</div>
+                    </Bar>
+                      {allRank?.map((rank) => (
+                      <RankList key={rank.rank}>
+                        <div className="rankPt2">{rank?.rank}</div>
+                        <div className="nicknamePt2">{rank.nickname}님</div>
+                        <div className="winPt2">{rank.total}전 {rank.win}승 {rank.lose}패</div>
+                      </RankList>
+                      ))}
+                    </div>
+                  </Body>
                 </Rank>
                 <PaginationContainer>
                     <Pagination
@@ -134,26 +141,28 @@ const RankList = styled.div`
   margin-left: 200px;
   margin-right: 200px;
   justify-content: center;
-  .rankPt {
+  .rankPt2 {
     width: 100px;
     justify-content: flex-end;
   }
-  .nicknamePt {
+  .nicknamePt2 {
     width: 440px;
   }
-  .winavgPt {
-    width: 100px;
+  .winPt2 {
+    width: 200px;
   }
 `
 const UserName = styled.div`
   font-size: 300%;
   margin-top: 50px;
   margin-bottom: 45px;
+  margin-left: 100px;
 `
 const GoBack = styled.button`
   background-color: #fff;
   border-color: #A9A9A9;
   margin: 10px;
+  margin-right: 100px;
   font-size: 15px;
   width: 132px;
   height: 45px;
@@ -166,6 +175,7 @@ const Score = styled.div`
     display: flex;
     font-size: 180%;
     margin-bottom: 40px;
+    margin-left:100px;
    .myscore {
     color: #707070;
      margin-right: 20px;
@@ -178,6 +188,7 @@ const MyRanking = styled.div`
   margin-bottom: 100px;
   display: flex;
   font-size: 180%;
+  margin-left: 100px;
   .myscore {
      color: #707070;
      margin-right: 20px;
@@ -193,6 +204,45 @@ const Rank = styled.div`
   height: 480px;
   .ranktxt {
     margin-bottom: 40px;
+  }
+  .rankmap{
+    justify-content: center;
+    flex-direction: row;
+  }
+`
+const Body = styled.div`
+  justify-content: center;
+  text-align: center;
+  
+`
+const Bar = styled.div`
+ 
+  border-radius: 8px 8px 0px 0px;
+  display: flex;
+  flex-direction: row;
+  width: 1040px;
+  height: 46px;
+  background-color: rgba(169, 169, 169, 0.25);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  
+  margin: 5px 0;
+  border: 0;
+  font-size: 70%;
+  align-items: center;
+  margin-bottom: 15px;
+  margin-left: 200px;
+  margin-right: 200px;
+  justify-content: center;
+  //justify-content: space-around;
+  .rankPt1 {
+    width: 100px;
+    justify-content: flex-end;
+  }
+  .nicknamePt1 {
+    width: 440px;
+  }
+  .winPt1 {
+    width: 200px;
   }
 `
 const PaginationContainer = styled.div`

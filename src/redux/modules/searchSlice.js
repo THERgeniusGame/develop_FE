@@ -1,5 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { useSelector } from "react-redux";
+import Main from "../../pages/Main";
 
 const initialState = {
     error: null,
@@ -8,13 +10,16 @@ const initialState = {
 
 const token = localStorage.getItem("token");
 
+
 export const __search = createAsyncThunk(
     "SEARCH", 
     async (payload, thunkAPI) => {
-        const keyword = payload.keyword;
+        const keyword = payload.input.keyword;
+        const page = payload.page.page;
+        console.log(payload)
         try {
             const res = await axios.get(
-                process.env.REACT_APP_ENDPOINT + `/room/search?keyword=${keyword}&page=${1}`,
+                process.env.REACT_APP_ENDPOINT + `/room/search?keyword=${keyword}&page=${page}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
