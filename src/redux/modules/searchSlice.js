@@ -8,13 +8,15 @@ const initialState = {
 
 const token = localStorage.getItem("token");
 
+
 export const __search = createAsyncThunk(
     "SEARCH", 
     async (payload, thunkAPI) => {
-        const keyword = payload.keyword;
+        const keyword = payload.input.keyword;
+        const page = payload.page.page;
         try {
             const res = await axios.get(
-                process.env.REACT_APP_ENDPOINT + `/room/search?keyword=${keyword}&page=${1}`,
+                process.env.REACT_APP_ENDPOINT + `/room/search?keyword=${keyword}&page=${page}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

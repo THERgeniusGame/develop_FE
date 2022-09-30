@@ -89,15 +89,15 @@ function Room() {
     const [ownerWin, setOwnerWin] = useState(0);
     //타이머
     const [timer, setTimer] = useState(0);
-    
+
     window.addEventListener('beforeunload', (event) => {
-          if(mynickname) {
-              // 표준에 따라 기본 동작 방지
-              event.preventDefault();
-              // Chrome에서는 returnValue 설정이 필요함
-              event.returnValue = 'ㅇㅇ';
-              
-          }
+        if (mynickname) {
+            // 표준에 따라 기본 동작 방지
+            event.preventDefault();
+            // Chrome에서는 returnValue 설정이 필요함
+            event.returnValue = 'ㅇㅇ';
+
+        }
     });
 
 
@@ -375,33 +375,33 @@ function Room() {
         const owner = turnResult.owner
         const guest = turnResult.guest
 
-        if (turnResult.owner.cards?.length === 0 && turnResult.guest.cards?.length === 0 && turn === true) {
-            if (End === false) {
-                socket.emit("gameEnd", {
-                    owner: {
-                        userId: owner.userId,
-                        nickname: owner.nickname,
-                        socketId: ownersoketId,
-                        cards: owner.cards,
-                        battingCards: owner.battingCards,
-                        coin: owner.coin,
-                        result: owner.result,
-                        win: owner.win,
-                    },
-                    guest: {
-                        userId: guest.userId,
-                        nickname: guest.nickname,
-                        socketId: guestsoketId,
-                        cards: guest.cards,
-                        battingCards: guest.battingCards,
-                        coin: guest.coin,
-                        result: guest.result,
-                        win: guest.win,
-                    },
-                });
-                setEnd(true);
-            } else { }
-        }
+        // if (turnResult.owner.cards?.length === 0 && turnResult.guest.cards?.length === 0 && turn === true) {
+        //     if (End === false) {
+        //         socket.emit("gameEnd", {
+        //             owner: {
+        //                 userId: owner.userId,
+        //                 nickname: owner.nickname,
+        //                 socketId: ownersoketId,
+        //                 cards: owner.cards,
+        //                 battingCards: owner.battingCards,
+        //                 coin: owner.coin,
+        //                 result: owner.result,
+        //                 win: owner.win,
+        //             },
+        //             guest: {
+        //                 userId: guest.userId,
+        //                 nickname: guest.nickname,
+        //                 socketId: guestsoketId,
+        //                 cards: guest.cards,
+        //                 battingCards: guest.battingCards,
+        //                 coin: guest.coin,
+        //                 result: guest.result,
+        //                 win: guest.win,
+        //             },
+        //         });
+        //         setEnd(true);
+        //     } else { }
+        // }
     });
 
     socket.on("gameEnd", gameEnd => {
@@ -758,8 +758,8 @@ function Room() {
                         <div style={{ width: "1040px", height: "1024px", display: "flex", margin: "auto", flexDirection: "column" }}>
                             {/* //게스트뷰 */}
                             <GameTop style={{ display: "flex", fontSize: "18px", justifyContent: "space-between", marginTop: "15px" }}>
-                                <div style={{ backgroundImage: 'url(' + Crown + ')', backgroundPosition: "center", backgroundSize: "cover", width: "25px", marginRight: "3px", marginBottom: "6px" }}></div>
                                 <div style={{ display: "flex", margin: "auto auto auto 0px" }}>
+                                    <div style={{ backgroundImage: 'url(' + Crown + ')', backgroundPosition: "center", backgroundSize: "cover", width: "25px", marginRight: "3px", marginBottom: "6px" }}></div>
                                     <div style={{ overflow: "hidden", marginTop: '3px', marginRight: "10px" }}>{ownerNickname}님</div>
                                     <div style={{ backgroundImage: 'url(' + Coin + ')', width: "30px", height: "30px", display: "flex", backgroundSize: "cover", marginRight: "10px" }}></div>
                                     <div style={{ marginTop: '3px' }}>
