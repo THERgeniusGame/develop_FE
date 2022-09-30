@@ -418,6 +418,11 @@ function Room() {
         else if (error.error === "Exist-ReportChat") { Swal.fire({ title: '이미 신고된 채팅입니다.', timer: 3000 }) }
         else if (error.error === "None-Exist-Owner") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); navigate("/"); }
         else if (error.error === "Failed-ChatLog") { Swal.fire({ title: '채팅을 불러오지 못했습니다.', timer: 3000 }) }
+        else if (error.error === "None-Room") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); navigate("/"); }
+    });
+
+    socket.on("out", out => {
+        setGuestNickname("");
     });
 
     return (
@@ -472,7 +477,7 @@ function Room() {
                                         {unableBTN === false ?
                                             <Able style={{ float: "right" }}>
                                                 <button onClick={() => { if (unableBTN === false) { socket.emit("ready", { ready: !ready }); } else { Swal.fire({ title: "이미 게임이 시작되었습니다!", timer: 1500 }); } }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
-                                                <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { socket.emit("forceDisconnect"); navigate("/"); }}>나가기</button>
+                                                <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { setGuestNickname(""); socket.emit("forceDisconnect"); navigate("/"); }}>나가기</button>
                                             </Able> :
                                             <Unable style={{ float: "right" }}>
                                                 <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
