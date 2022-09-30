@@ -24,8 +24,8 @@ const RoomsList = ({room, setRoomId, setRoomPw, setPwModal}) => {
             }
             }
             }}>
-            <div style={{ width: "173px", display: "flex" }}>{room.roomId}</div>
-            <div style={{ width: "380px", display: "flex", overflow: "hidden" }}>{room.roomTitle}</div>
+            <div style={{ width: "175px", display: "flex" }}>{room.roomId}</div>
+            <div style={{ width: "360px", display: "flex", overflow: "hidden" }}>{room.roomTitle}</div>
             <div style={{ width: "245px", display: "flex", overflow: "hidden" }}>{room.nickname}</div>
             <div style={{ width: "190px", display: "flex" }}>{room.currentUsers}</div>
             <div style={{ display: "flex", width: "20px", height: "20px", backgroundRepeat: "no-repeat", backgroundImage: room.roomLock === true ? 'url(' + LockImg + ')' : 'url(' + UnLockImg + ')' }}></div>

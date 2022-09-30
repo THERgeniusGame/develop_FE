@@ -45,27 +45,20 @@ function Main() {
   const clickLock = useSelector((state) => state?.lock?.lock?.result)
   const clickUnLock = useSelector((state) => state?.lock?.unLock?.result)
 
-  const token = localStorage.getItem("token")
-
   //페이지네이션
-  const handlePageChange = (page) => { setPage(page) };
+  const handlePageChange = (page) => { setPage({page:page}) };
   const unLockPageChange = (page) => { setUnLockPage(page) };
   const lockPageChange = (page) => { setLockPage(page) };
-  const [limit] = useState(9);
 
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState({
+    page: 1,
+  })
+  
   const [unLockPage, setUnLockPage] = useState(1);
   const [lockPage, setLockPage] = useState(1);
 
-  const indexOfLastPost = page * limit;
-  const indexOfFirstPost = indexOfLastPost - limit;
-  const currentCountings = resp?.slice(
-    indexOfFirstPost,
-    indexOfLastPost
-  );
 
   // 방 입장 
-  const [roomsearch, setRoomsearch] = useState('');
   const [roompw, setRoompw] = useState('');
   const [checkpw, setCheckpw] = useState('');
   const [roomId, setRoomId] = useState(0);
@@ -105,7 +98,8 @@ function Main() {
   }
 
   useEffect(() => {
-    dispatch(__GetMainRoom(page));
+    dispatch(__GetMainRoom(page.page));
+    dispatch(__search(page.page));
     dispatch(__unLock(unLockPage));
     dispatch(__lock(lockPage));
     setResp(rooms);
@@ -189,7 +183,7 @@ function Main() {
                   }
                 </ChooseLock>
               </div>
-              <Roomsearch
+              {/* <Roomsearch
                 style={{ marginTop: "140px" }}
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -209,12 +203,12 @@ function Main() {
                   </input>
                   <SearchBtn
                     style={{ marginLeft: "3px" }}
-                    onClick={() => { dispatch(__search(input)).then(setSearchStatus(true)) }}
+                    onClick={() => { dispatch(__search({input,page})).then(setSearchStatus(true)) }}
                   >
                     <FaSearch style={{ paddingRight: "20px", fontSize: "18", padding: "10px" }} />
                   </SearchBtn>
                 </div>
-              </Roomsearch>
+              </Roomsearch> */}
             </div>
             <RoomList style={{ display: "flex", flexDirection: "row", paddingTop: "15px", padding: "10px", marginBottom: "5px" }}>
               <span style={{ marginRight: "145px" }}>번호</span>
@@ -277,7 +271,7 @@ function Main() {
             {lock === "ALL" && lock !== "Lock" && lock !== "unLock" ? //전체
               <PaginationContainer>
                 <Pagination
-                  activePage={page}
+                  activePage={page.page}
                   itemsCountPerPage={9}
                   totalItemsCount={450}
                   pageRangeDisplayed={5}
