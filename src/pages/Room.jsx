@@ -21,7 +21,7 @@ let socket = socketio.connect("https://sparta-emil.shop"); //백서버
 
 
 function Room() {
-    const navigate = useNavigate();
+
     const params = useParams();
     const roomId = +params.roomId;
     const room = roomId;
@@ -89,16 +89,16 @@ function Room() {
     const [ownerWin, setOwnerWin] = useState(0);
     //타이머
     const [timer, setTimer] = useState(0);
-    
-    // window.addEventListener('beforeunload', (event) => {
-    //       if(mynickname) {
-    //           // 표준에 따라 기본 동작 방지
-    //           event.preventDefault();
-    //           // Chrome에서는 returnValue 설정이 필요함
-    //           event.returnValue = 'ㅇㅇ';
-              
-    //       }
-    // });
+
+    window.addEventListener('beforeunload', (event) => {
+        if (mynickname) {
+            // 표준에 따라 기본 동작 방지
+            event.preventDefault();
+            // Chrome에서는 returnValue 설정이 필요함
+            event.returnValue = 'ㅇㅇ';
+
+        }
+    });
 
 
     if (timer === 0 && gamestart === true && turn === true) {
@@ -218,7 +218,7 @@ function Room() {
             Swal.fire({ title: '방장에 의해 추방되었습니다.', timer: 1500 });
             socket.emit("forceDisconnect");
             setReady(false);
-            navigate("/")
+            window.location.replace("/")
         });
 
         socket.on("turnEnd_room", turnEnd_room => {
@@ -375,33 +375,33 @@ function Room() {
         const owner = turnResult.owner
         const guest = turnResult.guest
 
-        if (turnResult.owner.cards?.length === 0 && turnResult.guest.cards?.length === 0 && turn === true) {
-            if (End === false) {
-                socket.emit("gameEnd", {
-                    owner: {
-                        userId: owner.userId,
-                        nickname: owner.nickname,
-                        socketId: ownersoketId,
-                        cards: owner.cards,
-                        battingCards: owner.battingCards,
-                        coin: owner.coin,
-                        result: owner.result,
-                        win: owner.win,
-                    },
-                    guest: {
-                        userId: guest.userId,
-                        nickname: guest.nickname,
-                        socketId: guestsoketId,
-                        cards: guest.cards,
-                        battingCards: guest.battingCards,
-                        coin: guest.coin,
-                        result: guest.result,
-                        win: guest.win,
-                    },
-                });
-                setEnd(true);
-            } else { }
-        }
+        // if (turnResult.owner.cards?.length === 0 && turnResult.guest.cards?.length === 0 && turn === true) {
+        //     if (End === false) {
+        //         socket.emit("gameEnd", {
+        //             owner: {
+        //                 userId: owner.userId,
+        //                 nickname: owner.nickname,
+        //                 socketId: ownersoketId,
+        //                 cards: owner.cards,
+        //                 battingCards: owner.battingCards,
+        //                 coin: owner.coin,
+        //                 result: owner.result,
+        //                 win: owner.win,
+        //             },
+        //             guest: {
+        //                 userId: guest.userId,
+        //                 nickname: guest.nickname,
+        //                 socketId: guestsoketId,
+        //                 cards: guest.cards,
+        //                 battingCards: guest.battingCards,
+        //                 coin: guest.coin,
+        //                 result: guest.result,
+        //                 win: guest.win,
+        //             },
+        //         });
+        //         setEnd(true);
+        //     } else { }
+        // }
     });
 
     socket.on("gameEnd", gameEnd => {
@@ -420,16 +420,16 @@ function Room() {
             Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 3000 })
         }
         else if (error.error === "Bad-Request") { Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 3000 }) }
-        else if (error.error === "Expired-Token") { Swal.fire({ title: '로그인 유효시간이 경과하였습니다 다시 로그인해주세요.', timer: 3000 }); navigate("/login"); }
-        else if (error.error === "Wrong-Url") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); navigate("/"); }
+        else if (error.error === "Expired-Token") { Swal.fire({ title: '로그인 유효시간이 경과하였습니다 다시 로그인해주세요.', timer: 3000 }); window.location.replace("/login"); }
+        else if (error.error === "Wrong-Url") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); window.location.replace("/"); }
         else if (error.error === "None-User") { Swal.fire({ title: '존재하지 않는 유저입니다.', timer: 3000 }) }
         else if (error.error === "Not-Your-Turn") { Swal.fire({ title: '나의 턴이 아닙니다.', timer: 3000 }) }
         else if (error.error === "Err-Update-Result") { Swal.fire({ title: '결과를 가져오지 못했습니다.', timer: 3000 }) }
         else if (error.error === "Failed_ReportChat") { Swal.fire({ title: '채팅 신고에 실패했습니다.', timer: 3000 }) }
         else if (error.error === "Exist-ReportChat") { Swal.fire({ title: '이미 신고된 채팅입니다.', timer: 3000 }) }
-        else if (error.error === "None-Exist-Owner") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); navigate("/"); }
+        else if (error.error === "None-Exist-Owner") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); window.location.replace("/"); }
         else if (error.error === "Failed-ChatLog") { Swal.fire({ title: '채팅을 불러오지 못했습니다.', timer: 3000 }) }
-        else if (error.error === "None-Room") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); navigate("/"); }
+        else if (error.error === "None-Room") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); window.location.replace("/"); }
     });
 
     socket.on("out", out => {
@@ -461,7 +461,7 @@ function Room() {
                                                         setUnableBTN(true);
                                                     }
                                                 }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>게임시작</button>
-                                                <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { socket.emit("forceDisconnect"); navigate("/"); }}>나가기</button>
+                                                <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { socket.emit("forceDisconnect"); window.location.replace("/"); }}>나가기</button>
                                             </Able> :
                                             <Unable style={{ float: "right" }}>
                                                 <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>추방하기</button>
@@ -488,7 +488,7 @@ function Room() {
                                         {unableBTN === false ?
                                             <Able style={{ float: "right" }}>
                                                 <button onClick={() => { if (unableBTN === false) { socket.emit("ready", { ready: !ready }); } else { Swal.fire({ title: "이미 게임이 시작되었습니다!", timer: 1500 }); } }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
-                                                <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { setGuestNickname(""); socket.emit("forceDisconnect"); navigate("/"); }}>나가기</button>
+                                                <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { setGuestNickname(""); socket.emit("forceDisconnect"); window.location.replace("/"); }}>나가기</button>
                                             </Able> :
                                             <Unable style={{ float: "right" }}>
                                                 <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
@@ -622,7 +622,7 @@ function Room() {
                                             },
                                         });
                                         socket.emit("forceDisconnect");
-                                        navigate("/");
+                                        window.location.replace("/");
                                     }}>나가기</button>
                                 </div>
                             </GameTop>
@@ -758,8 +758,8 @@ function Room() {
                         <div style={{ width: "1040px", height: "1024px", display: "flex", margin: "auto", flexDirection: "column" }}>
                             {/* //게스트뷰 */}
                             <GameTop style={{ display: "flex", fontSize: "18px", justifyContent: "space-between", marginTop: "15px" }}>
-                                <div style={{ backgroundImage: 'url(' + Crown + ')', backgroundPosition: "center", backgroundSize: "cover", width: "25px", marginRight: "3px", marginBottom: "6px" }}></div>
                                 <div style={{ display: "flex", margin: "auto auto auto 0px" }}>
+                                    <div style={{ backgroundImage: 'url(' + Crown + ')', backgroundPosition: "center", backgroundSize: "cover", width: "25px", marginRight: "3px", marginBottom: "6px" }}></div>
                                     <div style={{ overflow: "hidden", marginTop: '3px', marginRight: "10px" }}>{ownerNickname}님</div>
                                     <div style={{ backgroundImage: 'url(' + Coin + ')', width: "30px", height: "30px", display: "flex", backgroundSize: "cover", marginRight: "10px" }}></div>
                                     <div style={{ marginTop: '3px' }}>
@@ -828,7 +828,7 @@ function Room() {
                                             },
                                         });
                                         socket.emit("forceDisconnect");
-                                        navigate("/");
+                                        window.location.replace("/");
                                     }}>나가기</button>
                                 </div>
                             </GameTop>
@@ -963,21 +963,21 @@ function Room() {
             {gameWinner !== '' && winGame === true && gameEnd === true ?
                 <WinModal>
                     <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>W</span></div><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px" }}><span style={{ display: "flex", margin: "auto" }}>I</span></div><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px" }}><span style={{ display: "flex", margin: "auto" }}>N</span></div></div>
-                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { navigate("/") }}>대기실로</button><button onClick={(e) => { setresultModal(true); }}>게임 결과</button></div>
+                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { window.location.replace("/") }}>대기실로</button><button onClick={(e) => { setresultModal(true); }}>게임 결과</button></div>
                 </WinModal> : ''
             }
             {/* lose모달 */}
             {gameWinner !== '' && loseGame === true && gameEnd === true ?
                 <LoseModal>
                     <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>L</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color: "black" }}><span style={{ display: "flex", margin: "auto" }}>O</span></div><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px" }}><span style={{ display: "flex", margin: "auto" }}>S</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color: "black" }}><span style={{ display: "flex", margin: "auto" }}>E</span></div></div>
-                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { navigate("/") }}>대기실로</button><button onClick={(e) => { setresultModal(true); }}>게임 결과</button></div>
+                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { window.location.replace("/") }}>대기실로</button><button onClick={(e) => { setresultModal(true); }}>게임 결과</button></div>
                 </LoseModal> : ''
             }
             {/* draw모달 */}
             {gameWinner === '' && drawGame === true && gameEnd === true ?
                 <DrawModal>
                     <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>D</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color: "black" }}><span style={{ display: "flex", margin: "auto" }}>R</span></div><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px" }}><span style={{ display: "flex", margin: "auto" }}>A</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color: "black" }}><span style={{ display: "flex", margin: "auto" }}>W</span></div></div>
-                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { navigate("/") }}>대기실로</button><button onClick={() => { setresultModal(true); }}>게임 결과</button></div>
+                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { window.location.replace("/") }}>대기실로</button><button onClick={() => { setresultModal(true); }}>게임 결과</button></div>
                 </DrawModal> : ''
             }
             {/* 게임 결과 모달 */}
@@ -1097,7 +1097,7 @@ function Room() {
                                 )}
                             </div>
                         </>}
-                    <button onClick={() => { navigate("/"); }} style={{ width: "210px", height: "45px", background: "#FFFFFF", boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)", borderRadius: "8px", border: "0", marginBottom: "30px" }}>대기실로 이동하기</button>
+                    <button onClick={() => { window.location.replace("/"); }} style={{ width: "210px", height: "45px", background: "#FFFFFF", boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)", borderRadius: "8px", border: "0", marginBottom: "30px" }}>대기실로 이동하기</button>
                 </ResultModal> : ''}
             {/* //신고하기 모달 */}
             {report === true ?
