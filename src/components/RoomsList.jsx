@@ -14,7 +14,7 @@ const RoomsList = ({room, setRoomId, setRoomPw, setPwModal}) => {
             onClick={(e) => {
             setRoomId(room.roomId);
             if (room.currentUsers >= 2) {
-            Swal.fire({ title: '인원이 꽉 찼습니다.', timer: 1500 })
+            Swal.fire({ title: '인원이 꽉 찼습니다.', timer: 1500, confirmButtonColor: "black" })
             } else {
             if (room.roomLock === true) {
                 setRoomPw(room.roomPw);

@@ -31,9 +31,11 @@ import { FaChevronLeft } from 'react-icons/fa';
 import { FaChevronRight } from 'react-icons/fa';
 import { __lock, __unLock } from "../redux/modules/lockSlice";
 
+import sound_one from "../components/assets/audio/corporate-technology-dreamer-112176.mp3"
 
 function Main() {
   const navigate = useNavigate();
+
 
   const dispatch = useDispatch();
 
@@ -46,14 +48,14 @@ function Main() {
   const clickUnLock = useSelector((state) => state?.lock?.unLock?.result)
 
   //페이지네이션
-  const handlePageChange = (page) => { setPage({page:page}) };
+  const handlePageChange = (page) => { setPage({ page: page }) };
   const unLockPageChange = (page) => { setUnLockPage(page) };
   const lockPageChange = (page) => { setLockPage(page) };
 
   const [page, setPage] = useState({
     page: 1,
   })
-  
+
   const [unLockPage, setUnLockPage] = useState(1);
   const [lockPage, setLockPage] = useState(1);
 
@@ -74,7 +76,7 @@ function Main() {
       navigate(`/room/${roomId}`)
     } else {
       setCheckpw("");
-      Swal.fire({ title: '비밀번호가 다릅니다.', timer: 1500 });
+      Swal.fire({ title: '비밀번호가 다릅니다.', timer: 1500, confirmButtonColor: "black" });
     }
   }
 
@@ -88,9 +90,9 @@ function Main() {
   const onsubmitHandle = (e) => {
     // e.preventDefault();
     if (roomTitle === '') {
-      Swal.fire({ title: '방 이름을 입력해주세요.', timer: 1500 })
+      Swal.fire({ title: '방 이름을 입력해주세요.', timer: 1500, confirmButtonColor: "black" })
     } else if (roomLock === true && roomPw === '') {
-      Swal.fire({ title: '비밀번호를 입력해주세요.', timer: 1500 })
+      Swal.fire({ title: '비밀번호를 입력해주세요.', timer: 1500, confirmButtonColor: "black" })
     }
     else {
       dispatch(__PostMainRoom({ roomTitle, roomCategory, roomLock, roomPw }));
@@ -120,10 +122,17 @@ function Main() {
       [name]: value
     });
   };
-  
+
   return (
     <>
       <Header />
+      <audio controls loop autoplay>
+        {/* <source src="https://drive.google.com/uc?export=download&id=1k1pPMFdFnJSjJ85UZLiby9MqMtK2Y66p" type="audio/mpeg" />
+        <source src="https://drive.google.com/uc?export=download&id=18pgZegsCPQzSu9_rYjqiBrQu1kM05fJC" type="audio/mpeg" /> */}
+        <source src="https://drive.google.com/uc?export=download&id=134TZJDaFvGfuZ_vCx_jpnOzK92XShrmw" type="audio/mpeg" />
+        {/* <source src="https://drive.google.com/uc?export=download&id=1HjqP_Qjh_okTKwfEWXdVwcXfWNz8rEc6" type="audio/mpeg" />
+        <source src="https://drive.google.com/uc?export=download&id=1F7cWcGtazXlX9Tl099hoJzE_Ro4X0X7M" type="audio/mpeg" /> */}
+      </audio>
       <BGImg>
         {Loading === true ?
           <div style={{ width: "1040px", margin: "0px auto" }}>
@@ -189,7 +198,7 @@ function Main() {
                 onSubmit={(e) => {
                   e.preventDefault();
                   if (input === '') {
-                    Swal.fire({ title: '검색어를 입력해주세요.', timer: 1500 })
+                    Swal.fire({ title: '검색어를 입력해주세요.', timer: 1500, confirmButtonColor: "black" })
                   } else {
                     dispatch(__search(input))
                   }
@@ -322,7 +331,7 @@ function Main() {
                       <input onChange={(e) => { setCheckpw(e.target.value) }} ></input>
                       <div>
                         <button>입장하기</button>
-                        <button type="button" onClick={()=>{setPwModal(!pwModal);}}>돌아가기</button>
+                        <button type="button" onClick={() => { setPwModal(!pwModal); }}>돌아가기</button>
                       </div>
                     </PwModalBody>
                   </PwModal>
@@ -343,8 +352,8 @@ function Main() {
                       <div style={{ display: "flex", margin: "0px auto 3px 112px" }}>게임방 이름
                         <span style={{ marginLeft: "552px" }}>방 공개여부</span>
                         {roomLock === false ?
-                          <LockBtn style={{ marginLeft: "16px", cursor:"pointer" }} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }}></LockBtn> :
-                          <UnLockBtn style={{ marginLeft: "16px", cursor:"pointer" }} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }}></UnLockBtn>}
+                          <LockBtn style={{ marginLeft: "16px", cursor: "pointer" }} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }}></LockBtn> :
+                          <UnLockBtn style={{ marginLeft: "16px", cursor: "pointer" }} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }}></UnLockBtn>}
                       </div>
                       <input style={{ display: "flex", margin: "0px auto 40px auto" }} onChange={(e) => { setRoomTitle(e.target.value) }}></input>
                       <div>{roomLock === true ?
@@ -828,7 +837,7 @@ let HowToModal = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 5;
+    z-index: 6;
     div {
       width: 864px;
       height: 233px;
