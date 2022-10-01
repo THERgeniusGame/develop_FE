@@ -59,7 +59,7 @@ function Room() {
     const [turn, setTurn] = useState(false); // 턴 여부
     const [middleView, setMiddleView] = useState(true); // 중간부분 뷰 여부
     const [gameEnd, setGameEnd] = useState(false);
-    const [batting, setBatting] = useState(0);
+    const [batting, setBatting] = useState(1);
     const [card, setCard] = useState(10);
     const [cardPick, setCardPick] = useState(false);
     const [Giveturn, setGiveturn] = useState([]);
@@ -74,7 +74,6 @@ function Room() {
     const [getCoin, setGetCoin] = useState(0);
     const [unableBTN, setUnableBTN] = useState(false);
     const [winnerList, setWinnerList] = useState([]); // 라운드 결과 list
-    const [End, setEnd] = useState(false);
     //게스트 진행정보
     const [guestCards, setGuestCards] = useState([]);
     const [guestBattingCards, setGuestBattingCards] = useState([]);
@@ -106,7 +105,7 @@ function Room() {
             userId: myUserId,
             batting: batting <= 0 ? +1 : +batting,
             turn: Giveturn,
-            card: mynickname === ownerNickname ? ownerCards[0] : guestCards[0],
+            card: mynickname === ownerNickname ? +ownerCards[0] : +guestCards[0],
             player: {
                 userId: myUserId,
                 nickname: mynickname,
@@ -273,7 +272,7 @@ function Room() {
             winnerList.push(turnResult.winner);
             setCard(10);
             setCardPick(false);
-            setBatting(turnResult.batting);
+            setBatting(1);
             setRound(turnResult.round);
             setTurnWinner(turnResult.winner);
             setTurnLoser(turnResult.loser);
@@ -405,6 +404,7 @@ function Room() {
     });
 
     socket.on("gameEnd", gameEnd => {
+        console.log(gameEnd)
         if (gameEnd.winner === mynickname) {
             setWinGame(true);
         } else if (gameEnd.loser === mynickname) {
@@ -572,6 +572,7 @@ function Room() {
                                 <div>
                                     <button onClick={() => {
                                         if (round < 3) {
+                                            console.log("")
                                             Swal.fire({ title: "항복은 3라운드 이후에 가능합니다!", timer: 1500 });
                                         } else {
                                             socket.emit("gameEnd", {
@@ -631,13 +632,13 @@ function Room() {
                             {/* guest */}
                             <div style={{ height: "125px", width: "1040px", margin: "25px auto auto 2px", display: "flex" }}>
                                 {guestCards?.map((guestcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", backgroundImage: +guestcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
                                     </Card>
                                 )}
                             </div>
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
                                 {guestBattingCards?.map((guestbattingcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto 10px auto 0", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto 10px auto 0", backgroundImage: +guestbattingcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
                                     </Card>
                                 )}
                             </div>
@@ -730,7 +731,7 @@ function Room() {
                             {/* owner */}
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 10px auto", display: "flex" }}>
                                 {ownerBattingCards?.map((ownerbattingcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: +ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {ownerbattingcard}
                                     </Card>
                                 )}
@@ -740,13 +741,13 @@ function Room() {
                                     <>
                                         {turn === true && cardPick === true ?
                                             card === ownercard ?
-                                                <MyPickCard onClick={(e) => { setCard(ownercard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                                <MyPickCard onClick={(e) => { setCard(+ownercard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: +ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                                     {ownercard}
                                                 </MyPickCard> :
-                                                <PickCard onClick={(e) => { setCard(ownercard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                                <PickCard onClick={(e) => { setCard(+ownercard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: +ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                                     {ownercard}
                                                 </PickCard> :
-                                            <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                            <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: +ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                                 {ownercard}
                                             </Card>}
                                     </>
@@ -777,6 +778,7 @@ function Room() {
                                 <div>
                                     <button onClick={() => {
                                         if (round < 3) {
+                                            console.log("");
                                             Swal.fire({ title: "항복은 3라운드 이후에 가능합니다!", timer: 1500 });
                                         } else {
                                             socket.emit("gameEnd", {
@@ -836,13 +838,13 @@ function Room() {
                             {/* owner */}
                             <div style={{ height: "125px", width: "1040px", margin: "25px auto auto 2px", display: "flex" }}>
                                 {ownerCards?.map((guestcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", backgroundImage: +guestcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
                                     </Card>
                                 )}
                             </div>
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
                                 {ownerBattingCards?.map((guestbattingcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto 10px auto 0", marginLeft: "7px", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto 10px auto 0", marginLeft: "7px", backgroundImage: +guestbattingcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
                                     </Card>
                                 )}
                             </div>
@@ -934,7 +936,7 @@ function Room() {
                             {/* guest */}
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 10px auto", display: "flex" }}>
                                 {guestBattingCards?.map((guestbattingcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +guestBattingCards % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 5px", backgroundImage: +guestBattingCards % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 5px", backgroundImage: +guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {guestbattingcard}
                                     </Card>
                                 )}
@@ -943,14 +945,14 @@ function Room() {
                                 {guestCards?.sort((a, b) => a - b)?.map((guestcard) =>
                                     <>
                                         {turn === true && cardPick === true ?
-                                            card === guestcard ?
-                                                <MyPickCard onClick={(e) => { setCard(guestcard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                            +card === +guestcard ?
+                                                <MyPickCard onClick={(e) => { setCard(+guestcard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: +guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                                     {guestcard}
                                                 </MyPickCard> :
-                                                <PickCard onClick={(e) => { setCard(guestcard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                                <PickCard onClick={(e) => { setCard(+guestcard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: +guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                                     {guestcard}
                                                 </PickCard> :
-                                            <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                            <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: +guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                                 {guestcard}
                                             </Card>}
                                     </>
@@ -1006,7 +1008,7 @@ function Room() {
                         <>
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
                                 {guestBattingCards?.map((guestbattingcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: +guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {guestbattingcard}
                                     </Card>
                                 )}
@@ -1044,7 +1046,7 @@ function Room() {
                             </MidBase>
                             <div style={{ height: "125px", width: "1040px", margin: "0px auto 105px auto", display: "flex" }}>
                                 {ownerBattingCards?.map((ownerbattingcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: +ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {ownerbattingcard}
                                     </Card>
                                 )}
@@ -1053,7 +1055,7 @@ function Room() {
                             {/* //게스트구역 */}
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
                                 {ownerBattingCards?.map((ownerbattingcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: +ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {ownerbattingcard}
                                     </Card>
                                 )}
@@ -1091,7 +1093,7 @@ function Room() {
                             </MidBase>
                             <div style={{ height: "125px", width: "1040px", margin: "0px auto 105px auto", display: "flex" }}>
                                 {guestBattingCards?.map((guestbattingcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: +guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {guestbattingcard}
                                     </Card>
                                 )}
