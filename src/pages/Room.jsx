@@ -59,7 +59,7 @@ function Room() {
     const [turn, setTurn] = useState(false); // 턴 여부
     const [middleView, setMiddleView] = useState(true); // 중간부분 뷰 여부
     const [gameEnd, setGameEnd] = useState(false);
-    const [batting, setBatting] = useState(0);
+    const [batting, setBatting] = useState(1);
     const [card, setCard] = useState(10);
     const [cardPick, setCardPick] = useState(false);
     const [Giveturn, setGiveturn] = useState([]);
@@ -74,7 +74,6 @@ function Room() {
     const [getCoin, setGetCoin] = useState(0);
     const [unableBTN, setUnableBTN] = useState(false);
     const [winnerList, setWinnerList] = useState([]); // 라운드 결과 list
-    const [End, setEnd] = useState(false);
     //게스트 진행정보
     const [guestCards, setGuestCards] = useState([]);
     const [guestBattingCards, setGuestBattingCards] = useState([]);
@@ -106,7 +105,7 @@ function Room() {
             userId: myUserId,
             batting: batting <= 0 ? +1 : +batting,
             turn: Giveturn,
-            card: mynickname === ownerNickname ? ownerCards[0] : guestCards[0],
+            card: mynickname === ownerNickname ? +ownerCards[0] : +guestCards[0],
             player: {
                 userId: myUserId,
                 nickname: mynickname,
@@ -218,7 +217,7 @@ function Room() {
             Swal.fire({ title: '방장에 의해 추방되었습니다.', timer: 1500 });
             socket.emit("forceDisconnect");
             setReady(false);
-            window.location.replace("/")
+            window.location.replace("/");
         });
 
         socket.on("turnEnd_room", turnEnd_room => {
@@ -273,7 +272,7 @@ function Room() {
             winnerList.push(turnResult.winner);
             setCard(10);
             setCardPick(false);
-            setBatting(turnResult.batting);
+            setBatting(1);
             setRound(turnResult.round);
             setTurnWinner(turnResult.winner);
             setTurnLoser(turnResult.loser);
@@ -405,6 +404,7 @@ function Room() {
     });
 
     socket.on("gameEnd", gameEnd => {
+        console.log(gameEnd)
         if (gameEnd.winner === mynickname) {
             setWinGame(true);
         } else if (gameEnd.loser === mynickname) {
@@ -421,15 +421,15 @@ function Room() {
         }
         else if (error.error === "Bad-Request") { Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 3000 }) }
         else if (error.error === "Expired-Token") { Swal.fire({ title: '로그인 유효시간이 경과하였습니다 다시 로그인해주세요.', timer: 3000 }); window.location.replace("/login"); }
-        else if (error.error === "Wrong-Url") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); window.location.replace("/"); }
+        else if (error.error === "Wrong-Url") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); window.location.replace("/");; }
         else if (error.error === "None-User") { Swal.fire({ title: '존재하지 않는 유저입니다.', timer: 3000 }) }
         else if (error.error === "Not-Your-Turn") { Swal.fire({ title: '나의 턴이 아닙니다.', timer: 3000 }) }
         else if (error.error === "Err-Update-Result") { Swal.fire({ title: '결과를 가져오지 못했습니다.', timer: 3000 }) }
         else if (error.error === "Failed_ReportChat") { Swal.fire({ title: '채팅 신고에 실패했습니다.', timer: 3000 }) }
         else if (error.error === "Exist-ReportChat") { Swal.fire({ title: '이미 신고된 채팅입니다.', timer: 3000 }) }
-        else if (error.error === "None-Exist-Owner") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); window.location.replace("/"); }
+        else if (error.error === "None-Exist-Owner") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); window.location.replace("/");; }
         else if (error.error === "Failed-ChatLog") { Swal.fire({ title: '채팅을 불러오지 못했습니다.', timer: 3000 }) }
-        else if (error.error === "None-Room") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); window.location.replace("/"); }
+        else if (error.error === "None-Room") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); window.location.replace("/");; }
     });
 
     socket.on("out", out => {
@@ -461,7 +461,7 @@ function Room() {
                                                         setUnableBTN(true);
                                                     }
                                                 }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>게임시작</button>
-                                                <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { socket.emit("forceDisconnect"); window.location.replace("/"); }}>나가기</button>
+                                                <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { socket.emit("forceDisconnect"); window.location.replace("/");; }}>나가기</button>
                                             </Able> :
                                             <Unable style={{ float: "right" }}>
                                                 <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>추방하기</button>
@@ -488,7 +488,7 @@ function Room() {
                                         {unableBTN === false ?
                                             <Able style={{ float: "right" }}>
                                                 <button onClick={() => { if (unableBTN === false) { socket.emit("ready", { ready: !ready }); } else { Swal.fire({ title: "이미 게임이 시작되었습니다!", timer: 1500 }); } }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
-                                                <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { setGuestNickname(""); socket.emit("forceDisconnect"); window.location.replace("/"); }}>나가기</button>
+                                                <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { setGuestNickname(""); socket.emit("forceDisconnect"); window.location.replace("/");; }}>나가기</button>
                                             </Able> :
                                             <Unable style={{ float: "right" }}>
                                                 <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
@@ -534,8 +534,10 @@ function Room() {
                             <form
                                 onSubmit={e => {
                                     e.preventDefault();
-                                    socket.emit("chat", { mynickname, msg: chat });
-                                    setChat("");
+                                    if (unableBTN !== true) {
+                                        socket.emit("chat", { mynickname, msg: chat });
+                                        setChat("");
+                                    }
                                 }}
                             >
                                 <ChatForm>
@@ -570,6 +572,7 @@ function Room() {
                                 <div>
                                     <button onClick={() => {
                                         if (round < 3) {
+                                            console.log("")
                                             Swal.fire({ title: "항복은 3라운드 이후에 가능합니다!", timer: 1500 });
                                         } else {
                                             socket.emit("gameEnd", {
@@ -622,20 +625,20 @@ function Room() {
                                             },
                                         });
                                         socket.emit("forceDisconnect");
-                                        window.location.replace("/");
+                                        window.location.replace("/");;
                                     }}>나가기</button>
                                 </div>
                             </GameTop>
                             {/* guest */}
                             <div style={{ height: "125px", width: "1040px", margin: "25px auto auto 2px", display: "flex" }}>
                                 {guestCards?.map((guestcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", backgroundImage: +guestcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
                                     </Card>
                                 )}
                             </div>
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
                                 {guestBattingCards?.map((guestbattingcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto 10px auto 0", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto 10px auto 0", backgroundImage: +guestbattingcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
                                     </Card>
                                 )}
                             </div>
@@ -677,9 +680,8 @@ function Room() {
                                 <BattingMid onSubmit={(e) => { e.preventDefault(); 0 !== +batting && +batting <= limitCoin ? setCardPick(true) : Swal.fire({ title: `배팅은 1개 부터 ${Math.floor(limitCoin)}개 까지 가능합니다!`, timer: 1500 }); }}>
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>배팅을 시작해주세요.</div>
                                     <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{timer > 0 ? <span>남은 턴 시간 {timer}초</span> : <span>시간 종료</span>}</div>
-                                    {/* <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "auto" }}></div> */}
                                     <div style={{ display: "flex", margin: "auto", fontSize: "18px" }}>배팅은 최대 {Math.floor(limitCoin)}개 까지 가능합니다.</div>
-                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => setBatting(e.target.value)}></input><span style={{ marginTop: "10px" }}>개</span>
+                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => e.target.value > 0 ? setBatting(e.target.value) : Swal.fire({ title: "배팅은 1개 이상만 가능 합니다.", timer: 1500 })}></input><span style={{ marginTop: "10px" }}>개</span>
                                         <button style={{ marginLeft: "10px", marginTop: "3px" }}>배팅하기</button></div>
                                 </BattingMid> : ''}
                             {middleView === false && turn === true && cardPick === true && gameEnd === false ?
@@ -729,7 +731,7 @@ function Room() {
                             {/* owner */}
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 10px auto", display: "flex" }}>
                                 {ownerBattingCards?.map((ownerbattingcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: +ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {ownerbattingcard}
                                     </Card>
                                 )}
@@ -739,13 +741,13 @@ function Room() {
                                     <>
                                         {turn === true && cardPick === true ?
                                             card === ownercard ?
-                                                <MyPickCard onClick={(e) => { setCard(ownercard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                                <MyPickCard onClick={(e) => { setCard(+ownercard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: +ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                                     {ownercard}
                                                 </MyPickCard> :
-                                                <PickCard onClick={(e) => { setCard(ownercard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                                <PickCard onClick={(e) => { setCard(+ownercard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: +ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                                     {ownercard}
                                                 </PickCard> :
-                                            <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                            <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +ownercard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: +ownercard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                                 {ownercard}
                                             </Card>}
                                     </>
@@ -776,6 +778,7 @@ function Room() {
                                 <div>
                                     <button onClick={() => {
                                         if (round < 3) {
+                                            console.log("");
                                             Swal.fire({ title: "항복은 3라운드 이후에 가능합니다!", timer: 1500 });
                                         } else {
                                             socket.emit("gameEnd", {
@@ -828,20 +831,20 @@ function Room() {
                                             },
                                         });
                                         socket.emit("forceDisconnect");
-                                        window.location.replace("/");
+                                        window.location.replace("/");;
                                     }}>나가기</button>
                                 </div>
                             </GameTop>
                             {/* owner */}
                             <div style={{ height: "125px", width: "1040px", margin: "25px auto auto 2px", display: "flex" }}>
                                 {ownerCards?.map((guestcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto", backgroundImage: +guestcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
                                     </Card>
                                 )}
                             </div>
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
                                 {ownerBattingCards?.map((guestbattingcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto 10px auto 0", marginLeft: "7px", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", margin: "auto 10px auto 0", marginLeft: "7px", backgroundImage: +guestbattingcard % 2 === 0 ? 'url(' + BackWhite + ')' : 'url(' + BackBlack + ')' }}>
                                     </Card>
                                 )}
                             </div>
@@ -882,15 +885,14 @@ function Room() {
                             {middleView === false && turn === true && cardPick === false && TurnWinner === '' && gameEnd === false ?
                                 <BattingMid onSubmit={(e) => { e.preventDefault(); 0 !== +batting && +batting <= limitCoin ? setCardPick(true) : Swal.fire({ title: `배팅은 1개 부터 ${Math.floor(limitCoin)}개 까지 가능합니다!`, timer: 1500 }); }}>
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>배팅을 시작해주세요.</div>
-                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{timer > 0 ? <span>남은 턴 시간 {timer}초</span> : <span>시간종료</span>}</div>
-                                    {/* <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "auto" }}></div> */}
+                                    <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{timer > 0 ? <span>남은 턴 시간 {timer}초</span> : <span>시간 종료</span>}</div>
                                     <div style={{ display: "flex", margin: "auto", fontSize: "18px" }}>배팅은 최대 {Math.floor(limitCoin)}개 까지 가능합니다.</div>
-                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => setBatting(e.target.value)}></input><span style={{ marginTop: "10px" }}>개</span><button style={{ marginLeft: "10px", marginTop: "3px" }}>배팅하기</button></div>
+                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => e.target.value > 0 ? setBatting(e.target.value) : Swal.fire({ title: "배팅은 1개 이상만 가능 합니다.", timer: 1500 })}></input><span style={{ marginTop: "10px" }}>개</span>
+                                        <button style={{ marginLeft: "10px", marginTop: "3px" }}>배팅하기</button></div>
                                 </BattingMid> : ''}
                             {middleView === false && turn === true && cardPick === true && gameEnd === false ?
                                 <CardPickMid>
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto auto 40px auto" }}>카드를 선택해주세요.</div>
-                                    {/* <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "0px auto auto auto" }}></div> */}
                                     <div style={{ fontSize: "26px", display: "flex", margin: "auto" }}>선택한 카드 {card >= 10 ? <span style={{ marginLeft: "10px", fontSize: "30px", color: "red" }}>없음</span> : <span style={{ marginLeft: "10px", fontSize: "30px", color: "red" }}> {card}</span>}</div>
                                     <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{batting !== 0 ? <span style={{ color: "black", marginRight: '20px' }}>라운드 배팅금액 {batting}개</span> : ''}{timer > 0 ? <span>남은 턴 시간 {timer - 1}초</span> : <span>시간종료</span>}</div>
                                     <button onClick={() => {
@@ -934,7 +936,7 @@ function Room() {
                             {/* guest */}
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 10px auto", display: "flex" }}>
                                 {guestBattingCards?.map((guestbattingcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 5px", backgroundImage: +guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {guestbattingcard}
                                     </Card>
                                 )}
@@ -943,14 +945,14 @@ function Room() {
                                 {guestCards?.sort((a, b) => a - b)?.map((guestcard) =>
                                     <>
                                         {turn === true && cardPick === true ?
-                                            card === guestcard ?
-                                                <MyPickCard onClick={(e) => { setCard(guestcard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                            +card === +guestcard ?
+                                                <MyPickCard onClick={(e) => { setCard(+guestcard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: +guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                                     {guestcard}
                                                 </MyPickCard> :
-                                                <PickCard onClick={(e) => { setCard(guestcard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                                <PickCard onClick={(e) => { setCard(+guestcard); }} key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: +guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                                     {guestcard}
                                                 </PickCard> :
-                                            <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                            <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +guestcard % 2 !== 0 ? "white" : "black", margin: "auto", backgroundImage: +guestcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                                 {guestcard}
                                             </Card>}
                                     </>
@@ -963,21 +965,21 @@ function Room() {
             {gameWinner !== '' && winGame === true && gameEnd === true ?
                 <WinModal>
                     <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>W</span></div><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px" }}><span style={{ display: "flex", margin: "auto" }}>I</span></div><div style={{ backgroundImage: 'url(' + BigCoin + ')', width: "120px", height: "120px", display: "flex", backgroundSize: "cover", margin: "20px" }}><span style={{ display: "flex", margin: "auto" }}>N</span></div></div>
-                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { window.location.replace("/") }}>대기실로</button><button onClick={(e) => { setresultModal(true); }}>게임 결과</button></div>
+                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { window.location.replace("/"); }}>대기실로</button><button onClick={(e) => { setresultModal(true); }}>게임 결과</button></div>
                 </WinModal> : ''
             }
             {/* lose모달 */}
             {gameWinner !== '' && loseGame === true && gameEnd === true ?
                 <LoseModal>
                     <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>L</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color: "black" }}><span style={{ display: "flex", margin: "auto" }}>O</span></div><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px" }}><span style={{ display: "flex", margin: "auto" }}>S</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color: "black" }}><span style={{ display: "flex", margin: "auto" }}>E</span></div></div>
-                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { window.location.replace("/") }}>대기실로</button><button onClick={(e) => { setresultModal(true); }}>게임 결과</button></div>
+                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { window.location.replace("/"); }}>대기실로</button><button onClick={(e) => { setresultModal(true); }}>게임 결과</button></div>
                 </LoseModal> : ''
             }
             {/* draw모달 */}
             {gameWinner === '' && drawGame === true && gameEnd === true ?
                 <DrawModal>
                     <div style={{ display: "flex" }}><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", backgroundPosition: "center" }}><span style={{ display: "flex", margin: "auto" }}>D</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color: "black" }}><span style={{ display: "flex", margin: "auto" }}>R</span></div><div style={{ backgroundImage: 'url(' + FrontBlack + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px" }}><span style={{ display: "flex", margin: "auto" }}>A</span></div><div style={{ backgroundImage: 'url(' + FrontWhite + ')', width: "95px", height: "140px", display: "flex", backgroundSize: "cover", margin: "15px", color: "black" }}><span style={{ display: "flex", margin: "auto" }}>W</span></div></div>
-                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { window.location.replace("/") }}>대기실로</button><button onClick={() => { setresultModal(true); }}>게임 결과</button></div>
+                    <div style={{ display: "flex", justifyContent: "space-between", width: "430px", marginTop: "105px" }}><button onClick={() => { window.location.replace("/"); }}>대기실로</button><button onClick={() => { setresultModal(true); }}>게임 결과</button></div>
                 </DrawModal> : ''
             }
             {/* 게임 결과 모달 */}
@@ -1006,7 +1008,7 @@ function Room() {
                         <>
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
                                 {guestBattingCards?.map((guestbattingcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: +guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {guestbattingcard}
                                     </Card>
                                 )}
@@ -1044,7 +1046,7 @@ function Room() {
                             </MidBase>
                             <div style={{ height: "125px", width: "1040px", margin: "0px auto 105px auto", display: "flex" }}>
                                 {ownerBattingCards?.map((ownerbattingcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: +ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {ownerbattingcard}
                                     </Card>
                                 )}
@@ -1053,7 +1055,7 @@ function Room() {
                             {/* //게스트구역 */}
                             <div style={{ height: "125px", width: "1040px", margin: "10px auto 20px auto", display: "flex" }}>
                                 {ownerBattingCards?.map((ownerbattingcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +ownerbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: +ownerbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {ownerbattingcard}
                                     </Card>
                                 )}
@@ -1091,13 +1093,13 @@ function Room() {
                             </MidBase>
                             <div style={{ height: "125px", width: "1040px", margin: "0px auto 105px auto", display: "flex" }}>
                                 {guestBattingCards?.map((guestbattingcard) =>
-                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
+                                    <Card key={uuidv4()} style={{ height: "140px", width: "95px", display: "flex", color: +guestbattingcard % 2 !== 0 ? "white" : "black", margin: "auto 10px auto 0", backgroundImage: +guestbattingcard % 2 === 0 ? 'url(' + FrontWhite + ')' : 'url(' + FrontBlack + ')', fontSize: "60px", alignItems: "center", justifyContent: "center" }}>
                                         {guestbattingcard}
                                     </Card>
                                 )}
                             </div>
                         </>}
-                    <button onClick={() => { window.location.replace("/"); }} style={{ width: "210px", height: "45px", background: "#FFFFFF", boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)", borderRadius: "8px", border: "0", marginBottom: "30px" }}>대기실로 이동하기</button>
+                    <button onClick={() => { window.location.replace("/");; }} style={{ width: "210px", height: "45px", background: "#FFFFFF", boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)", borderRadius: "8px", border: "0", marginBottom: "30px" }}>대기실로 이동하기</button>
                 </ResultModal> : ''}
             {/* //신고하기 모달 */}
             {report === true ?
