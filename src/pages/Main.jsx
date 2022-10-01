@@ -31,8 +31,6 @@ import { FaChevronLeft } from 'react-icons/fa';
 import { FaChevronRight } from 'react-icons/fa';
 import { __lock, __unLock } from "../redux/modules/lockSlice";
 
-import sound_one from "../components/assets/audio/corporate-technology-dreamer-112176.mp3"
-
 function Main() {
   const navigate = useNavigate();
 
