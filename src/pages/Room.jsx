@@ -379,6 +379,7 @@ function Room() {
     });
 
     socket.on("gameEnd", gameEnd => {
+        console.log(gameEnd)
         if (gameEnd.winner === mynickname) {
             setWinGame(true);
         } else if (gameEnd.loser === mynickname) {
