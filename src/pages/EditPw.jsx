@@ -121,7 +121,7 @@ const EditPw = () => {
                                         </Dupbtn>
                                     </div>
                                     <Message style={{color:Dup === true ? "black" : "red"}}>
-                                    {Dup === false ? checkEmailDup !== undefined && checkEmailDup !== "" ? "인증번호를 인증해주세요." : '' : "이메일 인증을 완료했습니다."}
+                                    {Dup === false ? checkEmailDup !== undefined && checkEmailDup !== "" ? <span>인증번호를 인증해주세요.</span> : '' : <span style={{color:"blue"}}>이메일 인증을 완료했습니다.</span>}
                                     </Message>
                                 </EmailConfirm>
                                 <PassWord

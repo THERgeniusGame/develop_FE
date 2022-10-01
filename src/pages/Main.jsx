@@ -136,7 +136,7 @@ function Main() {
                     href="https://docs.google.com/forms/d/e/1FAIpQLSeH2i8vTglp-0rKPPf50c43A_TFD5FPMZapDV7AU8nUh2mFoA/viewform">
                     <HowToBTN style={{ width: "250px" }}>치킨먹으러 가기!</HowToBTN></a>
                 </div>
-                <ChooseLock style={{ marginTop: "40px" }}>
+                <ChooseLock style={{ marginTop: "30px" }}>
                   {lock === "ALL" ?
                     <button onClick={(e) => { setResp(rooms); setLock("ALL") }}>전체방</button> :
                     <div style={{ display: "flex" }} onClick={(e) => { setResp(rooms); setLock("ALL") }}>
@@ -526,7 +526,7 @@ let RoomSelect = styled.button`
 
 let MakeRoom = styled.div`
   display:flex;
-  margin: 50px auto auto auto;
+  margin: 40px auto auto auto;
   box-sizing: border-box;
   width: 162px;
   height: 45px;
@@ -780,7 +780,7 @@ let RoomList = styled.div`
 
 let HowToBTN = styled.button`
   margin-right: 30px;
-  margin-top: 51px;
+  margin-top: 20px;
   font-style: normal;
   font-weight: 700;
   font-size: 22px;
@@ -858,7 +858,7 @@ let ChooseLock = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
   margin-right: 140px;
   button {
     font-style: normal;
