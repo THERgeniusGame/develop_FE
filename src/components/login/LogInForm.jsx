@@ -127,7 +127,7 @@ const LogInForm = () => {
                                 <LoginBtn>
                                     입장하기
                                 </LoginBtn>
-                                <KakaoLoginBtn onClick={() => { kakaoLogin(); }}/>
+                                
                             </div>
                         </Form>
                         <MoveBtn>
@@ -148,6 +148,7 @@ const LogInForm = () => {
                                 회원가입
                             </ToSignUpBtn>
                         </MoveBtn>
+                        <KakaoLoginBtn onClick={() => { kakaoLogin(); }}/>
                     </Box>
                 </BackGroundImg>
             </Body>
@@ -336,14 +337,15 @@ const LoginBtn = styled.button`
 `
 
 const KakaoLoginBtn = styled.button`
-    width: 300px;
-    height: 45px;
+    width: 380px;
+    height: 55px;
     font-size:15px;
     display:block;
     cursor:pointer;
-    margin-top: 40px;
+    margin: 40px auto auto auto;
     background-image: url(${kakaoLogin});
     background-repeat: no-repeat;
+    background-size: cover;
     border: none;
     border-radius: 8px;
 `

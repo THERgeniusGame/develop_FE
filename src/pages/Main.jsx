@@ -320,6 +320,10 @@ function Main() {
                     <PwModalBody onClick={(event) => { event.stopPropagation() }} >
                       <div>비밀번호를 입력해주세요</div>
                       <input onChange={(e) => { setCheckpw(e.target.value) }} ></input>
+                      <div>
+                        <button>입장하기</button>
+                        <button type="button" onClick={()=>{setPwModal(!pwModal);}}>돌아가기</button>
+                      </div>
                     </PwModalBody>
                   </PwModal>
                 </>
@@ -655,7 +659,7 @@ const PwModalBody = styled.div`
   margin: auto;
     div {
       display:flex;
-      margin: 50px auto auto auto;
+      margin: auto;
       font-style: normal;
       font-weight: 700;
       font-size: 24px;
@@ -664,7 +668,7 @@ const PwModalBody = styled.div`
     input {
       font-size: 18px;
       display:flex;
-      margin: auto auto 50px auto;
+      margin: auto;
       width: 505px;
       height: 45px;
       left: 472px;
@@ -673,6 +677,23 @@ const PwModalBody = styled.div`
       border: 1px solid rgba(169, 169, 169, 0.25);
       box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
       border-radius: 8px;
+    }
+    button {
+      font-style: normal;
+      margin: 0 30px 10px 30px;
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 22px;
+      width: 100px;
+      height: 45px;
+      background: #F4F4F4;
+      border: 1px solid rgba(169, 169, 169, 0.25);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+        :hover {
+        background-color: #BAB7B7;
+        cursor: pointer;
+              }
     }
 `;
 
