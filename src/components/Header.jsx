@@ -31,7 +31,7 @@ const Header = () => {
               setModal(!modal)
             }}
           >
-            지니어스
+            지니어스 ▼
           </Profile>
         </div>
 
