@@ -131,7 +131,7 @@ const MyPage = () => {
               <input value={signoutInput} placeholder="회원탈퇴" onChange={(e) => { setSignOutInput(e.target.value);  }} ></input>
               <div>
                 <GoBack style={{ margin: "0 20px" }}>회원탈퇴</GoBack>
-                <GoBack type="button" onclick={()=>{setModal(!modal);}} style={{ margin: "0 20px" }}>돌아가기</GoBack>
+                <GoBack style={{ margin: "0 20px" }} type="button" onClick={() => { setModal(!modal) }}>돌아가기</GoBack>
               </div>
             </SignoutModalBody>
           </SignoutModal>
