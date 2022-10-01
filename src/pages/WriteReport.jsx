@@ -29,11 +29,11 @@ const UserReport = () => {
 
     const onSubmitHandler = () => {
         if (inputs.reportTitle === "") {
-            Swal.fire({ title: '제목을 입력해주세요.', timer: 1500 });
+            Swal.fire({ title: '제목을 입력해주세요.', timer: 1500, confirmButtonColor: "black" });
         } else if (inputs.reportContent === "") {
-            Swal.fire({ title: '내용을 입력해주세요.', timer: 1500 });
+            Swal.fire({ title: '내용을 입력해주세요.', timer: 1500, confirmButtonColor: "black" });
         } else {
-            Swal.fire({ title: '신고를 완료했습니다.', timer: 1500 });
+            Swal.fire({ title: '신고를 완료했습니다.', timer: 1500, confirmButtonColor: "black" });
             dispatch(__postReport(inputs)).then(
                 navigate("/report")
             )

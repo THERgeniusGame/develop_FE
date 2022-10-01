@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import MypageModal from "./MypageModal";
 
 import Swal from 'sweetalert2'
+import { FaBlackTie } from "react-icons/fa";
 
 const Header = () => {
   const navigate = useNavigate()
@@ -13,14 +14,14 @@ const Header = () => {
   const token = localStorage.getItem("token");
 
   if (token === null || token === undefined) {
-    Swal.fire({ title: '로그인이 필요합니다.', timer: 2000 });
+    Swal.fire({ title: '로그인이 필요합니다.', timer: 2000, confirmButtonColor: "black" });
     navigate("/login")
   }
 
   return (
     <>
       <HeaderBox>
-        <div className="logo" style={{marginTop:"11px"}}>
+        <div className="logo" style={{ marginTop: "11px" }}>
           <Logo
             onClick={() => { navigate("/") }} />
         </div>

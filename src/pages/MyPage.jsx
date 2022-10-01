@@ -18,7 +18,7 @@ const MyPage = () => {
   const navigate = useNavigate();
 
   if (token === null || token === undefined) {
-    Swal.fire({ title: '로그인이 필요합니다.', timer: 2000 });
+    Swal.fire({ title: '로그인이 필요합니다.', timer: 2000, confirmButtonColor: "black" });
     navigate("/login")
   }
 
@@ -34,7 +34,7 @@ const MyPage = () => {
     if (signoutInput === "회원탈퇴") {
       dispatch(__signOut(signoutInput));
     } else {
-      Swal.fire({ title: '문장을 다시 작성해주세요.', timer: 1500 });
+      Swal.fire({ title: '문장을 다시 작성해주세요.', timer: 1500, confirmButtonColor: "black" });
     }
   }
 
@@ -126,9 +126,9 @@ const MyPage = () => {
             setModal(!modal);
           }}>
             <SignoutModalBody onClick={(event) => { event.stopPropagation() }} >
-              <div>탈퇴시 현재까지의 전적을 포함한 <span style={{color:"red"}}>모든 정보</span>가 사라집니다.</div>
+              <div>탈퇴시 전적을 포함한 현재까지의 <span style={{color:"red"}}>모든 정보</span>가 사라집니다.</div>
               <div style={{ fontSize: "18px", margin: "0 auto", color: "red" }}>동의하신다면 아래의 글자를 따라 작성해주세요.</div>
-              <input value={signoutInput} placeholder="회원탈퇴" onChange={(e) => { setSignOutInput(e.target.value);  }} ></input>
+              <input style={{color:"red"}} value={signoutInput} placeholder="회원탈퇴" onChange={(e) => { setSignOutInput(e.target.value);  }} ></input>
               <div>
                 <GoBack style={{ margin: "0 20px" }}>회원탈퇴</GoBack>
                 <GoBack style={{ margin: "0 20px" }} type="button" onClick={() => { setModal(!modal) }}>돌아가기</GoBack>

@@ -205,7 +205,7 @@ function Room() {
         });
 
         socket.on("kick", kick => {
-            Swal.fire({ title: '방장에 의해 추방되었습니다.', timer: 1500 });
+            Swal.fire({ title: '방장에 의해 추방되었습니다.', timer: 1500, confirmButtonColor: "black" });
             socket.emit("forceDisconnect");
             setReady(false);
             window.location.replace("/");
@@ -392,19 +392,19 @@ function Room() {
 
     socket.on("error", error => {
         if (error.error === "Bad-Request") {
-            Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 3000 })
+            Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 3000, confirmButtonColor: "black" })
         }
-        else if (error.error === "Bad-Request") { Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 3000 }) }
-        else if (error.error === "Expired-Token") { Swal.fire({ title: '로그인 유효시간이 경과하였습니다 다시 로그인해주세요.', timer: 3000 }); window.location.replace("/login"); }
-        else if (error.error === "Wrong-Url") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); window.location.replace("/");; }
-        else if (error.error === "None-User") { Swal.fire({ title: '존재하지 않는 유저입니다.', timer: 3000 }) }
-        else if (error.error === "Not-Your-Turn") { Swal.fire({ title: '나의 턴이 아닙니다.', timer: 3000 }) }
-        else if (error.error === "Err-Update-Result") { Swal.fire({ title: '결과를 가져오지 못했습니다.', timer: 3000 }) }
-        else if (error.error === "Failed_ReportChat") { Swal.fire({ title: '채팅 신고에 실패했습니다.', timer: 3000 }) }
-        else if (error.error === "Exist-ReportChat") { Swal.fire({ title: '이미 신고된 채팅입니다.', timer: 3000 }) }
-        else if (error.error === "None-Exist-Owner") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); window.location.replace("/");; }
-        else if (error.error === "Failed-ChatLog") { Swal.fire({ title: '채팅을 불러오지 못했습니다.', timer: 3000 }) }
-        else if (error.error === "None-Room") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); window.location.replace("/");; }
+        else if (error.error === "Bad-Request") { Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 3000, confirmButtonColor: "black" }) }
+        else if (error.error === "Expired-Token") { Swal.fire({ title: '로그인 유효시간이 경과하였습니다 다시 로그인해주세요.', timer: 3000, confirmButtonColor: "black" }); window.location.replace("/login"); }
+        else if (error.error === "Wrong-Url") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000, confirmButtonColor: "black" }); window.location.replace("/");; }
+        else if (error.error === "None-User") { Swal.fire({ title: '존재하지 않는 유저입니다.', timer: 3000, confirmButtonColor: "black" }) }
+        else if (error.error === "Not-Your-Turn") { Swal.fire({ title: '나의 턴이 아닙니다.', timer: 3000, confirmButtonColor: "black" }) }
+        else if (error.error === "Err-Update-Result") { Swal.fire({ title: '결과를 가져오지 못했습니다.', timer: 3000, confirmButtonColor: "black" }) }
+        else if (error.error === "Failed_ReportChat") { Swal.fire({ title: '채팅 신고에 실패했습니다.', timer: 3000, confirmButtonColor: "black" }) }
+        else if (error.error === "Exist-ReportChat") { Swal.fire({ title: '이미 신고된 채팅입니다.', timer: 3000, confirmButtonColor: "black" }) }
+        else if (error.error === "None-Exist-Owner") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000, confirmButtonColor: "black" }); window.location.replace("/");; }
+        else if (error.error === "Failed-ChatLog") { Swal.fire({ title: '채팅을 불러오지 못했습니다.', timer: 3000, confirmButtonColor: "black" }) }
+        else if (error.error === "None-Room") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000, confirmButtonColor: "black" }); window.location.replace("/");; }
     });
 
     socket.on("out", out => {
@@ -423,10 +423,10 @@ function Room() {
                                     <div style={{ fontSize: "36px", width: "975px", margin: "auto auto 80px auto" }}>{title}
                                         {unableBTN === false ?
                                             <Able style={{ float: "right" }}>
-                                                <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold", color: "red" }} onClick={() => { setGuestNickname(""); socket.emit("kick", { socketId: guestsoketId }); Swal.fire({ title: '상대를 추방했습니다.', timer: 1500 }) }}>추방하기</button>
+                                                <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold", color: "red" }} onClick={() => { setGuestNickname(""); socket.emit("kick", { socketId: guestsoketId }); Swal.fire({ title: '상대를 추방했습니다.', timer: 1500, confirmButtonColor: "black" }) }}>추방하기</button>
                                                 <button onClick={() => {
                                                     if (ready !== true) {
-                                                        Swal.fire({ title: '상대가 아직 준비되지 않았습니다.', timer: 1500 })
+                                                        Swal.fire({ title: '상대가 아직 준비되지 않았습니다.', timer: 1500, confirmButtonColor: "black" })
                                                     } else {
                                                         socket.emit("gameStart", {
                                                             gameStart: true,
@@ -461,7 +461,7 @@ function Room() {
                                     <div style={{ fontSize: "24px", width: "975px", margin: "auto auto 80px auto" }}>{title}님의 게임방
                                         {unableBTN === false ?
                                             <Able style={{ float: "right" }}>
-                                                <button onClick={() => { if (unableBTN === false) { socket.emit("ready", { ready: !ready }); } else { Swal.fire({ title: "이미 게임이 시작되었습니다!", timer: 1500 }); } }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
+                                                <button onClick={() => { if (unableBTN === false) { socket.emit("ready", { ready: !ready }); } else { Swal.fire({ title: "이미 게임이 시작되었습니다!", timer: 1500, confirmButtonColor: "black" }); } }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
                                                 <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { setGuestNickname(""); socket.emit("forceDisconnect"); window.location.replace("/");; }}>나가기</button>
                                             </Able> :
                                             <Unable style={{ float: "right" }}>
@@ -547,7 +547,7 @@ function Room() {
                                     <button onClick={() => {
                                         if (round < 3) {
                                             console.log("")
-                                            Swal.fire({ title: "항복은 3라운드 이후에 가능합니다!", timer: 1500 });
+                                            Swal.fire({ title: "항복은 3라운드 이후에 가능합니다!", timer: 1500, confirmButtonColor: "black" });
                                         } else {
                                             socket.emit("gameEnd", {
                                                 name: ownerUserId,
@@ -651,12 +651,12 @@ function Room() {
                                 </MidBase>
                                 : ''}
                             {middleView === false && turn === true && cardPick === false && TurnWinner === '' && gameEnd === false ?
-                                <BattingMid onSubmit={(e) => { e.preventDefault(); 0 !== +batting && +batting <= limitCoin ? setCardPick(true) : Swal.fire({ title: `배팅은 1개 부터 ${Math.floor(limitCoin)}개 까지 가능합니다!`, timer: 1500 }); }}>
+                                <BattingMid onSubmit={(e) => { e.preventDefault(); 0 !== +batting && +batting <= limitCoin ? setCardPick(true) : Swal.fire({ title: `배팅은 1개 부터 ${Math.floor(limitCoin)}개 까지 가능합니다!`, timer: 1500, confirmButtonColor: "black" }); }}>
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>배팅을 시작해주세요.</div>
                                     <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{timer > 0 ? <span>남은 턴 시간 {timer}초</span> : <span>시간 종료</span>}</div>
                                     <div style={{ display: "flex", margin: "auto", fontSize: "18px" }}>배팅은 최대 {Math.floor(limitCoin)}개 까지 가능합니다.</div>
                                     <div style={{ color:"red", margin:"auto"}}>배팅 후에는 수정할 수 없습니다. 신중히 배팅 해주세요!</div>
-                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => e.target.value > 0 ? setBatting(e.target.value) : Swal.fire({ title: "배팅은 1개 이상만 가능 합니다.", timer: 1500 })}></input><span style={{ marginTop: "10px" }}>개</span>
+                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => e.target.value > 0 ? setBatting(e.target.value) : Swal.fire({ title: "배팅은 1개 이상만 가능 합니다.", timer: 1500, confirmButtonColor: "black" })}></input><span style={{ marginTop: "10px" }}>개</span>
                                         <button style={{ marginLeft: "10px", marginTop: "3px" }}>배팅하기</button></div>
                                 </BattingMid> : ''}
                             {middleView === false && turn === true && cardPick === true && gameEnd === false ?
@@ -684,7 +684,7 @@ function Room() {
                                             });
                                             setBatting(0);
                                         } else {
-                                            Swal.fire({ title: "카드를 선택해주세요!", timer: 1500 });
+                                            Swal.fire({ title: "카드를 선택해주세요!", timer: 1500, confirmButtonColor: "black" });
                                         }
                                     }}>선택 완료</button>
                                 </CardPickMid> : winGame === true || loseGame === true || drawGame === true ? <MidBase></MidBase> : ''}
@@ -752,7 +752,7 @@ function Room() {
                                     <button onClick={() => {
                                         if (round < 3) {
                                             console.log("");
-                                            Swal.fire({ title: "항복은 3라운드 이후에 가능합니다!", timer: 1500 });
+                                            Swal.fire({ title: "항복은 3라운드 이후에 가능합니다!", timer: 1500, confirmButtonColor: "black" });
                                         } else {
                                             socket.emit("gameEnd", {
                                                 name: guestUserId,
@@ -856,12 +856,12 @@ function Room() {
                                 </MidBase>
                                 : ''}
                             {middleView === false && turn === true && cardPick === false && TurnWinner === '' && gameEnd === false ?
-                                <BattingMid onSubmit={(e) => { e.preventDefault(); 0 !== +batting && +batting <= limitCoin ? setCardPick(true) : Swal.fire({ title: `배팅은 1개 부터 ${Math.floor(limitCoin)}개 까지 가능합니다!`, timer: 1500 }); }}>
+                                <BattingMid onSubmit={(e) => { e.preventDefault(); 0 !== +batting && +batting <= limitCoin ? setCardPick(true) : Swal.fire({ title: `배팅은 1개 부터 ${Math.floor(limitCoin)}개 까지 가능합니다!`, timer: 1500, confirmButtonColor: "black" }); }}>
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>배팅을 시작해주세요.</div>
                                     <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{timer > 0 ? <span>남은 턴 시간 {timer}초</span> : <span>시간 종료</span>}</div>
                                     <div style={{ display: "flex", margin: "auto", fontSize: "18px" }}>배팅은 최대 {Math.floor(limitCoin)}개 까지 가능합니다.</div>
                                     <div style={{ color:"red", margin:"auto"}}>배팅 후에는 수정할 수 없습니다. 신중히 배팅 해주세요!</div>
-                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => e.target.value > 0 ? setBatting(e.target.value) : Swal.fire({ title: "배팅은 1개 이상만 가능 합니다.", timer: 1500 })}></input><span style={{ marginTop: "10px" }}>개</span>
+                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => e.target.value > 0 ? setBatting(e.target.value) : Swal.fire({ title: "배팅은 1개 이상만 가능 합니다.", timer: 1500, confirmButtonColor: "black" })}></input><span style={{ marginTop: "10px" }}>개</span>
                                         <button style={{ marginLeft: "10px", marginTop: "3px" }}>배팅하기</button></div>
                                 </BattingMid> : ''}
                             {middleView === false && turn === true && cardPick === true && gameEnd === false ?
@@ -890,7 +890,7 @@ function Room() {
                                             });
                                             setBatting(0);
                                         } else {
-                                            Swal.fire({ title: "카드를 선택해주세요!", timer: 1500 });
+                                            Swal.fire({ title: "카드를 선택해주세요!", timer: 1500, confirmButtonColor: "black" });
                                         }
                                     }}>선택 완료</button>
                                 </CardPickMid> : winGame === true || loseGame === true || drawGame === true ? <MidBase></MidBase> : ''}

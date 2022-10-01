@@ -26,6 +26,7 @@ export const __signup = createAsyncThunk(
             Swal.fire({
                 icon: "error",
                 title: "이미 가입한 이메일입니다.",
+                confirmButtonColor: "black"
             });
         };
     });
@@ -63,17 +64,20 @@ export const __checkNickname = createAsyncThunk(
 export const __signOut = createAsyncThunk(
     "signup/signOut",
     async (payload, thunkAPI) => {
+        console.log(payload, token)
         try {
             const res = await axios.delete(
-                process.env.REACT_APP_ENDPOINT + "/user/secession", payload,
+                process.env.REACT_APP_ENDPOINT + "/user/secession", {comment:payload},
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 }
-            ).then((data)=> {localStorage.removeItem("token"); window.location.replace("/");})
+            )
+            console.log(res)
             return res
         } catch (err) {
+            console.log(err)
             return err
         }
     }
