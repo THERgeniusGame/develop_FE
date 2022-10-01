@@ -27,6 +27,8 @@ function Room() {
     const room = roomId;
     const token = localStorage.getItem("token");
 
+    const [title, setTitle] = useState("");
+
     //유저Id
     const [myUserId, setMyUserId] = useState('');
     const [ownerUserId, setOwnerUserId] = useState('');
@@ -88,18 +90,6 @@ function Room() {
     const [ownerWin, setOwnerWin] = useState(0);
     //타이머
     const [timer, setTimer] = useState(0);
-
-    // window.addEventListener('beforeunload', (event) => {
-    //     if (mynickname) {
-    //         // 표준에 따라 기본 동작 방지
-    //         event.preventDefault();
-    //         // Chrome에서는 returnValue 설정이 필요함
-    //         event.returnValue = '';
-
-    //     }
-    // });
-
-
     if (timer === 0 && gamestart === true && turn === true) {
         socket.emit("turnEnd", {
             userId: myUserId,
@@ -137,6 +127,7 @@ function Room() {
 
         socket.on("login_room", login => {
             socket.emit("ready", { ready: false });
+            setTitle(login.roomTitle);
             setUsers(login.userList); //유저 목록
             setOwnerNickname(login.owner); //방장 닉네임
             setGuestNickname(login.userList.filter((user) => user.nickname !== login.owner)[0]?.nickname); //게스트 닉네임
@@ -280,7 +271,14 @@ function Room() {
             const guest = turnResult.guest;
             //오너
             setOwnerBattingCards(owner.battingCards);
-            setOwnerCards(owner.cards);
+            const newnum2 = [];
+            while (owner.cards.length) {
+                const movenum2 = owner.cards.splice(Math.floor(Math.random() * owner.cards.length), 1)[0]
+                newnum2.push(movenum2)
+            };
+            const ownercards = newnum2.filter(x => !owner.battingCards.includes(x));
+
+            setOwnerCards(ownercards);
             setOwnerCoin(owner.coin);
             setOwnerResult(owner.result);
             setOwnerWin(owner.win);
@@ -291,7 +289,14 @@ function Room() {
 
             //게스트
             setGuestBattingCards(guest.battingCards);
-            setGuestCards(guest.cards);
+            const newnum = [];
+            while (guest.cards.length) {
+                const movenum = guest.cards.splice(Math.floor(Math.random() * guest.cards.length), 1)[0]
+                newnum.push(movenum)
+            };
+            const guestcards = newnum.filter(x => !guest.battingCards.includes(x));
+            setGuestCards(guestcards);
+
             setGuestCoin(guest.coin);
             setGuestResult(guest.result);
             setGuestWin(guest.win);
@@ -366,41 +371,11 @@ function Room() {
         }
 
         if (turnResult.owner.coin > turnResult.guest.coin) {
-            setLimitCoin(+turnResult.guest.coin / +turnResult.guest.cards?.length);
+            setLimitCoin(+turnResult.guest.coin / +guestCards?.length);
         } else {
-            setLimitCoin(+turnResult.owner.coin / turnResult.owner.cards?.length);
+            setLimitCoin(+turnResult.owner.coin / +ownerCards?.length);
         }
 
-        const owner = turnResult.owner
-        const guest = turnResult.guest
-
-        // if (turnResult.owner.cards?.length === 0 && turnResult.guest.cards?.length === 0 && turn === true) {
-        //     if (End === false) {
-        //         socket.emit("gameEnd", {
-        //             owner: {
-        //                 userId: owner.userId,
-        //                 nickname: owner.nickname,
-        //                 socketId: ownersoketId,
-        //                 cards: owner.cards,
-        //                 battingCards: owner.battingCards,
-        //                 coin: owner.coin,
-        //                 result: owner.result,
-        //                 win: owner.win,
-        //             },
-        //             guest: {
-        //                 userId: guest.userId,
-        //                 nickname: guest.nickname,
-        //                 socketId: guestsoketId,
-        //                 cards: guest.cards,
-        //                 battingCards: guest.battingCards,
-        //                 coin: guest.coin,
-        //                 result: guest.result,
-        //                 win: guest.win,
-        //             },
-        //         });
-        //         setEnd(true);
-        //     } else { }
-        // }
     });
 
     socket.on("gameEnd", gameEnd => {
@@ -435,7 +410,6 @@ function Room() {
     socket.on("out", out => {
         setGuestNickname("");
     });
-
     return (
         <>
             {gamestart === false ?
@@ -446,7 +420,7 @@ function Room() {
                             {mynickname === ownerNickname ?
                                 //호스트 구역
                                 <div>
-                                    <div style={{ fontSize: "36px", width: "975px", margin: "auto auto 80px auto" }}>{ownerNickname}님의 게임방
+                                    <div style={{ fontSize: "36px", width: "975px", margin: "auto auto 80px auto" }}>{title}
                                         {unableBTN === false ?
                                             <Able style={{ float: "right" }}>
                                                 <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold", color: "red" }} onClick={() => { setGuestNickname(""); socket.emit("kick", { socketId: guestsoketId }); Swal.fire({ title: '상대를 추방했습니다.', timer: 1500 }) }}>추방하기</button>
@@ -484,7 +458,7 @@ function Room() {
                                 </div> :
                                 //게스트 구역
                                 <div>
-                                    <div style={{ fontSize: "24px", width: "975px", margin: "auto auto 80px auto" }}>{ownerNickname}님의 게임방
+                                    <div style={{ fontSize: "24px", width: "975px", margin: "auto auto 80px auto" }}>{title}님의 게임방
                                         {unableBTN === false ?
                                             <Able style={{ float: "right" }}>
                                                 <button onClick={() => { if (unableBTN === false) { socket.emit("ready", { ready: !ready }); } else { Swal.fire({ title: "이미 게임이 시작되었습니다!", timer: 1500 }); } }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
@@ -681,13 +655,13 @@ function Room() {
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>배팅을 시작해주세요.</div>
                                     <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{timer > 0 ? <span>남은 턴 시간 {timer}초</span> : <span>시간 종료</span>}</div>
                                     <div style={{ display: "flex", margin: "auto", fontSize: "18px" }}>배팅은 최대 {Math.floor(limitCoin)}개 까지 가능합니다.</div>
+                                    <div style={{ color:"red", margin:"auto"}}>배팅 후에는 수정할 수 없습니다. 신중히 배팅 해주세요!</div>
                                     <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => e.target.value > 0 ? setBatting(e.target.value) : Swal.fire({ title: "배팅은 1개 이상만 가능 합니다.", timer: 1500 })}></input><span style={{ marginTop: "10px" }}>개</span>
                                         <button style={{ marginLeft: "10px", marginTop: "3px" }}>배팅하기</button></div>
                                 </BattingMid> : ''}
                             {middleView === false && turn === true && cardPick === true && gameEnd === false ?
                                 <CardPickMid>
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto auto 40px auto" }}>카드를 선택해주세요.</div>
-                                    {/* <div style={{ background: "#FFD700", width: "48px", height: "48px", borderRadius: "100%", display: "flex", margin: "0px auto auto auto" }}></div> */}
                                     <div style={{ fontSize: "26px", display: "flex", margin: "auto" }}>선택한 카드 {card >= 10 ? <span style={{ marginLeft: "10px", fontSize: "30px", color: "red" }}>없음</span> : <span style={{ marginLeft: "10px", fontSize: "30px", color: "red" }}> {card}</span>}</div>
                                     <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{batting !== 0 ? <span style={{ color: "black", marginRight: '20px' }}>라운드 배팅금액 {batting}개</span> : ''}{timer > 0 ? <span>남은 턴 시간 {timer - 1}초</span> : <span>시간종료</span>}</div>
                                     <button onClick={() => {
@@ -700,12 +674,11 @@ function Room() {
                                                 player: {
                                                     userId: ownerUserId,
                                                     nickname: mynickname,
-                                                    // socketId: mysocketId,
-                                                    cards: mynickname === ownerNickname ? ownerCards : guestCards,
-                                                    battingCards: mynickname === ownerNickname ? ownerBattingCards : guestBattingCards,
-                                                    coin: mynickname === ownerNickname ? +ownerCoin : +guestCoin,
-                                                    result: mynickname === ownerNickname ? ownerResult : guestResult,
-                                                    win: mynickname === ownerNickname ? ownerWin : guestWin
+                                                    cards: ownerCards,
+                                                    battingCards: ownerBattingCards,
+                                                    coin: +ownerCoin,
+                                                    result: ownerResult,
+                                                    win: ownerWin
                                                 }
 
                                             });
@@ -887,6 +860,7 @@ function Room() {
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>배팅을 시작해주세요.</div>
                                     <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{timer > 0 ? <span>남은 턴 시간 {timer}초</span> : <span>시간 종료</span>}</div>
                                     <div style={{ display: "flex", margin: "auto", fontSize: "18px" }}>배팅은 최대 {Math.floor(limitCoin)}개 까지 가능합니다.</div>
+                                    <div style={{ color:"red", margin:"auto"}}>배팅 후에는 수정할 수 없습니다. 신중히 배팅 해주세요!</div>
                                     <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => e.target.value > 0 ? setBatting(e.target.value) : Swal.fire({ title: "배팅은 1개 이상만 가능 합니다.", timer: 1500 })}></input><span style={{ marginTop: "10px" }}>개</span>
                                         <button style={{ marginLeft: "10px", marginTop: "3px" }}>배팅하기</button></div>
                                 </BattingMid> : ''}
@@ -906,11 +880,11 @@ function Room() {
                                                     userId: guestUserId,
                                                     nickname: mynickname,
                                                     // socketId: mysocketId,
-                                                    cards: mynickname === ownerNickname ? ownerCards : guestCards,
-                                                    battingCards: mynickname === ownerNickname ? ownerBattingCards : guestBattingCards,
-                                                    coin: mynickname === ownerNickname ? +ownerCoin : +guestCoin,
-                                                    result: mynickname === ownerNickname ? ownerResult : guestResult,
-                                                    win: mynickname === ownerNickname ? ownerWin : guestWin
+                                                    cards: guestCards,
+                                                    battingCards: guestBattingCards,
+                                                    coin: +guestCoin,
+                                                    result: guestResult,
+                                                    win: guestWin
                                                 }
 
                                             });
@@ -1401,13 +1375,13 @@ let WinModal = styled.div`
     left: 0;
     bottom: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.126);
+    background: rgba(169, 169, 169, 0.753);
     display: flex;
     justify-content: center;
     align-items: center;
-    color: white;
     flex-direction:column;
-   
+    color: white;
+
     button {
       font-style: normal;
       font-weight: 700;
@@ -1433,13 +1407,13 @@ let LoseModal = styled.div`
     left: 0;
     bottom: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.126);
+    background: rgba(169, 169, 169, 0.753);
     display: flex;
     justify-content: center;
     align-items: center;
-    color: white;
     flex-direction:column;
-   
+    color: white;
+
     button {
       font-style: normal;
       font-weight: 700;
@@ -1465,7 +1439,7 @@ let DrawModal = styled.div`
     left: 0;
     bottom: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.126);
+    background: rgba(169, 169, 169, 0.753);
     display: flex;
     justify-content: center;
     align-items: center;
