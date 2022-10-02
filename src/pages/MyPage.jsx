@@ -22,8 +22,8 @@ const MyPage = () => {
     navigate("/login")
   }
 
-  const allRank = useSelector((state) => state.getMyPage.allRank)
-  const myRank = useSelector((state) => state.getMyPage.myRank)
+  const allRank = useSelector((state) => state?.getMyPage?.allRank)
+  const myRank = useSelector((state) => state?.getMyPage?.myRank)
 
   const mynickname = myRank?.nickname;
   const [modal, setModal] = useState(false);

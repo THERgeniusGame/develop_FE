@@ -18,7 +18,6 @@ const ReportContent = () => {
     const dispatch = useDispatch();
 
     const getReport = useSelector((state) => state.report.getReport)
-
     const { reportId } = useParams();
 
     useEffect(() => {
@@ -37,7 +36,6 @@ const ReportContent = () => {
             setEditInput("");
         }
     }
-
     return (
         <>
             <Header />
