@@ -25,7 +25,14 @@ const Header = () => {
           <Logo
             onClick={() => { navigate("/") }} />
         </div>
-        <div className="mypage">
+        <div className="mypage" style={{display:"flex", flexDirection:"row"}}>
+          <BGM controls loop autoplay>
+            {/* <source src="https://drive.google.com/uc?export=download&id=1k1pPMFdFnJSjJ85UZLiby9MqMtK2Y66p" type="audio/mpeg" />
+            <source src="https://drive.google.com/uc?export=download&id=18pgZegsCPQzSu9_rYjqiBrQu1kM05fJC" type="audio/mpeg" /> */}
+            <source src="https://drive.google.com/uc?export=download&id=134TZJDaFvGfuZ_vCx_jpnOzK92XShrmw" type="audio/mpeg" />
+            {/* <source src="https://drive.google.com/uc?export=download&id=1HjqP_Qjh_okTKwfEWXdVwcXfWNz8rEc6" type="audio/mpeg" />
+            <source src="https://drive.google.com/uc?export=download&id=1F7cWcGtazXlX9Tl099hoJzE_Ro4X0X7M" type="audio/mpeg" /> */}
+          </BGM>
           <Profile
             onClick={(e) => {
               e.preventDefault()
@@ -35,14 +42,12 @@ const Header = () => {
             지니어스 ▼
           </Profile>
         </div>
-
         {modal == true ?
           <MypageModal
             setModal={setModal}
           />
           : null
         }
-
       </HeaderBox>
     </>
   );
@@ -91,4 +96,9 @@ const Profile = styled.div`
   background-color: #BAB7B7;
   cursor: pointer;
  }
+`
+
+const BGM = styled.audio`
+ height: 47px;
+ margin: 0 10px;
 `
