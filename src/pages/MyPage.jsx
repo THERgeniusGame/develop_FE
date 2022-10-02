@@ -77,8 +77,8 @@ const MyPage = () => {
                       {allRank?.map((rank) => (
                       <RankList key={rank.rank}>
                         <div className="rankPt2">{rank?.rank}</div>
-                        <div className="nicknamePt2">{rank.nickname}님</div>
-                        <div className="winPt2">{rank.total}전 {rank.win}승 {rank.lose}패</div>
+                        <div className="nicknamePt2">{rank?.nickname}님</div>
+                        <div className="winPt2">{rank?.total}전 {rank?.win}승 {rank?.lose}패</div>
                       </RankList>
                       ))}
                     </div>
