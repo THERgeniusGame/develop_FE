@@ -9,6 +9,7 @@ import ReportList from "../pages/ReportList";
 import UserReport from "../pages/WriteReport";
 import ReportContent from "../pages/ReportContent";
 import EditReport from "../pages/EditReport";
+import NotFound from "../pages/NotFound";
 
 const Router = () => {
   return (
@@ -23,6 +24,7 @@ const Router = () => {
       <Route path="/report/user" element={<UserReport />} />
       <Route path="/report/:reportId" element={<ReportContent />} />
       <Route path="/editReport/:reportId" element={<EditReport />} />
+      <Route path={"*"} element={<NotFound />}/>
     </Routes>
   );
 };
