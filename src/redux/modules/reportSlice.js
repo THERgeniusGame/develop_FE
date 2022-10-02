@@ -5,6 +5,8 @@ const initialState = {
     error: null,
     isLogin: false,
     getReport: [],
+    getReportList: [],
+    getAnswer: [],
 };
 
 const token = localStorage.getItem("token");
@@ -28,7 +30,7 @@ export const __getReportList = createAsyncThunk(
         }
     });
 
-// GET 신고목록 per page ( 신고 상세페이지 )
+// GET 신고상세 per page ( 신고 상세페이지 )
 export const __getReport = createAsyncThunk(
     "GET_REPORT_PAGE",
     async (reportId, thunkAP) => {
@@ -65,7 +67,7 @@ export const __getAnswer = createAsyncThunk(
     });
 
 
-// POST 신고목록 ( 신고페이지 )
+// POST 신고하기 ( 신고페이지 메인페이지)
 export const __postReport = createAsyncThunk(
     "POST_REPORT",
     async (payload, thunkAPI) => {
@@ -84,8 +86,7 @@ export const __postReport = createAsyncThunk(
     });
 
 
-
-// 신고 수정
+// 신고 수정 ( 신고 상세페이지 )
 export const __EditReport = createAsyncThunk(
     "report/editReport",
     async (payload, thunkAPI) => {
@@ -103,7 +104,7 @@ export const __EditReport = createAsyncThunk(
         }
     });
 
-// 신고 삭제
+// 신고 삭제 ( 신고 상세페이지 )
 export const __deleteReport = createAsyncThunk(
     "report/deleteReport",
     async (payload, thunkAPI) => {
@@ -121,7 +122,7 @@ export const __deleteReport = createAsyncThunk(
         }
     });
 
-// 신고 수정
+// 신고 댓글 수정 ( 신고 상세페이지 )
 export const __EditReportContent = createAsyncThunk(
     "report/editReportContent",
     async (payload, thunkAPI) => {
@@ -139,6 +140,25 @@ export const __EditReportContent = createAsyncThunk(
         }
     });
 
+
+// 신고 댓글 작성 ( 신고 상세페이지 )
+export const __PostReportContent = createAsyncThunk(
+    "report/postReportContent",
+    async (payload, thunkAPI) => {
+        try {
+            const data = await axios.post(process.env.REACT_APP_ENDPOINT + `/report/${payload.reportId}/comment`, { commentContent:payload.commentContent },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            )
+        } catch (err) {
+            return err
+        }
+    });
+
+
 //slice
 export const reportSlice = createSlice({
     name: "report",
@@ -150,7 +170,7 @@ export const reportSlice = createSlice({
 
             // GET 신고목록 (신고 메인페이지)
             .addCase(__getReportList.fulfilled, (state, action) => {
-                state.getReport = action.payload
+                state.getReportList = action.payload
             })
             .addCase(__getReportList.rejected, (state, action) => {
             })
@@ -168,7 +188,7 @@ export const reportSlice = createSlice({
 
             // GET 신고 상세페이지 answer
             .addCase(__getAnswer.fulfilled, (state, action) => {
-                state.getReport = action.payload
+                state.getAnswer = action.payload
             })
             .addCase(__getAnswer.rejected, (state, action) => {
             })
@@ -196,6 +216,12 @@ export const reportSlice = createSlice({
             .addCase(__EditReportContent.fulfilled, (state, action) => {
             })
             .addCase(__EditReportContent.rejected, (state, action) => {
+
+            })
+            // 리포트 댓글 작성
+            .addCase(__PostReportContent.fulfilled, (state, action) => {
+            })
+            .addCase(__PostReportContent.rejected, (state, action) => {
 
             })
     },

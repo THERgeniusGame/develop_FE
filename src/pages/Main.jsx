@@ -33,7 +33,6 @@ import { __lock, __unLock } from "../redux/modules/lockSlice";
 function Main() {
   const navigate = useNavigate();
 
-
   const dispatch = useDispatch();
 
   const rooms = useSelector((state) => state.getmainroom.data.result);

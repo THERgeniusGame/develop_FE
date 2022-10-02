@@ -13,7 +13,7 @@ const ReportList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const allReport = useSelector((state) => state?.report?.getReport)
+  const allReport = useSelector((state) => state?.report?.getReportList)
 
   const [page, setPage] = useState(1); //현재 페이지x
 
@@ -21,10 +21,9 @@ const ReportList = () => {
   const handlePageChange = (page) => { setPage(page); };
 
   useEffect(() => {
-    dispatch(__getReportList(page))
+    dispatch(__getReportList(page));
   }, [page])
-
-
+  
   return (
     <>
       <Header />
@@ -45,7 +44,7 @@ const ReportList = () => {
           <div className="body">
             {allReport?.map((report) => (
               <ReportMap key={report?.reportId}
-                onClick={() => { navigate(`/report/${report.reportId}`) }}
+                onClick={() => { navigate(`/report/${report?.reportId}`) }}
               >
                 <List>
                   <div className="idPt">{report?.reportId}</div>
