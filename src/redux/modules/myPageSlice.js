@@ -1,11 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const initialState = {
     error: null,
     isRendering: [],
     myRank: {},
     allRank: [],
+    user: [],
 };
 
 const token = localStorage.getItem("token");
@@ -43,10 +45,16 @@ export const __getMyRank = createAsyncThunk(
             );
             return res.data
         } catch (err) {
+            if (err.response.data === "jwt expired") {
+                Swal.fire({ title: '로그인 시간이 만료되었습니다.', timer: 1500, confirmButtonColor: "black" });
+                localStorage.removeItem("token");
+                window.location.replace("/login");
+            }
             return err
         }
     });
-    
+
+
 //slice
 export const myPageSlice = createSlice({
     name: "getMyPage",
