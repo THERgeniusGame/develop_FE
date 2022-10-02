@@ -144,7 +144,7 @@ function Main() {
                 </div>
                 <ChooseLock style={{ marginTop: "30px" }}>
                   {lock === "ALL" ?
-                    <button onClick={(e) => { setResp(rooms); setLock("ALL") }}>전체방</button> :
+                    <button onClick={(e) => { setResp(rooms); setLock("ALL"); }}>전체방</button> :
                     <div style={{ display: "flex" }} onClick={(e) => { setResp(rooms); setLock("ALL") }}>
                       <span style={{ display: "flex", margin: "auto" }}>전체방</span>
                     </div>

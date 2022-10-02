@@ -1,14 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Main from "../shared/image/Main.png";
 import { useNavigate } from "react-router-dom";
 import MypageModal from "./MypageModal";
 
+import { useDispatch, useSelector } from "react-redux";
+
+import { __getMyRank } from "../redux/modules/myPageSlice";
+
 import Swal from 'sweetalert2'
-import { FaBlackTie } from "react-icons/fa";
 
 const Header = () => {
-  const navigate = useNavigate()
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const mynickname = useSelector((state)=>state?.getMyPage?.myRank?.nickname)
   const [modal, setModal] = useState(false);
 
   const token = localStorage.getItem("token");
@@ -17,6 +24,10 @@ const Header = () => {
     Swal.fire({ title: '로그인이 필요합니다.', timer: 2000, confirmButtonColor: "black" });
     navigate("/login")
   }
+
+  useEffect(() => {
+    dispatch(__getMyRank());
+  }, []);
 
   return (
     <>
@@ -39,7 +50,7 @@ const Header = () => {
               setModal(!modal)
             }}
           >
-            지니어스 ▼
+            {mynickname} ▼
           </Profile>
         </div>
         {modal == true ?
