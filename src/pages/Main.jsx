@@ -25,7 +25,6 @@ import HowTo6 from "../shared/image/MainIMG/HowTo6.png";
 
 import Swal from 'sweetalert2'
 
-import { FaSearch } from 'react-icons/fa'; //
 import { IoMdAdd } from 'react-icons/io';
 import { FaChevronLeft } from 'react-icons/fa';
 import { FaChevronRight } from 'react-icons/fa';
@@ -89,11 +88,19 @@ function Main() {
     // e.preventDefault();
     if (roomTitle === '') {
       Swal.fire({ title: '방 이름을 입력해주세요.', timer: 1500, confirmButtonColor: "black" })
-    } else if (roomLock === true && roomPw === '') {
+    } 
+    else if (roomTitle.length > 15) {
+      Swal.fire({ title: '방 이름은 15글자 이하로 가능합니다.', timer: 1500, confirmButtonColor: "black" })
+    }
+    else if (roomLock === true && roomPw === '') {
       Swal.fire({ title: '비밀번호를 입력해주세요.', timer: 1500, confirmButtonColor: "black" })
+    }
+    else if (roomLock === true && roomPw.length > 20) {
+      Swal.fire({ title: '비밀번호는 20글자 이하로 가능합니다.', timer: 1500, confirmButtonColor: "black" })
     }
     else {
       dispatch(__PostMainRoom({ roomTitle, roomCategory, roomLock, roomPw }));
+      setDisable(true);
     }
   }
 
@@ -124,13 +131,6 @@ function Main() {
   return (
     <>
       <Header />
-      <audio controls loop autoplay>
-        {/* <source src="https://drive.google.com/uc?export=download&id=1k1pPMFdFnJSjJ85UZLiby9MqMtK2Y66p" type="audio/mpeg" />
-        <source src="https://drive.google.com/uc?export=download&id=18pgZegsCPQzSu9_rYjqiBrQu1kM05fJC" type="audio/mpeg" /> */}
-        <source src="https://drive.google.com/uc?export=download&id=134TZJDaFvGfuZ_vCx_jpnOzK92XShrmw" type="audio/mpeg" />
-        {/* <source src="https://drive.google.com/uc?export=download&id=1HjqP_Qjh_okTKwfEWXdVwcXfWNz8rEc6" type="audio/mpeg" />
-        <source src="https://drive.google.com/uc?export=download&id=1F7cWcGtazXlX9Tl099hoJzE_Ro4X0X7M" type="audio/mpeg" /> */}
-      </audio>
       <BGImg>
         {Loading === true ?
           <div style={{ width: "1040px", margin: "0px auto" }}>
@@ -353,19 +353,19 @@ function Main() {
                           <LockBtn style={{ marginLeft: "16px", cursor: "pointer" }} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }}></LockBtn> :
                           <UnLockBtn style={{ marginLeft: "16px", cursor: "pointer" }} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }}></UnLockBtn>}
                       </div>
-                      <input style={{ display: "flex", margin: "0px auto 40px auto" }} onChange={(e) => { setRoomTitle(e.target.value) }}></input>
+                      <input placeholder="제목을 입력해주세요.(15자 이하)" style={{ display: "flex", margin: "0px auto 40px auto" }} onChange={(e) => { setRoomTitle(e.target.value) }}></input>
                       <div>{roomLock === true ?
                         <>
                           <div style={{ display: "flex", margin: "auto auto 3px 112px" }}>비밀번호 입력창</div>
-                          <input style={{ display: "flex", margin: "auto auto 50px auto" }} onChange={(e) => { setRoomPw(e.target.value) }}></input>
+                          <input placeholder="비밀번호를 입력해주세요.(20글자 이하)" style={{ display: "flex", margin: "auto auto 50px auto" }} onChange={(e) => { setRoomPw(e.target.value) }}></input>
                         </> : ''}
                       </div>
                       <div style={{ "fontSize": "20px", "color": "gray", "display": "flex", margin: "0px auto auto auto" }}>
                         <span style={{ marginRight: "34px" }}>
-                          <button disabled={disable} onClick={() => { onsubmitHandle(); setDisable(true); }}>방 만들기</button>
+                          <button disabled={disable} onClick={() => { onsubmitHandle(); }}>방 만들기</button>
                         </span>
                         <span>
-                          <button type="button" onClick={() => { setMakeRoomModal(!makeroomModal); setRoomLock(false); }}>돌아가기</button>
+                          <button type="button" onClick={() => { setMakeRoomModal(!makeroomModal); setRoomLock(false); setDisable(false); }}>돌아가기</button>
                         </span>
                       </div>
                     </MakeRoomModalBody>
