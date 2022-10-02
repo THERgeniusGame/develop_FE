@@ -30,7 +30,7 @@ const ReportContent = () => {
 
     const onclickHandle = () => {
         if (editInput === "") {
-            Swal.fire({ title: '내용을 입력해주세요.', timer: 3000 });
+            Swal.fire({ title: '내용을 입력해주세요.', timer: 3000, confirmButtonColor: "black" });
         } else {
             setEditRequest(!editRequest);
             dispatch(__EditReportContent({reportId, commentContent:editInput}))

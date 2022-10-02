@@ -26,41 +26,41 @@ const EditPw = () => {
         if (emailPass.test(checkEmail) === true) {
             dispatch(__SendDup(checkEmail))
         } else {
-            Swal.fire({ title: '이메일 형식을 확인해주세요.', timer: 1500 });
+            Swal.fire({ title: '이메일 형식을 확인해주세요.', timer: 1500, confirmButtonColor: "black" });
         }
     }
 
     const onclickCheckDup = () => {
         if (checkEmailDup !== undefined && checkEmailDup !== "") {
             if (data?.data === +checkEmailDup) {
-                Swal.fire({ title: '이메일 인증에 성공했습니다.', timer: 1500 });
+                Swal.fire({ title: '이메일 인증에 성공했습니다.', timer: 1500, confirmButtonColor: "black" });
                 setDup(true);
             } else {
-                Swal.fire({ title: '인증번호를 확인해주세요.', timer: 1500 });
+                Swal.fire({ title: '인증번호를 확인해주세요.', timer: 1500, confirmButtonColor: "black" });
             }
         } else {
-            Swal.fire({ title: '인증번호를 입력해주세요.', timer: 1500 });
+            Swal.fire({ title: '인증번호를 입력해주세요.', timer: 1500, confirmButtonColor: "black" });
         }
     }
 
     const onclickSubmit = (e) => {
         if (emailPass.test(checkEmail) !== true) {
-            Swal.fire({ title: '이메일 형식을 확인해주세요.', timer: 1500 });
+            Swal.fire({ title: '이메일 형식을 확인해주세요.', timer: 1500, confirmButtonColor: "black" });
         } else {
             if (data?.data !== +checkEmailDup) {
-                Swal.fire({ title: '인증번호를 확인해주세요.', timer: 1500 });
+                Swal.fire({ title: '인증번호를 확인해주세요.', timer: 1500, confirmButtonColor: "black" });
             } else {
                 if (Dup === false) {
-                    Swal.fire({ title: '이메일을 인증해주세요.', timer: 1500 });
+                    Swal.fire({ title: '이메일을 인증해주세요.', timer: 1500, confirmButtonColor: "black" });
                 } else {
                     if (regPass.test(password) !== true) {
-                        Swal.fire({ title: '비밀번호 형식을 확인해주세요.', timer: 1500 });
+                        Swal.fire({ title: '비밀번호 형식을 확인해주세요.', timer: 1500, confirmButtonColor: "black" });
                     } else {
                         if (password !== confirmPassword) {
-                            Swal.fire({ title: '비밀번호가 서로 일치하지 않습니다.', timer: 1500 });
+                            Swal.fire({ title: '비밀번호가 서로 일치하지 않습니다.', timer: 1500, confirmButtonColor: "black" });
                         } else {
                             dispatch(__EditPw({email:checkEmail, emailConFirm:checkEmailDup, password, confirmPw:confirmPassword}))
-                            Swal.fire({ title: '비밀번호를 변경했습니다.', timer: 1500 });
+                            Swal.fire({ title: '비밀번호를 변경했습니다.', timer: 1500, confirmButtonColor: "black" });
                             navigate("/login")
                         }
                     }
