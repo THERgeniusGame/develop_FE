@@ -123,7 +123,7 @@ https://www.figma.com/file/0XBiaSNcr9NcTTKjBKfv1x/THERgeniusGame?node-id=0%3A1
 ### 회원가입 페이지 플로우차트
 ![회원가입](https://user-images.githubusercontent.com/105829258/192963976-3424756a-1ca5-4736-bba5-4849a9c3e913.png)
 ### 로그인 페이지 플로우차트
-![로그인 (1)](https://user-images.githubusercontent.com/105829258/192964058-1a2d68dc-4866-4347-aa6c-93ef4d0a3f91.png)
+![로그인 플로우차트](https://user-images.githubusercontent.com/105829258/193446102-05a8ec2f-1912-4bf7-b052-90e06f49694b.png)
 ### 메인 페이지 플로우차트
 ![메인](https://user-images.githubusercontent.com/105829258/192964156-94016a99-ed51-408e-b902-0dc7458f9967.png)
 ### 게임 대기실 페이지 플로우차트
@@ -131,7 +131,7 @@ https://www.figma.com/file/0XBiaSNcr9NcTTKjBKfv1x/THERgeniusGame?node-id=0%3A1
 ### 인게임 페이지 플로우차트
 ![룸(게임) 페이지](https://user-images.githubusercontent.com/105829258/192964497-56278dc5-782a-43f3-af5b-7e5ef10a22d9.png)
 ### 랭킹 페이지 플로우차트
-![랭킹](https://user-images.githubusercontent.com/105829258/192964589-46ca94c4-8504-45db-b2ba-d4e351eda759.png)
+![랭킹 페이지 플로우차트](https://user-images.githubusercontent.com/105829258/193446109-edc92ede-ae50-4dbe-9806-18ad2c869cd4.png)
 ### 신고 페이지 플로우차트
 ![신고](https://user-images.githubusercontent.com/105829258/192964650-164c1eb1-1834-44df-85ad-1bb7f8f28006.png)
 ### 토큰 플로우차트
