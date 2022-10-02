@@ -76,7 +76,8 @@ export const __signOut = createAsyncThunk(
                 }
             ).then((data) => {
                 Swal.fire({ title: '탈퇴가 완료되었습니다.', timer: 1500, confirmButtonColor: "black" });
-                window.location.replace("/login")
+                localStorage.removeItem("token");
+                window.location.replace("/login");
             })
             return res
         } catch (err) {
