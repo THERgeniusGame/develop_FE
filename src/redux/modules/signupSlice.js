@@ -60,27 +60,27 @@ export const __checkNickname = createAsyncThunk(
     }
 );
 
+
 //회원탈퇴
 export const __signOut = createAsyncThunk(
     "signup/signOut",
     async (payload, thunkAPI) => {
         try {
             const res = await axios.delete(
-                process.env.REACT_APP_ENDPOINT + "/user/secession", { comment: payload },
+                process.env.REACT_APP_ENDPOINT + "/user/secession",
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,
+                        authorization: `Bearer ${token}`,
                     },
+                    data: { comment: payload }
                 }
             ).then((data) => {
-                console.log(data)
-                // Swal.fire({ title: '탈퇴가 완료되었습니다.', timer: 1500, confirmButtonColor: "black" });
-                // window.location.replace("/login")
+                Swal.fire({ title: '탈퇴가 완료되었습니다.', timer: 1500, confirmButtonColor: "black" });
+                window.location.replace("/login")
             })
             return res
         } catch (err) {
-            console.log(err)
-            // Swal.fire({ title: '회원가입에 실패했습니다.', timer: 1500, confirmButtonColor: "black" });
+            Swal.fire({ title: '회원탈퇴에 실패했습니다.', timer: 1500, confirmButtonColor: "black" });
             return err
         }
     }
