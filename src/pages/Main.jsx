@@ -29,6 +29,7 @@ import { FaSearch } from 'react-icons/fa';
 import { IoMdAdd } from 'react-icons/io';
 import { FaChevronLeft } from 'react-icons/fa';
 import { FaChevronRight } from 'react-icons/fa';
+import { FaSearch } from 'react-icons/fa';
 import { __lock, __unLock } from "../redux/modules/lockSlice";
 
 function Main() {
@@ -55,21 +56,20 @@ function Main() {
 
   const [unLockPage, setUnLockPage] = useState(1);
   const [lockPage, setLockPage] = useState(1);
+
   const [pageDisplay, setPageDisplay] = useState(1);
-  console.log(pageDisplay)
+
   const [pageLockDisplay, setpageLockDisplay] = useState(1);
   const [pageUnlockDisplay, setPageUnlockDisplay] = useState(1);
   
-  // 방의 총 개수
-  const allRoomNum = useSelector((state) => state.getmainroom.roomNum) 
-  console.log(allRoomNum)
-  const lockRoomNum = useSelector((state) => state.getmainroom.lockNum)
-  console.log(lockRoomNum)
-  const unlockRoomNum = useSelector((state) => state.getmainroom.unlockNum)
-  console.log(unlockRoomNum)
+  const allRoomNum = useSelector((state) => state?.getmainroom?.roomNum) 
+
+  const lockRoomNum = useSelector((state) => state?.getmainroom?.lockNum)
+
+  const unlockRoomNum = useSelector((state) => state?.getmainroom?.unlockNum)
+
 
   // 방 입장 
-  const [roompw, setRoompw] = useState('');
   const [checkpw, setCheckpw] = useState('');
   const [roomId, setRoomId] = useState(0);
 
@@ -79,8 +79,7 @@ function Main() {
   const [HowTo, setHowTo] = useState(false);
   const [HowToPage, setHowTopage] = useState(1);
   const pwSubmit = (e) => {
-    e.preventDefault();
-    if (roompw === checkpw) {
+    if (roomPw === checkpw) {
       navigate(`/room/${roomId}`)
     } else {
       setCheckpw("");
@@ -232,6 +231,7 @@ function Main() {
               </div>
               <Roomsearch
                 style={{ marginTop: "140px" }}
+
                 onSubmit={(e) => {
                   e.preventDefault();
                   if (input === '') {
@@ -239,6 +239,7 @@ function Main() {
                   } else {
                     dispatch(__search(input))
                     setInput({keyword:""})
+
                   }
                 }
                 }>
@@ -362,6 +363,7 @@ function Main() {
                   <PwModal onSubmit={(e) => {
                     e.preventDefault();
                     pwSubmit(e)}} type="button" onClick={() => {
+
                     setPwModal(!pwModal)
                   }}>
                     <PwModalBody onClick={(event) => { event.stopPropagation() }} >

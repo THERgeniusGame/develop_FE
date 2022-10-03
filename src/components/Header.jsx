@@ -57,7 +57,7 @@ const Header = () => {
             {mynickname} ▼
           </Profile>
         </div>
-        {modal == true ?
+        {modal === true ?
           <MypageModal
             setModal={setModal}
           />
