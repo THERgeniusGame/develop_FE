@@ -9,7 +9,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { __getMyRank } from "../redux/modules/myPageSlice";
 
 import Swal from 'sweetalert2'
-import { useSelector } from "react-redux";
 
 const Header = () => {
 
