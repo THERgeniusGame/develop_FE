@@ -88,13 +88,13 @@ const ReportContent = () => {
                                                 <div style={{ marginTop: "5px" }}>{getAnswer?.commentContent}</div>
                                                 <Btn onClick={() => { setEditContent(true); }}>수정하기</Btn>
                                             </div> :
-                                            <form onSubmit={(e)=> {onsubmitHandle();}} style={{ display: "flex", justifyContent: "space-between" }}>
+                                            <form onSubmit={(e) => { onsubmitHandle(); }} style={{ display: "flex", justifyContent: "space-between" }}>
                                                 <input value={editInput} onChange={(e) => { setEditInput(e.target.value); }} style={{ width: "890px", margin: "7px 5px 5px 5px", paddingLeft: "10px", fontSize: "21px" }}></input>
                                                 <Btn type="button" onClick={() => { setEditContent(false); }}>취소하기</Btn>
                                             </form>}
                                 </AnswerResponse>
                             </Answer>
-                            : getAnswer === null ? null :
+                            : getAnswer?.length === 0 ? null :
                                 <Answer>
                                     <AnswerTxt>
                                         답변

@@ -13,17 +13,21 @@ const ReportList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const allReport = useSelector((state) => state?.report?.getReportList)
+  const allReport = useSelector((state) => state?.report?.getReport?.reportList)
+
+  const reportNum = useSelector((state) => state?.report?.getReport?.total)
+
 
   const [page, setPage] = useState(1); //현재 페이지x
 
   //페이지네이션
   const handlePageChange = (page) => { setPage(page); };
+  const [pageDisplay, setPageDisplay] = useState(1);
 
   useEffect(() => {
-    dispatch(__getReportList(page));
-  }, [page])
-  
+    dispatch(__getReportList(page))
+    setPageDisplay(Math.ceil(reportNum / 9))
+  }, [page, reportNum])
   return (
     <>
       <Header />
@@ -58,8 +62,8 @@ const ReportList = () => {
               <Pagination
                 activePage={page} // 현재 페이지
                 itemsCountPerPage={9} //한 페이지 당 보여줄 리스트 룸의 개수
-                totalItemsCount={300} // 총 룸의 개수
-                pageRangeDisplayed={5} // pagenator 내에서 보여줄 페이지의 범위
+                totalItemsCount={reportNum} // 총 룸의 개수
+                pageRangeDisplayed={pageDisplay} // pagenator 내에서 보여줄 페이지의 범위
                 onChange={handlePageChange} // 페이지
               />
             </PaginationContainer>

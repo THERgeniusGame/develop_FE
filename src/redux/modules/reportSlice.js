@@ -24,7 +24,7 @@ export const __getReportList = createAsyncThunk(
                     },
                 }
             );
-            return res.data.reportList
+            return res.data
         } catch (err) {
             return err
         }
@@ -60,7 +60,7 @@ export const __getAnswer = createAsyncThunk(
                     },
                 }
             );
-            return res.data
+            return res
         } catch (err) {
             return err
         }
@@ -128,7 +128,7 @@ export const __EditReportContent = createAsyncThunk(
     "report/editReportContent",
     async (payload, thunkAPI) => {
         try {
-            const data = await axios.put(process.env.REACT_APP_ENDPOINT + `/report/${payload.reportId}/comment`, { commentContent:payload.commentContent },
+            const data = await axios.put(process.env.REACT_APP_ENDPOINT + `/report/${payload.reportId}/comment`, { commentContent: payload.commentContent },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -147,7 +147,7 @@ export const __PostReportContent = createAsyncThunk(
     "report/postReportContent",
     async (payload, thunkAPI) => {
         try {
-            const data = await axios.post(process.env.REACT_APP_ENDPOINT + `/report/${payload.reportId}/comment`, { commentContent:payload.commentContent },
+            const data = await axios.post(process.env.REACT_APP_ENDPOINT + `/report/${payload.reportId}/comment`, { commentContent: payload.commentContent },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -172,12 +172,11 @@ export const reportSlice = createSlice({
 
             // GET 신고목록 (신고 메인페이지)
             .addCase(__getReportList.fulfilled, (state, action) => {
-                state.getReportList = action.payload
+                state.getReport = action.payload
+                //state.getReportList = action.payload
+
             })
             .addCase(__getReportList.rejected, (state, action) => {
-            })
-            .addCase(__getReportList.pending, (state, action) => {
-
             })
 
             // GET 신고 상세페이지 content
@@ -190,7 +189,9 @@ export const reportSlice = createSlice({
 
             // GET 신고 상세페이지 answer
             .addCase(__getAnswer.fulfilled, (state, action) => {
-                state.getAnswer = action.payload
+                state.getAnswer = [...action.payload.data]
+                //state.getAnswer = action.payload
+
             })
             .addCase(__getAnswer.rejected, (state, action) => {
             })

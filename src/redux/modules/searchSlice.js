@@ -22,8 +22,9 @@ export const __search = createAsyncThunk(
                         Authorization: `Bearer ${token}`,
                     },
                 }
+                
             )
-            return res.data.result
+            return res.data
         } catch (err) {
             return err
         }
@@ -44,6 +45,8 @@ export const searchSlice = createSlice({
         .addCase(__search.rejected, (state, action) => {
             state.data = action.payload;
         })
+
+
     },
 });
 
