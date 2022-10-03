@@ -24,10 +24,8 @@ export const __getReportList = createAsyncThunk(
                     },
                 }
             );
-                //console.log(res.data)
             return res.data
         } catch (err) {
-            //console.log(err)
             return err
         }
     });
@@ -54,7 +52,6 @@ export const __getReport = createAsyncThunk(
 export const __getAnswer = createAsyncThunk(
     "GET_REPORT_ANSWER",
     async (reportId, thunkAPI) => {
-        console.log(reportId)
         try {
             const res = await axios.get(process.env.REACT_APP_ENDPOINT + `/report/${reportId}/comment`,
                 {
@@ -131,7 +128,7 @@ export const __EditReportContent = createAsyncThunk(
     "report/editReportContent",
     async (payload, thunkAPI) => {
         try {
-            const data = await axios.put(process.env.REACT_APP_ENDPOINT + `/report/${payload.reportId}/comment`, { commentContent:payload.commentContent },
+            const data = await axios.put(process.env.REACT_APP_ENDPOINT + `/report/${payload.reportId}/comment`, { commentContent: payload.commentContent },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -150,7 +147,7 @@ export const __PostReportContent = createAsyncThunk(
     "report/postReportContent",
     async (payload, thunkAPI) => {
         try {
-            const data = await axios.post(process.env.REACT_APP_ENDPOINT + `/report/${payload.reportId}/comment`, { commentContent:payload.commentContent },
+            const data = await axios.post(process.env.REACT_APP_ENDPOINT + `/report/${payload.reportId}/comment`, { commentContent: payload.commentContent },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

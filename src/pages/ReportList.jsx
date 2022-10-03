@@ -14,7 +14,7 @@ const ReportList = () => {
   const dispatch = useDispatch();
 
   const allReport = useSelector((state) => state?.report?.getReport?.reportList)
-  
+
   const reportNum = useSelector((state) => state?.report?.getReport?.total)
 
 
