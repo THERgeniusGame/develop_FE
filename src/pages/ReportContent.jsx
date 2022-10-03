@@ -22,8 +22,8 @@ const ReportContent = () => {
     const { reportId } = useParams();
 
     useEffect(() => {
-        dispatch(__getReport(reportId)); //reportId가 slice로 넘어감
-        dispatch(__getAnswer(reportId));
+        dispatch(__getReport(reportId))
+        dispatch(__getAnswer(reportId))
     }, [])
 
     const [editRequest, setEditRequest] = useState(false);

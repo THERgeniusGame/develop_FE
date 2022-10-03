@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { __getMyRank } from "../redux/modules/myPageSlice";
 
 import Swal from 'sweetalert2'
+import { useSelector } from "react-redux";
 
 const Header = () => {
 
@@ -19,6 +20,9 @@ const Header = () => {
   const [modal, setModal] = useState(false);
 
   const token = localStorage.getItem("token");
+  
+  const nickname = useSelector((state) => state.getMyPage)
+  console.log(nickname)
 
   if (token === null || token === undefined) {
     Swal.fire({ title: '로그인이 필요합니다.', timer: 2000, confirmButtonColor: "black" });

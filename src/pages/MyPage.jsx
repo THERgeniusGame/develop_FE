@@ -37,13 +37,6 @@ const MyPage = () => {
     }
   }
 
-  // //페이지네이션 - 랭킹페이지
-  // const [page, setPage] = useState(1); //현재 페이지
-
-  // const handlePageChange = (page) => {
-  //   setPage(page);
-  // };
-
   const rankEndRef = useRef(null);
   const scrollToBottom = () => {
     rankEndRef.current?.scrollIntoView({ behavior: "smooth" })
