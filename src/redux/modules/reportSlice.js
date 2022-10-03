@@ -24,8 +24,10 @@ export const __getReportList = createAsyncThunk(
                     },
                 }
             );
-            return res.data.reportList
+                //console.log(res.data)
+            return res.data
         } catch (err) {
+            //console.log(err)
             return err
         }
     });
@@ -52,6 +54,7 @@ export const __getReport = createAsyncThunk(
 export const __getAnswer = createAsyncThunk(
     "GET_REPORT_ANSWER",
     async (reportId, thunkAPI) => {
+        console.log(reportId)
         try {
             const res = await axios.get(process.env.REACT_APP_ENDPOINT + `/report/${reportId}/comment`,
                 {
@@ -60,7 +63,7 @@ export const __getAnswer = createAsyncThunk(
                     },
                 }
             );
-            return res.data
+            return res
         } catch (err) {
             return err
         }
@@ -172,12 +175,11 @@ export const reportSlice = createSlice({
 
             // GET 신고목록 (신고 메인페이지)
             .addCase(__getReportList.fulfilled, (state, action) => {
-                state.getReportList = action.payload
+                state.getReport = action.payload
+                //state.getReportList = action.payload
+
             })
             .addCase(__getReportList.rejected, (state, action) => {
-            })
-            .addCase(__getReportList.pending, (state, action) => {
-
             })
 
             // GET 신고 상세페이지 content
@@ -190,7 +192,9 @@ export const reportSlice = createSlice({
 
             // GET 신고 상세페이지 answer
             .addCase(__getAnswer.fulfilled, (state, action) => {
-                state.getAnswer = action.payload
+                state.getAnswer = [...action.payload.data]
+                //state.getAnswer = action.payload
+
             })
             .addCase(__getAnswer.rejected, (state, action) => {
             })

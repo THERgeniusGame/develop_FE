@@ -1,4 +1,5 @@
 import axios from "axios";
+import Swal from "sweetalert2";
 
 // axios 기본 주소 & header 타입 세팅
 export const api = axios.create({
@@ -16,5 +17,27 @@ api.interceptors.request.use(function (config) {
   return config;
 });
 
+// Axios 인스턴스 설정
+const instance = axios.create({
+  baseURL: process.env.REACT_APP_SURVER,
+});
 
-//success 받고 이동하도록
+// ┏----------interceptor를 통한 response 설정----------┓
+instance.interceptors.response.use(
+  async response => {
+      if (response.data.message === "new token") {
+          const { config } = response;
+          const originalRequest = config;
+
+          const newAccessToken = response.data.myNewToken;
+          // localStorage.setItem("token", newAccessToken);
+          localStorage.removeItem("token")
+
+          axios.defaults.headers.common.authorization = `Bearer ${newAccessToken}`;
+          originalRequest.headers.authorization = `Bearer ${newAccessToken}`;
+          return axios(originalRequest);
+      }
+      return response;
+  },
+  
+);

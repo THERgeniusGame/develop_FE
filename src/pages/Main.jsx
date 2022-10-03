@@ -25,10 +25,10 @@ import HowTo6 from "../shared/image/MainIMG/HowTo6.png";
 
 import Swal from 'sweetalert2'
 
+import { FaSearch } from 'react-icons/fa'; 
 import { IoMdAdd } from 'react-icons/io';
 import { FaChevronLeft } from 'react-icons/fa';
 import { FaChevronRight } from 'react-icons/fa';
-import { FaSearch } from 'react-icons/fa';
 import { __lock, __unLock } from "../redux/modules/lockSlice";
 
 function Main() {
@@ -36,7 +36,7 @@ function Main() {
 
   const dispatch = useDispatch();
 
-  const rooms = useSelector((state) => state.getmainroom.data.result);
+  const rooms = useSelector((state) => state.getmainroom.result);
   const Loading = useSelector((state) => state.getmainroom.isLoading);
   const [resp, setResp] = useState([]);
   const [lock, setLock] = useState("ALL");
@@ -55,6 +55,18 @@ function Main() {
 
   const [unLockPage, setUnLockPage] = useState(1);
   const [lockPage, setLockPage] = useState(1);
+
+  const [pageDisplay, setPageDisplay] = useState(1);
+
+  const [pageLockDisplay, setpageLockDisplay] = useState(1);
+  const [pageUnlockDisplay, setPageUnlockDisplay] = useState(1);
+  
+  const allRoomNum = useSelector((state) => state?.getmainroom?.roomNum) 
+
+  const lockRoomNum = useSelector((state) => state?.getmainroom?.lockNum)
+
+  const unlockRoomNum = useSelector((state) => state?.getmainroom?.unlockNum)
+
 
   // 방 입장 
   const [checkpw, setCheckpw] = useState('');
@@ -106,12 +118,22 @@ function Main() {
     dispatch(__search(page.page));
     dispatch(__unLock(unLockPage));
     dispatch(__lock(lockPage));
+    setInput({keyword:""})
     setResp(rooms);
-  }, [page, rooms?.length, lock, lockPage, unLockPage]);
-
+    setPageDisplay(Math.ceil(allRoomNum / 9));
+    setpageLockDisplay(Math.ceil(lockRoomNum / 9));
+    setPageUnlockDisplay(Math.ceil(unlockRoomNum / 9));
+  }, [page , rooms?.length, lock, lockPage, unLockPage
+    //, allRoomNum
+    , lockRoomNum, unlockRoomNum
+  ]);
 
   // 검색 기능
-  const searchRoom = useSelector((state) => state.search.data)
+  //const searchRoom = useSelector((state) => state)
+  const searchRoom = useSelector((state) => state?.search?.data?.result)
+  console.log(searchRoom)
+  // const searchNum = useSelector((state) => state.search)
+  // console.log(searchNum)
 
   const [input, setInput] = useState({
     keyword: "",
@@ -142,16 +164,28 @@ function Main() {
                 </div>
                 <ChooseLock style={{ marginTop: "30px" }}>
                   {lock === "ALL" ?
-                    <button onClick={(e) => { setResp(rooms); setLock("ALL"); }}>전체방</button> :
-                    <div style={{ display: "flex" }} onClick={(e) => { setResp(rooms); setLock("ALL") }}>
+                    <button onClick={(e) => { 
+                      setResp(rooms); setLock("ALL") 
+                      dispatch(__GetMainRoom(page.page))
+                      setInput({keyword:""})
+                      setSearchStatus(false)
+                    }}>전체방</button> :
+                  <div style={{ display: "flex" }} onClick={(e) => { 
+                      setResp(rooms); setLock("ALL") 
+                      dispatch(__GetMainRoom(page.page))
+                      setInput({keyword:""})
+                      setSearchStatus(false)
+                    }}>
                       <span style={{ display: "flex", margin: "auto" }}>전체방</span>
                     </div>
-                  }
+                 }
                   {lock === "unLock" ?
                     <button
                       onClick={(e) => {
                         setResp(rooms?.filter((res) => (res.roomLock === false)));
                         setLock("unLock")
+                        dispatch(__unLock(unLockPage));
+                        setInput({keyword:""})
                       }}
                     >공개방</button>
                     :
@@ -160,6 +194,8 @@ function Main() {
                       onClick={(e) => {
                         setResp(rooms?.filter((res) => (res.roomLock === false)));
                         setLock("unLock")
+                        dispatch(__unLock(unLockPage));
+                        setInput({keyword:""})
                       }}
                     >
                       <span
@@ -172,6 +208,8 @@ function Main() {
                       onClick={(e) => {
                         setResp(rooms?.filter((res) => (res.roomLock === true)));
                         setLock("Lock")
+                        dispatch(__lock(lockPage));
+                        setInput({keyword:""})
                       }}
                     >비공개방</button> :
                     <div
@@ -179,6 +217,8 @@ function Main() {
                       onClick={(e) => {
                         setResp(rooms?.filter((res) => (res.roomLock === true)));
                         setLock("Lock")
+                        dispatch(__lock(lockPage));
+                        setInput({keyword:""})
                       }}
                     >
                       <span
@@ -189,16 +229,16 @@ function Main() {
                 </ChooseLock>
               </div>
               <Roomsearch
-                style={{ marginTop: "100px" }}
+                style={{ marginTop: "140px" }}
+
                 onSubmit={(e) => {
                   e.preventDefault();
                   if (input === '') {
                     Swal.fire({ title: '검색어를 입력해주세요.', timer: 1500, confirmButtonColor: "black" })
                   } else {
-                    dispatch(__search(input));
-                    setInput({
-                      keyword: ""
-                    });
+                    dispatch(__search(input))
+                    setInput({keyword:""})
+
                   }
                 }
                 }>
@@ -237,7 +277,6 @@ function Main() {
                     setPwModal={setPwModal}
                   ></RoomsList>
                 )
-
               })) : null}
 
               {/* 전체방 + 검색 O */}
@@ -277,13 +316,13 @@ function Main() {
               })) : null}
             </MainBody>
 
-            {lock === "ALL" && lock !== "Lock" && lock !== "unLock" ? //전체
+            {lock === "ALL" && lock !== "Lock" && lock !== "unLock" ? //전체 (검색 o)
               <PaginationContainer>
                 <Pagination
-                  activePage={page.page}
-                  itemsCountPerPage={9}
-                  totalItemsCount={450}
-                  pageRangeDisplayed={5}
+                  activePage={page.page} //현재 보고있는 페이지
+                  itemsCountPerPage={9} 
+                  totalItemsCount={allRoomNum} //총 아이템 수
+                  pageRangeDisplayed={pageDisplay} // 표시할 페이지 수 
                   onChange={handlePageChange}
                 />
               </PaginationContainer> : null}
@@ -293,8 +332,8 @@ function Main() {
                 <Pagination
                   activePage={unLockPage}
                   itemsCountPerPage={9}
-                  totalItemsCount={450}
-                  pageRangeDisplayed={5}
+                  totalItemsCount={unlockRoomNum}
+                  pageRangeDisplayed={pageUnlockDisplay}
                   onChange={unLockPageChange}
                 />
               </PaginationContainer> : null}
@@ -304,13 +343,11 @@ function Main() {
                 <Pagination
                   activePage={lockPage}
                   itemsCountPerPage={9}
-                  totalItemsCount={450}
-                  pageRangeDisplayed={5}
+                  totalItemsCount={lockRoomNum}
+                  pageRangeDisplayed={pageLockDisplay}
                   onChange={lockPageChange}
                 />
               </PaginationContainer> : null}
-
-
 
             <MakeRoom onClick={() => { setMakeRoomModal(true); }}>
               <div style={{ display: "flex" }}>방만들기
@@ -322,7 +359,10 @@ function Main() {
             {
               pwModal === true ? (
                 <>
-                  <PwModal onSubmit={(e) => { e.preventDefault(); pwSubmit(e);}} type="button" onClick={() => {
+                  <PwModal onSubmit={(e) => {
+                    e.preventDefault();
+                    pwSubmit(e)}} type="button" onClick={() => {
+
                     setPwModal(!pwModal)
                   }}>
                     <PwModalBody onClick={(event) => { event.stopPropagation() }} >
@@ -427,12 +467,10 @@ function Main() {
               </div>
             </HowToModal>
           </>)
-
           : ''
       }
     </>
   );
-
 }
 
 export default Main;
