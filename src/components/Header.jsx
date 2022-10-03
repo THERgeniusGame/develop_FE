@@ -53,7 +53,7 @@ const Header = () => {
             {mynickname} ▼
           </Profile>
         </div>
-        {modal == true ?
+        {modal === true ?
           <MypageModal
             setModal={setModal}
           />
@@ -66,9 +66,6 @@ const Header = () => {
 
 export default Header;
 
-const Modal = styled.div`
-  
-`
 const HeaderBox = styled.div`
   height: 56px;
   display: flex;

@@ -39,7 +39,6 @@ function Room() {
     const [guestNickname, setGuestNickname] = useState('');
 
     //소켓아이디
-    const [mysocketId, setMysocketId] = useState('');
     const [guestsoketId, setGuestsoketId] = useState('');
     const [ownersoketId, setOwnersoketId] = useState('');
 
@@ -66,7 +65,6 @@ function Room() {
     const [cardPick, setCardPick] = useState(false);
     const [Giveturn, setGiveturn] = useState([]);
     const [TurnWinner, setTurnWinner] = useState('');
-    const [turnLoser, setTurnLoser] = useState('');
     const [limitCoin, setLimitCoin] = useState(10);
     const [gameWinner, setGameWinner] = useState('');
     const [winGame, setWinGame] = useState(false);
@@ -75,7 +73,7 @@ function Room() {
     const [resultModal, setresultModal] = useState(false);
     const [getCoin, setGetCoin] = useState(0);
     const [unableBTN, setUnableBTN] = useState(false);
-    const [winnerList, setWinnerList] = useState([]); // 라운드 결과 list
+    const [winnerList] = useState([]); // 라운드 결과 list
     //게스트 진행정보
     const [guestCards, setGuestCards] = useState([]);
     const [guestBattingCards, setGuestBattingCards] = useState([]);
@@ -142,7 +140,6 @@ function Room() {
             setList(prev => prev.concat({ text: "음악설정은 게임시작 전에만 가능합니다." }));
             socket.emit("chat", { nickname: login.mynickname, msg: "님이 입장하셨습니다." });
             setMyUserId(login.userId);
-            setMysocketId(login.socketId); //나의 소켓 아이디
             setMyNickname(login.nickname); //나의 닉네임
         });
 
@@ -267,7 +264,6 @@ function Room() {
             setBatting(1);
             setRound(turnResult.round);
             setTurnWinner(turnResult.winner);
-            setTurnLoser(turnResult.loser);
             const owner = turnResult.owner;
             const guest = turnResult.guest;
             //오너
@@ -321,7 +317,6 @@ function Room() {
     socket.on("gameStart_user", gameStart_user => {
         setMyUserId(gameStart_user.userId);
         setMyNickname(gameStart_user.nickname);
-        setMysocketId(gameStart_user.socketId);
     })
 
     socket.on("login_user", login_user => {
