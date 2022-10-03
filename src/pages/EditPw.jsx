@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import "../components/assets/fonts/font.css"
 import SignUp from "../shared/image/SignUp.png"

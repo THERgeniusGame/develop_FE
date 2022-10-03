@@ -4,7 +4,6 @@ import { useSelector } from "react-redux/es/exports";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import Pagination from "react-js-pagination";
 import Background from "../shared/image/RoomIMG/RoomBackground.png";
 import { useParams } from "react-router-dom";
 

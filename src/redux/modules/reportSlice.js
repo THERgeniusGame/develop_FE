@@ -99,6 +99,7 @@ export const __EditReport = createAsyncThunk(
                 }
             ).then((res) => {
             })
+            return data
         } catch (err) {
             return err
         }
@@ -115,8 +116,8 @@ export const __deleteReport = createAsyncThunk(
                         Authorization: `Bearer ${token}`,
                     },
                 }
-            ).then((res) => {
-            })
+            )
+            return data
         } catch (err) {
             return err
         }
@@ -133,8 +134,8 @@ export const __EditReportContent = createAsyncThunk(
                         Authorization: `Bearer ${token}`,
                     },
                 }
-            ).then((res) => {
-            })
+            )
+            return data
         } catch (err) {
             return err
         }
@@ -153,6 +154,7 @@ export const __PostReportContent = createAsyncThunk(
                     },
                 }
             )
+            return data
         } catch (err) {
             return err
         }

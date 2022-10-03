@@ -20,8 +20,8 @@ export const __signup = createAsyncThunk(
     "signup",
     async (payload, thunkAPI) => {
         try {
-            const response = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/signup", payload)
-            return Swal.fire("회원가입이 완료되었습니다!", "success");
+            await axios.post(process.env.REACT_APP_ENDPOINT + "/user/signup", payload)
+            return Swal.fire("회원가입이 완료되었습니다!", "success"); 
         } catch (err) {
             Swal.fire({
                 icon: "error",
@@ -52,7 +52,7 @@ export const __checkNickname = createAsyncThunk(
     "signup/checknickname",
     async (payload, thunkAPI) => {
         try {
-            const response = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/checknickname", payload)
+            await axios.post(process.env.REACT_APP_ENDPOINT + "/user/checknickname", payload)
             return true;
         } catch (err) {
             return false
@@ -74,7 +74,7 @@ export const __signOut = createAsyncThunk(
                     },
                     data: { comment: payload }
                 }
-            ).then((data) => {
+            ).then(() => {
                 Swal.fire({ title: '탈퇴가 완료되었습니다.', timer: 1500, confirmButtonColor: "black" });
                 localStorage.removeItem("token");
                 window.location.replace("/login");
