@@ -26,7 +26,7 @@ function Room() {
     const roomId = +params.roomId;
     const room = roomId;
     const token = localStorage.getItem("token");
-
+    const navigate = useNavigate();
     const [title, setTitle] = useState("");
 
     //유저Id
@@ -139,6 +139,7 @@ function Room() {
 
         socket.on("login_user", login => {
             setReady(false);
+            setList(prev => prev.concat({ text: "음악설정은 게임시작 전에만 가능합니다." }));
             socket.emit("chat", { nickname: login.mynickname, msg: "님이 입장하셨습니다." });
             setMyUserId(login.userId);
             setMysocketId(login.socketId); //나의 소켓 아이디
@@ -205,7 +206,7 @@ function Room() {
         });
 
         socket.on("kick", kick => {
-            Swal.fire({ title: '방장에 의해 추방되었습니다.', timer: 1500 });
+            Swal.fire({ title: '방장에 의해 추방되었습니다.', timer: 1500, confirmButtonColor: "black" });
             socket.emit("forceDisconnect");
             setReady(false);
             window.location.replace("/");
@@ -379,7 +380,6 @@ function Room() {
     });
 
     socket.on("gameEnd", gameEnd => {
-        console.log(gameEnd)
         if (gameEnd.winner === mynickname) {
             setWinGame(true);
         } else if (gameEnd.loser === mynickname) {
@@ -392,19 +392,19 @@ function Room() {
 
     socket.on("error", error => {
         if (error.error === "Bad-Request") {
-            Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 3000 })
+            Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 3000, confirmButtonColor: "black" })
         }
-        else if (error.error === "Bad-Request") { Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 3000 }) }
-        else if (error.error === "Expired-Token") { Swal.fire({ title: '로그인 유효시간이 경과하였습니다 다시 로그인해주세요.', timer: 3000 }); window.location.replace("/login"); }
-        else if (error.error === "Wrong-Url") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); window.location.replace("/");; }
-        else if (error.error === "None-User") { Swal.fire({ title: '존재하지 않는 유저입니다.', timer: 3000 }) }
-        else if (error.error === "Not-Your-Turn") { Swal.fire({ title: '나의 턴이 아닙니다.', timer: 3000 }) }
-        else if (error.error === "Err-Update-Result") { Swal.fire({ title: '결과를 가져오지 못했습니다.', timer: 3000 }) }
-        else if (error.error === "Failed_ReportChat") { Swal.fire({ title: '채팅 신고에 실패했습니다.', timer: 3000 }) }
-        else if (error.error === "Exist-ReportChat") { Swal.fire({ title: '이미 신고된 채팅입니다.', timer: 3000 }) }
-        else if (error.error === "None-Exist-Owner") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); window.location.replace("/");; }
-        else if (error.error === "Failed-ChatLog") { Swal.fire({ title: '채팅을 불러오지 못했습니다.', timer: 3000 }) }
-        else if (error.error === "None-Room") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000 }); window.location.replace("/");; }
+        else if (error.error === "Bad-Request") { Swal.fire({ title: '유효하지 않은 요청입니다.', timer: 3000, confirmButtonColor: "black" }) }
+        else if (error.error === "Expired-Token") { Swal.fire({ title: '로그인 유효시간이 경과하였습니다 다시 로그인해주세요.', timer: 3000, confirmButtonColor: "black" }); localStorage.removeItem("token"); navigate("/login"); }
+        else if (error.error === "Wrong-Url") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000, confirmButtonColor: "black" }); navigate("/");; }
+        else if (error.error === "None-User") { Swal.fire({ title: '존재하지 않는 유저입니다.', timer: 3000, confirmButtonColor: "black" }) }
+        else if (error.error === "Not-Your-Turn") { Swal.fire({ title: '나의 턴이 아닙니다.', timer: 3000, confirmButtonColor: "black" }) }
+        else if (error.error === "Err-Update-Result") { Swal.fire({ title: '결과를 가져오지 못했습니다.', timer: 3000, confirmButtonColor: "black" }) }
+        else if (error.error === "Failed_ReportChat") { Swal.fire({ title: '채팅 신고에 실패했습니다.', timer: 3000, confirmButtonColor: "black" }) }
+        else if (error.error === "Exist-ReportChat") { Swal.fire({ title: '이미 신고된 채팅입니다.', timer: 3000, confirmButtonColor: "black" }) }
+        else if (error.error === "None-Exist-Owner") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000, confirmButtonColor: "black" }); navigate("/");; }
+        else if (error.error === "Failed-ChatLog") { Swal.fire({ title: '채팅을 불러오지 못했습니다.', timer: 3000, confirmButtonColor: "black" }) }
+        else if (error.error === "None-Room") { Swal.fire({ title: '존재하지 않는 방입니다.', timer: 3000, confirmButtonColor: "black" }); navigate("/");; }
     });
 
     socket.on("out", out => {
@@ -420,13 +420,22 @@ function Room() {
                             {mynickname === ownerNickname ?
                                 //호스트 구역
                                 <div>
-                                    <div style={{ fontSize: "36px", width: "975px", margin: "auto auto 80px auto" }}>{title}
+                                    <div style={{ width: "975px", margin: "auto auto 80px auto", display: "flex", flexDirection: "row" }}>
+                                        <div style={{ width: '380px', overflow: "hidden", fontSize: "24px", paddingTop: "15px" }}>{title}</div>
+                                        <BGM controls loop autoplay>
+                                            <source src="https://drive.google.com/uc?export=download&id=1hKtNpVkNySh7M3flLQdxb1iBoi0713Ig" type="audio/mpeg" />
+                                            {/* <source src="https://drive.google.com/uc?export=download&id=1k1pPMFdFnJSjJ85UZLiby9MqMtK2Y66p" type="audio/mpeg" /> */}
+                                            {/* <source src="https://drive.google.com/uc?export=download&id=18pgZegsCPQzSu9_rYjqiBrQu1kM05fJC" type="audio/mpeg" /> */}
+                                            {/* <source src="https://drive.google.com/uc?export=download&id=134TZJDaFvGfuZ_vCx_jpnOzK92XShrmw" type="audio/mpeg" /> */}
+                                            {/* <source src="https://drive.google.com/uc?export=download&id=1HjqP_Qjh_okTKwfEWXdVwcXfWNz8rEc6" type="audio/mpeg" /> */}
+                                            {/* <source src="https://drive.google.com/uc?export=download&id=1F7cWcGtazXlX9Tl099hoJzE_Ro4X0X7M" type="audio/mpeg" /> */}
+                                        </BGM>
                                         {unableBTN === false ?
-                                            <Able style={{ float: "right" }}>
-                                                <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold", color: "red" }} onClick={() => { setGuestNickname(""); socket.emit("kick", { socketId: guestsoketId }); Swal.fire({ title: '상대를 추방했습니다.', timer: 1500 }) }}>추방하기</button>
+                                            <Able>
+                                                <button style={{ marginRight: "20px", fontSize: "18px", fontWeight: "bold", color: "red" }} onClick={() => { setGuestNickname(""); socket.emit("kick", { socketId: guestsoketId }); Swal.fire({ title: '상대를 추방했습니다.', timer: 1500, confirmButtonColor: "black" }) }}>추방하기</button>
                                                 <button onClick={() => {
                                                     if (ready !== true) {
-                                                        Swal.fire({ title: '상대가 아직 준비되지 않았습니다.', timer: 1500 })
+                                                        Swal.fire({ title: '상대가 아직 준비되지 않았습니다.', timer: 1500, confirmButtonColor: "black" })
                                                     } else {
                                                         socket.emit("gameStart", {
                                                             gameStart: true,
@@ -434,12 +443,12 @@ function Room() {
                                                         });
                                                         setUnableBTN(true);
                                                     }
-                                                }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>게임시작</button>
+                                                }} style={{ marginRight: "20px", fontSize: "18px", fontWeight: "bold" }}>게임시작</button>
                                                 <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { socket.emit("forceDisconnect"); window.location.replace("/");; }}>나가기</button>
                                             </Able> :
-                                            <Unable style={{ float: "right" }}>
-                                                <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>추방하기</button>
-                                                <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>게임시작</button>
+                                            <Unable>
+                                                <button style={{ marginRight: "20px", fontSize: "18px", fontWeight: "bold" }}>추방하기</button>
+                                                <button style={{ marginRight: "20px", fontSize: "18px", fontWeight: "bold" }}>게임시작</button>
                                                 <button style={{ fontSize: "18px", fontWeight: "bold" }}>나가기</button>
                                             </Unable>
                                         }
@@ -458,16 +467,26 @@ function Room() {
                                 </div> :
                                 //게스트 구역
                                 <div>
-                                    <div style={{ fontSize: "24px", width: "975px", margin: "auto auto 80px auto" }}>{title}님의 게임방
+                                    <div style={{ width: "975px", margin: "auto auto 80px auto", display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+                                        <div style={{ width: '380px', overflow: "hidden", fontSize: "24px", paddingTop: "15px" }}>{title}</div>
+                                        <BGM style={{marginLeft:"100px"}} controls loop autoplay>
+                                            <source src="https://drive.google.com/uc?export=download&id=1hKtNpVkNySh7M3flLQdxb1iBoi0713Ig" type="audio/mpeg" />
+                                            {/* <source src="https://drive.google.com/uc?export=download&id=1k1pPMFdFnJSjJ85UZLiby9MqMtK2Y66p" type="audio/mpeg" /> */}
+                                            {/* <source src="https://drive.google.com/uc?export=download&id=18pgZegsCPQzSu9_rYjqiBrQu1kM05fJC" type="audio/mpeg" /> */}
+                                            {/* <source src="https://drive.google.com/uc?export=download&id=134TZJDaFvGfuZ_vCx_jpnOzK92XShrmw" type="audio/mpeg" /> */}
+                                            {/* <source src="https://drive.google.com/uc?export=download&id=1HjqP_Qjh_okTKwfEWXdVwcXfWNz8rEc6" type="audio/mpeg" /> */}
+                                            {/* <source src="https://drive.google.com/uc?export=download&id=1F7cWcGtazXlX9Tl099hoJzE_Ro4X0X7M" type="audio/mpeg" /> */}
+                                        </BGM>
                                         {unableBTN === false ?
-                                            <Able style={{ float: "right" }}>
-                                                <button onClick={() => { if (unableBTN === false) { socket.emit("ready", { ready: !ready }); } else { Swal.fire({ title: "이미 게임이 시작되었습니다!", timer: 1500 }); } }} style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
+                                            <Able>
+                                                <button onClick={() => { if (unableBTN === false) { socket.emit("ready", { ready: !ready }); } else { Swal.fire({ title: "이미 게임이 시작되었습니다!", timer: 1500, confirmButtonColor: "black" }); } }} style={{ marginRight: "20px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
                                                 <button style={{ fontSize: "18px", fontWeight: "bold" }} onClick={() => { setGuestNickname(""); socket.emit("forceDisconnect"); window.location.replace("/");; }}>나가기</button>
                                             </Able> :
-                                            <Unable style={{ float: "right" }}>
-                                                <button style={{ marginRight: "30px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
+                                            <Unable>
+                                                <button style={{ marginRight: "20px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
                                                 <button style={{ fontSize: "18px", fontWeight: "bold" }}>나가기</button>
-                                            </Unable>}
+                                            </Unable>
+                                        }
                                     </div>
                                     <UserList>
                                         <span style={{ display: "flex" }}>
@@ -492,7 +511,7 @@ function Room() {
                                             {item.nickname + " : " + item.text}
                                         </Chat> :
                                         item.nickname === undefined ?
-                                            <p key={uuidv4()}>
+                                            <p style={{ color: "red", fontWeight: "bolder" }} key={uuidv4()}>
                                                 {item.text}
                                             </p> :
                                             item.text !== "님이 입장하셨습니다." && item.text !== "님이 퇴장하셨습니다." ?
@@ -547,7 +566,7 @@ function Room() {
                                     <button onClick={() => {
                                         if (round < 3) {
                                             console.log("")
-                                            Swal.fire({ title: "항복은 3라운드 이후에 가능합니다!", timer: 1500 });
+                                            Swal.fire({ title: "항복은 3라운드 이후에 가능합니다!", timer: 1500, confirmButtonColor: "black" });
                                         } else {
                                             socket.emit("gameEnd", {
                                                 name: ownerUserId,
@@ -651,12 +670,12 @@ function Room() {
                                 </MidBase>
                                 : ''}
                             {middleView === false && turn === true && cardPick === false && TurnWinner === '' && gameEnd === false ?
-                                <BattingMid onSubmit={(e) => { e.preventDefault(); 0 !== +batting && +batting <= limitCoin ? setCardPick(true) : Swal.fire({ title: `배팅은 1개 부터 ${Math.floor(limitCoin)}개 까지 가능합니다!`, timer: 1500 }); }}>
+                                <BattingMid onSubmit={(e) => { e.preventDefault(); 0 !== +batting && +batting <= limitCoin ? setCardPick(true) : Swal.fire({ title: `배팅은 1개 부터 ${Math.floor(limitCoin)}개 까지 가능합니다!`, timer: 1500, confirmButtonColor: "black" }); }}>
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>배팅을 시작해주세요.</div>
                                     <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{timer > 0 ? <span>남은 턴 시간 {timer}초</span> : <span>시간 종료</span>}</div>
                                     <div style={{ display: "flex", margin: "auto", fontSize: "18px" }}>배팅은 최대 {Math.floor(limitCoin)}개 까지 가능합니다.</div>
-                                    <div style={{ color:"red", margin:"auto"}}>배팅 후에는 수정할 수 없습니다. 신중히 배팅 해주세요!</div>
-                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => e.target.value > 0 ? setBatting(e.target.value) : Swal.fire({ title: "배팅은 1개 이상만 가능 합니다.", timer: 1500 })}></input><span style={{ marginTop: "10px" }}>개</span>
+                                    <div style={{ color: "red", margin: "auto" }}>배팅 후에는 수정할 수 없습니다. 신중히 배팅 해주세요!</div>
+                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => e.target.value > 0 ? setBatting(e.target.value) : Swal.fire({ title: "배팅은 1개 이상만 가능 합니다.", timer: 1500, confirmButtonColor: "black" })}></input><span style={{ marginTop: "10px" }}>개</span>
                                         <button style={{ marginLeft: "10px", marginTop: "3px" }}>배팅하기</button></div>
                                 </BattingMid> : ''}
                             {middleView === false && turn === true && cardPick === true && gameEnd === false ?
@@ -684,7 +703,7 @@ function Room() {
                                             });
                                             setBatting(0);
                                         } else {
-                                            Swal.fire({ title: "카드를 선택해주세요!", timer: 1500 });
+                                            Swal.fire({ title: "카드를 선택해주세요!", timer: 1500, confirmButtonColor: "black" });
                                         }
                                     }}>선택 완료</button>
                                 </CardPickMid> : winGame === true || loseGame === true || drawGame === true ? <MidBase></MidBase> : ''}
@@ -752,7 +771,7 @@ function Room() {
                                     <button onClick={() => {
                                         if (round < 3) {
                                             console.log("");
-                                            Swal.fire({ title: "항복은 3라운드 이후에 가능합니다!", timer: 1500 });
+                                            Swal.fire({ title: "항복은 3라운드 이후에 가능합니다!", timer: 1500, confirmButtonColor: "black" });
                                         } else {
                                             socket.emit("gameEnd", {
                                                 name: guestUserId,
@@ -856,12 +875,12 @@ function Room() {
                                 </MidBase>
                                 : ''}
                             {middleView === false && turn === true && cardPick === false && TurnWinner === '' && gameEnd === false ?
-                                <BattingMid onSubmit={(e) => { e.preventDefault(); 0 !== +batting && +batting <= limitCoin ? setCardPick(true) : Swal.fire({ title: `배팅은 1개 부터 ${Math.floor(limitCoin)}개 까지 가능합니다!`, timer: 1500 }); }}>
+                                <BattingMid onSubmit={(e) => { e.preventDefault(); 0 !== +batting && +batting <= limitCoin ? setCardPick(true) : Swal.fire({ title: `배팅은 1개 부터 ${Math.floor(limitCoin)}개 까지 가능합니다!`, timer: 1500, confirmButtonColor: "black" }); }}>
                                     <div style={{ fontSize: "36px", display: "flex", margin: "auto" }}>배팅을 시작해주세요.</div>
                                     <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{timer > 0 ? <span>남은 턴 시간 {timer}초</span> : <span>시간 종료</span>}</div>
                                     <div style={{ display: "flex", margin: "auto", fontSize: "18px" }}>배팅은 최대 {Math.floor(limitCoin)}개 까지 가능합니다.</div>
-                                    <div style={{ color:"red", margin:"auto"}}>배팅 후에는 수정할 수 없습니다. 신중히 배팅 해주세요!</div>
-                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => e.target.value > 0 ? setBatting(e.target.value) : Swal.fire({ title: "배팅은 1개 이상만 가능 합니다.", timer: 1500 })}></input><span style={{ marginTop: "10px" }}>개</span>
+                                    <div style={{ color: "red", margin: "auto" }}>배팅 후에는 수정할 수 없습니다. 신중히 배팅 해주세요!</div>
+                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => e.target.value > 0 ? setBatting(e.target.value) : Swal.fire({ title: "배팅은 1개 이상만 가능 합니다.", timer: 1500, confirmButtonColor: "black" })}></input><span style={{ marginTop: "10px" }}>개</span>
                                         <button style={{ marginLeft: "10px", marginTop: "3px" }}>배팅하기</button></div>
                                 </BattingMid> : ''}
                             {middleView === false && turn === true && cardPick === true && gameEnd === false ?
@@ -890,7 +909,7 @@ function Room() {
                                             });
                                             setBatting(0);
                                         } else {
-                                            Swal.fire({ title: "카드를 선택해주세요!", timer: 1500 });
+                                            Swal.fire({ title: "카드를 선택해주세요!", timer: 1500, confirmButtonColor: "black" });
                                         }
                                     }}>선택 완료</button>
                                 </CardPickMid> : winGame === true || loseGame === true || drawGame === true ? <MidBase></MidBase> : ''}
@@ -1102,10 +1121,11 @@ let RoomBody = styled.div`
     font-weight: 700;
 `
 
-let Able = styled.span`
+let Able = styled.div`
     float:right;
+    margin-left: 5px;
     button {
-        width: 140px;
+        width: 120px;
         height: 45px;
         background: #F4F4F4;
         box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -1120,8 +1140,9 @@ let Able = styled.span`
 
 let Unable = styled.span`
     float:right;
+    margin-left: 5px;
     button {
-        width: 140px;
+        width: 120px;
         height: 45px;
         background-color: #BAB7B7;
         box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -1526,3 +1547,9 @@ let ReportModal = styled.div`
               }
     }
 `;
+
+const BGM = styled.audio`
+ height: 47px;
+ width: 170px;
+ margin: 5px 10px 0 10px;
+`

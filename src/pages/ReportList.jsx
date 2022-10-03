@@ -13,10 +13,10 @@ const ReportList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const allReport = useSelector((state) => state.report.getReport.reportList)
-  console.log(allReport)
-  const reportNum = useSelector((state) => state.report.getReport.total)
-  console.log(reportNum)
+  const allReport = useSelector((state) => state?.report?.getReport?.reportList)
+  
+  const reportNum = useSelector((state) => state?.report?.getReport?.total)
+
 
   const [page, setPage] = useState(1); //현재 페이지x
 
@@ -28,8 +28,6 @@ const ReportList = () => {
     dispatch(__getReportList(page))
     setPageDisplay(Math.ceil(reportNum / 9))
   }, [page, reportNum])
-
-
   return (
     <>
       <Header />
@@ -50,7 +48,7 @@ const ReportList = () => {
           <div className="body">
             {allReport?.map((report) => (
               <ReportMap key={report?.reportId}
-                onClick={() => { navigate(`/report/${report.reportId}`) }}
+                onClick={() => { navigate(`/report/${report?.reportId}`) }}
               >
                 <List>
                   <div className="idPt">{report?.reportId}</div>

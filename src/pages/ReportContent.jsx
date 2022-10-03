@@ -8,7 +8,7 @@ import Pagination from "react-js-pagination";
 import Background from "../shared/image/RoomIMG/RoomBackground.png";
 import { useParams } from "react-router-dom";
 
-import { __getAnswer, __getReport, __deleteReport, __EditReportContent } from "../redux/modules/reportSlice";
+import { __getAnswer, __getReport, __deleteReport, __EditReportContent, __PostReportContent } from "../redux/modules/reportSlice";
 
 import Swal from 'sweetalert2'
 
@@ -17,31 +17,33 @@ const ReportContent = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const getReport = useSelector((state) => state.report.getReport)
-    console.log(getReport)
-
-    const getAnswer = useSelector((state) => state.report.getAnswer)
-    console.log(getAnswer)
+    const getReport = useSelector((state) => state?.report?.getReport);
+    const getAnswer = useSelector((state) => state?.report?.getAnswer);
 
     const { reportId } = useParams();
 
     useEffect(() => {
         dispatch(__getReport(reportId))
-        dispatch(__getAnswer(reportId)) //reportId가 slice로 넘어감
+        dispatch(__getAnswer(reportId))
     }, [])
-
 
     const [editRequest, setEditRequest] = useState(false);
     const [editInput, setEditInput] = useState("");
+    const [editContent, setEditContent] = useState(false);
 
-    const onclickHandle = () => {
+    //댓글 수정 핸들
+    const onsubmitHandle = () => {
         if (editInput === "") {
-            Swal.fire({ title: '내용을 입력해주세요.', timer: 3000 });
+            Swal.fire({ title: '내용을 입력해주세요.', timer: 3000, confirmButtonColor: "black" });
         } else {
             setEditRequest(!editRequest);
-            dispatch(__EditReportContent({reportId, commentContent:editInput}))
+            dispatch(__EditReportContent({ reportId, commentContent: editInput }));
             setEditInput("");
         }
+    }
+
+    const submitHandle = (e) => {
+        dispatch(__PostReportContent({ commentContent: editInput, reportId }));
     }
 
     return (
@@ -70,15 +72,39 @@ const ReportContent = () => {
                             {getReport.my ? <button style={{ display: "flex", margin: "auto" }} onClick={() => { navigate(`/editReport/${reportId}`); }}>수정하기</button> : ''}
                             <button style={{ display: "flex", margin: "auto" }} onClick={() => { navigate("/report") }}>돌아가기</button>
                         </Btns>
-                        <Answer>
-                            <AnswerTxt>
-                                답변
-                            </AnswerTxt>
-                            <AnswerResponse>
-                                <div style={{ width: "885px", overflow: "hidden", padding: "5px" }}>{editRequest === true ? <input value={editInput} onChange={(e) => { setEditInput(e.target.value) }} style={{ height: "22px", padding: "3px", width: "850px" }}></input> : getAnswer}</div>
-                                <div>{getReport.admin === true ? <Btn onClick={() => editRequest === true ? onclickHandle() : setEditRequest(!editRequest)} style={{ display: "flex", borderRadius: "9px", padding: "7px", marginTop: editRequest === true ? "3px" : '' }}>답변 수정하기</Btn> : ''}</div>
-                            </AnswerResponse>
-                        </Answer>
+                        {getReport.admin === true ?
+                            <Answer>
+                                <AnswerTxt>
+                                    답변
+                                </AnswerTxt>
+                                <AnswerResponse>
+                                    {getAnswer === null ?
+                                        <form onSubmit={(e) => { e.preventDefault(); submitHandle(e); }}>
+                                            <input value={editInput} onChange={(e) => { setEditInput(e.target.value); }} style={{ width: "890px", margin: "7px 5px 5px 5px", paddingLeft: "10px", fontSize: "21px" }}></input>
+                                            <Btn>답변하기</Btn>
+                                        </form>
+                                        :
+                                        editContent === false ?
+                                            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                                <div style={{ marginTop: "5px" }}>{getAnswer?.commentContent}</div>
+                                                <Btn onClick={() => { setEditContent(true); }}>수정하기</Btn>
+                                            </div> :
+                                            <form onSubmit={(e)=> {onsubmitHandle();}} style={{ display: "flex", justifyContent: "space-between" }}>
+                                                <input value={editInput} onChange={(e) => { setEditInput(e.target.value); }} style={{ width: "890px", margin: "7px 5px 5px 5px", paddingLeft: "10px", fontSize: "21px" }}></input>
+                                                <Btn type="button" onClick={() => { setEditContent(false); }}>취소하기</Btn>
+                                            </form>}
+                                </AnswerResponse>
+                            </Answer>
+                            : getAnswer === null ? null :
+                                <Answer>
+                                    <AnswerTxt>
+                                        답변
+                                    </AnswerTxt>
+                                    <AnswerResponse>
+                                        <><div>{getAnswer?.commentContent}</div></>
+                                    </AnswerResponse>
+                                </Answer>
+                        }
                     </div>
                 </ReportContainer>
             </BackgroundImg>
@@ -206,6 +232,8 @@ const Btns = styled.div`
 `
 
 const Btn = styled.button`
+    margin: 5px;
+    padding: 5px;
     :hover {
     background-color: #BAB7B7;
     cursor: pointer;

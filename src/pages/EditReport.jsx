@@ -34,13 +34,13 @@ const EditReport = () => {
 
     const onSubmitHandler = () => {
         if (inputs.reportTitle === "") {
-            Swal.fire({ title: '제목을 입력해주세요.', timer: 2000 });
+            Swal.fire({ title: '제목을 입력해주세요.', timer: 2000, confirmButtonColor: "black" });
         } else if (inputs.reportContent === "") {
-            Swal.fire({ title: '내용을 입력해주세요.', timer: 2000 });
+            Swal.fire({ title: '내용을 입력해주세요.', timer: 2000, confirmButtonColor: "black" });
         } else {
             dispatch(__EditReport(inputs));
             navigate(`/report/${reportId}`);
-            Swal.fire({ title: '수정이 완료 되었습니다.', timer: 2000 });
+            Swal.fire({ title: '수정이 완료 되었습니다.', timer: 2000, confirmButtonColor: "black" });
         }
     }
 
