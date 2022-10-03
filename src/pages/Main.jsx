@@ -25,7 +25,7 @@ import HowTo6 from "../shared/image/MainIMG/HowTo6.png";
 
 import Swal from 'sweetalert2'
 
-import { FaSearch } from 'react-icons/fa'; 
+import { FaSearch } from 'react-icons/fa';
 import { IoMdAdd } from 'react-icons/io';
 import { FaChevronLeft } from 'react-icons/fa';
 import { FaChevronRight } from 'react-icons/fa';
@@ -60,8 +60,8 @@ function Main() {
 
   const [pageLockDisplay, setpageLockDisplay] = useState(1);
   const [pageUnlockDisplay, setPageUnlockDisplay] = useState(1);
-  
-  const allRoomNum = useSelector((state) => state?.getmainroom?.roomNum) 
+
+  const allRoomNum = useSelector((state) => state?.getmainroom?.roomNum)
 
   const lockRoomNum = useSelector((state) => state?.getmainroom?.lockNum)
 
@@ -97,7 +97,7 @@ function Main() {
     // e.preventDefault();
     if (roomTitle === '') {
       Swal.fire({ title: '방 이름을 입력해주세요.', timer: 1500, confirmButtonColor: "black" })
-    } 
+    }
     else if (roomTitle.length > 15) {
       Swal.fire({ title: '방 이름은 15글자 이하로 가능합니다.', timer: 1500, confirmButtonColor: "black" })
     }
@@ -118,23 +118,17 @@ function Main() {
     dispatch(__search(page.page));
     dispatch(__unLock(unLockPage));
     dispatch(__lock(lockPage));
-    setInput({keyword:""})
+    setInput({ keyword: "" })
     setResp(rooms);
     setPageDisplay(Math.ceil(allRoomNum / 9));
     setpageLockDisplay(Math.ceil(lockRoomNum / 9));
     setPageUnlockDisplay(Math.ceil(unlockRoomNum / 9));
-  }, [page , rooms?.length, lock, lockPage, unLockPage
-    //, allRoomNum
+  }, [page, rooms?.length, lock, lockPage, unLockPage
     , lockRoomNum, unlockRoomNum
   ]);
 
   // 검색 기능
-  //const searchRoom = useSelector((state) => state)
   const searchRoom = useSelector((state) => state?.search?.data?.result)
-  console.log(searchRoom)
-  // const searchNum = useSelector((state) => state.search)
-  // console.log(searchNum)
-
   const [input, setInput] = useState({
     keyword: "",
   })
@@ -164,28 +158,28 @@ function Main() {
                 </div>
                 <ChooseLock style={{ marginTop: "30px" }}>
                   {lock === "ALL" ?
-                    <button onClick={(e) => { 
-                      setResp(rooms); setLock("ALL") 
+                    <button onClick={(e) => {
+                      setResp(rooms); setLock("ALL")
                       dispatch(__GetMainRoom(page.page))
-                      setInput({keyword:""})
+                      setInput({ keyword: "" })
                       setSearchStatus(false)
                     }}>전체방</button> :
-                  <div style={{ display: "flex" }} onClick={(e) => { 
-                      setResp(rooms); setLock("ALL") 
+                    <div style={{ display: "flex" }} onClick={(e) => {
+                      setResp(rooms); setLock("ALL")
                       dispatch(__GetMainRoom(page.page))
-                      setInput({keyword:""})
+                      setInput({ keyword: "" })
                       setSearchStatus(false)
                     }}>
                       <span style={{ display: "flex", margin: "auto" }}>전체방</span>
                     </div>
-                 }
+                  }
                   {lock === "unLock" ?
                     <button
                       onClick={(e) => {
                         setResp(rooms?.filter((res) => (res.roomLock === false)));
                         setLock("unLock")
                         dispatch(__unLock(unLockPage));
-                        setInput({keyword:""})
+                        setInput({ keyword: "" })
                       }}
                     >공개방</button>
                     :
@@ -195,7 +189,7 @@ function Main() {
                         setResp(rooms?.filter((res) => (res.roomLock === false)));
                         setLock("unLock")
                         dispatch(__unLock(unLockPage));
-                        setInput({keyword:""})
+                        setInput({ keyword: "" })
                       }}
                     >
                       <span
@@ -209,7 +203,7 @@ function Main() {
                         setResp(rooms?.filter((res) => (res.roomLock === true)));
                         setLock("Lock")
                         dispatch(__lock(lockPage));
-                        setInput({keyword:""})
+                        setInput({ keyword: "" })
                       }}
                     >비공개방</button> :
                     <div
@@ -218,7 +212,7 @@ function Main() {
                         setResp(rooms?.filter((res) => (res.roomLock === true)));
                         setLock("Lock")
                         dispatch(__lock(lockPage));
-                        setInput({keyword:""})
+                        setInput({ keyword: "" })
                       }}
                     >
                       <span
@@ -229,16 +223,16 @@ function Main() {
                 </ChooseLock>
               </div>
               <Roomsearch
-                style={{ marginTop: "140px" }}
+                style={{ marginTop: "100px" }}
 
                 onSubmit={(e) => {
                   e.preventDefault();
                   if (input === '') {
                     Swal.fire({ title: '검색어를 입력해주세요.', timer: 1500, confirmButtonColor: "black" })
                   } else {
-                    dispatch(__search(input))
-                    setInput({keyword:""})
-
+                    setLock("ALL");
+                    dispatch(__search(input));
+                    setInput({ keyword: "" });
                   }
                 }
                 }>
@@ -252,7 +246,7 @@ function Main() {
                   </input>
                   <SearchBtn
                     style={{ marginLeft: "3px" }}
-                    onClick={() => { dispatch(__search({input,page})).then(setSearchStatus(true)) }}
+                    onClick={() => { dispatch(__search({ input, page })).then(setSearchStatus(true)) }}
                   >
                     <FaSearch style={{ paddingRight: "20px", fontSize: "18", padding: "10px" }} />
                   </SearchBtn>
@@ -320,7 +314,7 @@ function Main() {
               <PaginationContainer>
                 <Pagination
                   activePage={page.page} //현재 보고있는 페이지
-                  itemsCountPerPage={9} 
+                  itemsCountPerPage={9}
                   totalItemsCount={allRoomNum} //총 아이템 수
                   pageRangeDisplayed={pageDisplay} // 표시할 페이지 수 
                   onChange={handlePageChange}
@@ -361,7 +355,8 @@ function Main() {
                 <>
                   <PwModal onSubmit={(e) => {
                     e.preventDefault();
-                    pwSubmit(e)}} type="button" onClick={() => {
+                    pwSubmit(e)
+                  }} type="button" onClick={() => {
 
                     setPwModal(!pwModal)
                   }}>

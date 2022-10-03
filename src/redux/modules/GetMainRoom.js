@@ -22,8 +22,7 @@ export const __GetMainRoom = createAsyncThunk(
                         authorization: `Bearer ${token}`,
                     },
                 }
-                )
-                console.log(response.data.roomsInfo)
+            )
             return api.fulfillWithValue(response.data.roomsInfo);
         } catch (e) {
             return api.rejectWithValue(e);
@@ -44,7 +43,6 @@ const getMainRoomSlice = createSlice({
             state.lockNum = action.payload.lockNum;
             state.unlockNum = action.payload.unlockNum;
             state.roomNum = action.payload.roomNum;
-            console.log(action.payload.result)
         },
         [__GetMainRoom.rejected]: (state, action) => {
         },
