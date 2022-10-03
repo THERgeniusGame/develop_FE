@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useSelector } from "react-redux/es/exports";
 import { useDispatch } from "react-redux";
@@ -15,6 +15,8 @@ const MyPage = () => {
     const allRank = useSelector((state) => state.getMyPage.allRank)
     const myRank = useSelector((state) => state.getMyPage.myRank)
 
+    const mynickname = myRank?.nickname;
+
     //페이지네이션 - 랭킹페이지
     const [page, setPage] = useState(1); //현재 페이지
 
@@ -22,12 +24,19 @@ const MyPage = () => {
         setPage(page);
     };
 
+    const rankEndRef = useRef(null);
+    const scrollToBottom = () => {
+      rankEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }
+
     useEffect(() => {
-      dispatch(__getMyPage())
+      dispatch(__getMyPage());
+      scrollToBottom();
     }, [])
 
     useEffect(() => {
-      dispatch(__getMyRank())
+      dispatch(__getMyRank());
+      scrollToBottom();
     }, [])
     
     return(
@@ -75,24 +84,17 @@ const MyPage = () => {
                       <div className="winPt1">전적</div>
                     </Bar>
                       {allRank?.map((rank) => (
-                      <RankList key={rank.rank}>
+                      <RankList style={{border:mynickname === rank.nickname ? "3px solid #e6468b" : ''}} key={rank.rank}>
                         <div className="rankPt2">{rank?.rank}</div>
-                        <div className="nicknamePt2">{rank?.nickname}님</div>
-                        <div className="winPt2">{rank?.total}전 {rank?.win}승 {rank?.lose}패</div>
+
+                        <div className="nicknamePt2">{rank.nickname}님</div>
+                        {mynickname === rank.nickname ? <div style={{marginBottom:"360px"}} ref={rankEndRef} /> : null}
+                        <div className="winPt2">{rank.total}전 {rank.win}승 {rank.lose}패</div>
                       </RankList>
                       ))}
                     </div>
                   </Body>
                 </Rank>
-                <PaginationContainer>
-                    <Pagination
-                        activePage={page} // 현재 페이지
-                        itemsCountPerPage={9} //한 페이지 당 보여줄 리스트 룸의 개수
-                        totalItemsCount={300} // 총 룸의 개수
-                        pageRangeDisplayed={5} // pagenator 내에서 보여줄 페이지의 범위
-                        onChange={handlePageChange} // 페이지
-                    /> 
-                </PaginationContainer>
             </div>
           </MypageContainer>
         </ProfileImg>
@@ -168,6 +170,10 @@ const GoBack = styled.button`
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 8px;
   cursor:pointer;
+  :hover {
+  background-color: #BAB7B7;
+  cursor: pointer;
+ }
 `
 const Score = styled.div`
     display: flex;
@@ -183,7 +189,7 @@ const Score = styled.div`
   }
 `
 const MyRanking = styled.div`
-  margin-bottom: 100px;
+  margin-bottom: 30px;
   display: flex;
   font-size: 180%;
   margin-left: 100px;
@@ -211,10 +217,12 @@ const Rank = styled.div`
 const Body = styled.div`
   justify-content: center;
   text-align: center;
-  
+  overflow-y: scroll;
+  height: 380px;
+  //margin-bottom: 300px;
+  margin-top: -20px;
 `
 const Bar = styled.div`
- 
   border-radius: 8px 8px 0px 0px;
   display: flex;
   flex-direction: row;
@@ -231,7 +239,6 @@ const Bar = styled.div`
   margin-left: 200px;
   margin-right: 200px;
   justify-content: center;
-  //justify-content: space-around;
   .rankPt1 {
     width: 100px;
     justify-content: flex-end;

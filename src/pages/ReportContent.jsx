@@ -18,12 +18,18 @@ const ReportContent = () => {
     const dispatch = useDispatch();
 
     const getReport = useSelector((state) => state.report.getReport)
+    console.log(getReport)
+
+    const getAnswer = useSelector((state) => state.report.getAnswer)
+    console.log(getAnswer)
 
     const { reportId } = useParams();
 
     useEffect(() => {
-        dispatch(__getReport(reportId), __getAnswer(reportId)) //reportId가 slice로 넘어감
+        dispatch(__getReport(reportId))
+        dispatch(__getAnswer(reportId)) //reportId가 slice로 넘어감
     }, [])
+
 
     const [editRequest, setEditRequest] = useState(false);
     const [editInput, setEditInput] = useState("");
@@ -69,7 +75,7 @@ const ReportContent = () => {
                                 답변
                             </AnswerTxt>
                             <AnswerResponse>
-                                <div style={{ width: "885px", overflow: "hidden", padding: "5px" }}>{editRequest === true ? <input value={editInput} onChange={(e) => { setEditInput(e.target.value) }} style={{ height: "22px", padding: "3px", width: "850px" }}></input> : getReport.reportContent}</div>
+                                <div style={{ width: "885px", overflow: "hidden", padding: "5px" }}>{editRequest === true ? <input value={editInput} onChange={(e) => { setEditInput(e.target.value) }} style={{ height: "22px", padding: "3px", width: "850px" }}></input> : getAnswer}</div>
                                 <div>{getReport.admin === true ? <Btn onClick={() => editRequest === true ? onclickHandle() : setEditRequest(!editRequest)} style={{ display: "flex", borderRadius: "9px", padding: "7px", marginTop: editRequest === true ? "3px" : '' }}>답변 수정하기</Btn> : ''}</div>
                             </AnswerResponse>
                         </Answer>

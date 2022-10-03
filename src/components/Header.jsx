@@ -13,49 +13,46 @@ const Header = () => {
 
   const token = localStorage.getItem("token");
   
-  const nickname = useSelector((state) => state)
+  const nickname = useSelector((state) => state.getMyPage)
   console.log(nickname)
 
-  if ( token === null || token === undefined ) {
+  if (token === null || token === undefined) {
     Swal.fire({ title: '로그인이 필요합니다.', timer: 2000 });
     navigate("/login")
-  } 
-  
+  }
+
   return (
-   <>
+    <>
       <HeaderBox>
-        <div className="logo">
+        <div className="logo" style={{marginTop:"11px"}}>
           <Logo
-            onClick={() => {navigate("/")}} />
+            onClick={() => { navigate("/") }} />
         </div>
         <div className="mypage">
           <Profile
-            onClick={(e) => { 
+            onClick={(e) => {
               e.preventDefault()
-              setModal(!modal) 
+              setModal(!modal)
             }}
           >
-            지니어스
+            지니어스 ▼
           </Profile>
         </div>
-       
+
         {modal == true ?
-          <MypageModal 
-            setModal = {setModal}
+          <MypageModal
+            setModal={setModal}
           />
           : null
         }
 
       </HeaderBox>
-   </>
+    </>
   );
 };
 
 export default Header;
 
-const Modal = styled.div`
-  
-`
 const HeaderBox = styled.div`
   height: 56px;
   display: flex;
@@ -66,10 +63,7 @@ const HeaderBox = styled.div`
   z-index: 4;
 
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  
-  div {
-    margin-top: 8px;
-  }
+
   .logo {
     margin-left: 250px;
   }
@@ -87,6 +81,14 @@ const Logo = styled.div`
   cursor: pointer;
 `
 const Profile = styled.div`
-  margin-left: auto;
+  margin: 3px auto auto auto;
   cursor: pointer;
+  width: 100px;
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+  :hover {
+  background-color: #BAB7B7;
+  cursor: pointer;
+ }
 `

@@ -14,14 +14,15 @@ export const __login = createAsyncThunk(
     "login",
     async (payload, thunkAPI) => {
         try {
-            const res = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/login", payload).then((data)=>{
+            const res = await axios.post(process.env.REACT_APP_ENDPOINT + "/user/login", payload)
+            .then((data)=>{
                 localStorage.setItem("token", data.data);
                 window.location.replace("/");
             });
             return res.data
         } catch (err) {
             if (err.response.data === "Check-EmailorPw"){
-                Swal.fire({ title: '존재하지 않는 회원입니다.', timer: 1500 });
+                Swal.fire({ title: '이메일 또는 패스워드를 확인해주세요.', timer: 1500 });
             }
             return err
         }

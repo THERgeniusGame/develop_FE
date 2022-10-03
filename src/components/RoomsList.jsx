@@ -10,26 +10,26 @@ const RoomsList = ({room, setRoomId, setRoomPw, setPwModal}) => {
     
     return (
         <>
-        <RoomSelect key={room.roomId} 
-            onClick={(e) => {
-            setRoomId(room.roomId);
-            if (room.currentUsers >= 2) {
-            Swal.fire({ title: '인원이 꽉 찼습니다.', timer: 1500 })
-            } else {
-            if (room.roomLock === true) {
-                setRoomPw(room.roomPw);
-                setPwModal(true);
-            } else {
-                navigate(`room/${room.roomId}`)
-            }
-            }
-            }}>
-            <div style={{ width: "175px", display: "flex" }}>{room.roomId}</div>
-            <div style={{ width: "360px", display: "flex", overflow: "hidden" }}>{room.roomTitle}</div>
-            <div style={{ width: "245px", display: "flex", overflow: "hidden" }}>{room.nickname}</div>
-            <div style={{ width: "190px", display: "flex" }}>{room.currentUsers}</div>
-            <div style={{ display: "flex", width: "20px", height: "20px", backgroundRepeat: "no-repeat", backgroundImage: room.roomLock === true ? 'url(' + LockImg + ')' : 'url(' + UnLockImg + ')' }}></div>
-        </RoomSelect>
+            <RoomSelect key={room.roomId} 
+                onClick={(e) => {
+                    setRoomId(room.roomId);
+                    if (room.currentUsers >= 2) {
+                        Swal.fire({ title: '인원이 꽉 찼습니다.', timer: 1500 })
+                    } else {
+                        if (room.roomLock === true) {
+                            setRoomPw(room.roomPw);
+                            setPwModal(true);
+                        } else {
+                            navigate(`room/${room.roomId}`)
+                        }
+                    }
+                }}>
+                <div style={{ width: "175px", display: "flex" }}>{room.roomId}</div>
+                <div style={{ width: "360px", display: "flex", overflow: "hidden" }}>{room.roomTitle}</div>
+                <div style={{ width: "245px", display: "flex", overflow: "hidden" }}>{room.nickname}</div>
+                <div style={{ width: "190px", display: "flex" }}>{room.currentUsers}</div>
+                <div style={{ display: "flex", width: "20px", height: "20px", backgroundRepeat: "no-repeat", backgroundImage: room.roomLock === true ? 'url(' + LockImg + ')' : 'url(' + UnLockImg + ')' }}></div>
+            </RoomSelect>
         </>
     )
 }
