@@ -29,7 +29,6 @@ import { FaSearch } from 'react-icons/fa';
 import { IoMdAdd } from 'react-icons/io';
 import { FaChevronLeft } from 'react-icons/fa';
 import { FaChevronRight } from 'react-icons/fa';
-import { FaSearch } from 'react-icons/fa';
 import { __lock, __unLock } from "../redux/modules/lockSlice";
 
 function Main() {
