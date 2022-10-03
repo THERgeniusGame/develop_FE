@@ -87,6 +87,8 @@ const SignUpForm = () => {
         }
     }, [checkNickname]);
 
+
+    
     //이메일 인증번호 확인
     const onNumConfirm = () => {
         const NumConfirm = getValues("emailConfirm") 
