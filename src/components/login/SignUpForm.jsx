@@ -86,9 +86,6 @@ const SignUpForm = () => {
             setError("nickname", { message: "사용 가능한 닉네임입니다."});
         }
     }, [checkNickname]);
-
-
-    
     //이메일 인증번호 확인
     const onNumConfirm = () => {
         const NumConfirm = getValues("emailConfirm") 
