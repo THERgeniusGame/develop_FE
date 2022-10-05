@@ -8,7 +8,7 @@ import { useSelector } from "react-redux/es/exports";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import Pagination from "react-js-pagination"; 
+import Pagination from "react-js-pagination";
 import RoomsList from "../components/RoomsList";
 
 import Loadingimg from "../shared/image/Loading.png";
@@ -25,48 +25,50 @@ import HowTo6 from "../shared/image/MainIMG/HowTo6.png";
 
 import Swal from 'sweetalert2'
 
-import { FaSearch } from 'react-icons/fa'; //
+import { FaSearch } from 'react-icons/fa';
 import { IoMdAdd } from 'react-icons/io';
 import { FaChevronLeft } from 'react-icons/fa';
 import { FaChevronRight } from 'react-icons/fa';
 import { __lock, __unLock } from "../redux/modules/lockSlice";
-
 
 function Main() {
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
-  const rooms = useSelector((state) => state.getmainroom.data.result);
+  const rooms = useSelector((state) => state.getmainroom.result);
   const Loading = useSelector((state) => state.getmainroom.isLoading);
   const [resp, setResp] = useState([]);
-  const [lock, setLock] = useState("ALL"); 
+  const [lock, setLock] = useState("ALL");
 
   const clickLock = useSelector((state) => state?.lock?.lock?.result)
-console.log(clickLock)
-  const clickUnLock = useSelector((state) => state?.lock?.unLock)
-  
+  const clickUnLock = useSelector((state) => state?.lock?.unLock?.result)
 
   //페이지네이션
-  const handlePageChange = (page) => { setPage(page) }; 
-  const unLockPageChange = (page) => { setUnLockPage(page)};
-  const lockPageChange = (page) => { setLockPage(page)};
-  const [limit] = useState(9);
+  const handlePageChange = (page) => { setPage({ page: page }) };
+  const unLockPageChange = (page) => { setUnLockPage(page) };
+  const lockPageChange = (page) => { setLockPage(page) };
 
-  const [page, setPage] = useState(1);
-  const [unLockPage, setUnLockPage] = useState(1); 
-  const [lockPage, setLockPage] = useState(1); 
+  const [page, setPage] = useState({
+    page: 1,
+  })
 
-  const indexOfLastPost = page * limit;
-  const indexOfFirstPost = indexOfLastPost - limit;
-  const currentCountings = resp?.slice(
-    indexOfFirstPost,
-    indexOfLastPost
-  );
+  const [unLockPage, setUnLockPage] = useState(1);
+  const [lockPage, setLockPage] = useState(1);
+
+  const [pageDisplay, setPageDisplay] = useState(1);
+
+  const [pageLockDisplay, setpageLockDisplay] = useState(1);
+  const [pageUnlockDisplay, setPageUnlockDisplay] = useState(1);
+
+  const allRoomNum = useSelector((state) => state?.getmainroom?.roomNum)
+
+  const lockRoomNum = useSelector((state) => state?.getmainroom?.lockNum)
+
+  const unlockRoomNum = useSelector((state) => state?.getmainroom?.unlockNum)
+
 
   // 방 입장 
-  const [roomsearch, setRoomsearch] = useState('');
-  const [roompw, setRoompw] = useState('');
   const [checkpw, setCheckpw] = useState('');
   const [roomId, setRoomId] = useState(0);
 
@@ -76,12 +78,11 @@ console.log(clickLock)
   const [HowTo, setHowTo] = useState(false);
   const [HowToPage, setHowTopage] = useState(1);
   const pwSubmit = (e) => {
-    e.preventDefault();
-    if (roompw === checkpw) {
+    if (roomPw === checkpw) {
       navigate(`/room/${roomId}`)
     } else {
       setCheckpw("");
-      Swal.fire({ title: '비밀번호가 다릅니다.', timer: 1500 });
+      Swal.fire({ title: '비밀번호가 다릅니다.', timer: 1500, confirmButtonColor: "black" });
     }
   }
 
@@ -95,117 +96,162 @@ console.log(clickLock)
   const onsubmitHandle = (e) => {
     // e.preventDefault();
     if (roomTitle === '') {
-      Swal.fire({ title: '방 이름을 입력해주세요.', timer: 1500 })
-    } else if (roomLock === true && roomPw === '') {
-      Swal.fire({ title: '비밀번호를 입력해주세요.', timer: 1500 })
+      Swal.fire({ title: '방 이름을 입력해주세요.', timer: 1500, confirmButtonColor: "black" })
+    }
+    else if (roomTitle.length > 15) {
+      Swal.fire({ title: '방 이름은 15글자 이하로 가능합니다.', timer: 1500, confirmButtonColor: "black" })
+    }
+    else if (roomLock === true && roomPw === '') {
+      Swal.fire({ title: '비밀번호를 입력해주세요.', timer: 1500, confirmButtonColor: "black" })
+    }
+    else if (roomLock === true && roomPw.length > 20) {
+      Swal.fire({ title: '비밀번호는 20글자 이하로 가능합니다.', timer: 1500, confirmButtonColor: "black" })
     }
     else {
       dispatch(__PostMainRoom({ roomTitle, roomCategory, roomLock, roomPw }));
+      setDisable(true);
     }
   }
 
   useEffect(() => {
-    dispatch(__GetMainRoom(page)); 
+    dispatch(__GetMainRoom(page.page));
+    dispatch(__search(page.page));
     dispatch(__unLock(unLockPage));
     dispatch(__lock(lockPage));
+    setInput({ keyword: "" })
     setResp(rooms);
-  }, [page, rooms?.length, lock, lockPage, unLockPage]);
+    setPageDisplay(Math.ceil(allRoomNum / 9));
+    setpageLockDisplay(Math.ceil(lockRoomNum / 9));
+    setPageUnlockDisplay(Math.ceil(unlockRoomNum / 9));
+  }, [page, rooms?.length, lock, lockPage, unLockPage
+    , lockRoomNum, unlockRoomNum
+  ]);
 
+  // 검색 기능
+  const searchRoom = useSelector((state) => state?.search?.data?.result)
+  const [input, setInput] = useState({
+    keyword: "",
+  })
+  const [searchStatus, setSearchStatus] = useState(false);
 
-// 검색 기능
-  const searchRoom = useSelector((state) => state.search.data)
-    console.log("검색", searchRoom)
+  const onChange = (e) => {
+    const { value, name } = e.target;
+    setInput({
+      [name]: value
+    });
+  };
 
-    const [input, setInput] = useState({
-        keyword: "",
-    })
-    const [searchStatus, setSearchStatus] = useState(false);
-
-    const onChange = (e) => {
-        const { value, name } = e.target;
-        setInput({
-            [name] : value
-        });
-    };
-console.log(clickUnLock)
-console.log(clickLock)
   return (
     <>
       <Header />
       <BGImg>
-      {Loading === true ?
-          <div style={{ width: "1040px",  margin: "0px auto" }}>
+        {Loading === true ?
+          <div style={{ width: "1040px", margin: "0px auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", width: "1040px", margin: "0px auto" }}>
-              
-                <div style={{ dispaly: "flex", flexWrap: "wrap" }}>
+              <div style={{ dispaly: "flex", flexWrap: "wrap" }}>
+                <div>
                   <HowToBTN onClick={() => setHowTo(true)}>플레이 방법</HowToBTN>
-
-                  <ChooseLock style={{ marginTop: "40px" }}>
-                    {lock === "ALL" ?
-                      <button onClick={(e) => { setResp(rooms); setLock("ALL") }}>전체방</button> :
-                      <div style={{ display: "flex" }} onClick={(e) => { setResp(rooms); setLock("ALL") }}>
-                        <span style={{ display: "flex", margin: "auto" }}>전체방</span>
-                      </div>
-                    }
-                    {lock === "unLock" ?
-                      <button 
-                        onClick={(e) => { setResp(rooms?.filter((res) => (res.roomLock === false))); 
-                        setLock("unLock") }}
-                      >공개방</button> 
-                        :
-                      <div 
-                        style={{ display: "flex" }} 
-                        onClick={(e) => { setResp(rooms?.filter((res) => (res.roomLock === false))); 
-                        setLock("unLock") }}
-                      >
-                        <span 
-                        style={{ display: "flex", margin: "auto" }}
-                        >공개방</span>
-                      </div>
-                    }
-                    {lock === "Lock" ?
-                      <button 
-                        onClick={(e) => { setResp(rooms?.filter((res) => (res.roomLock === true))); 
-                        setLock("Lock") }}
-                      >비공개방</button> :
-                      <div 
-                        style={{ display: "flex" }} 
-                        onClick={(e) => { setResp(rooms?.filter((res) => (res.roomLock === true))); 
-                        setLock("Lock") }}
-                      >
-                        <span 
-                          style={{ display: "flex", margin: "auto" }}
-                          >비공개방</span>
-                      </div>
-                    }
-                  </ChooseLock>
+                  <a rel="noopener noreferrer"
+                    target='_blank'
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSeH2i8vTglp-0rKPPf50c43A_TFD5FPMZapDV7AU8nUh2mFoA/viewform">
+                    <HowToBTN style={{ width: "250px" }}>치킨먹으러 가기!</HowToBTN></a>
                 </div>
-                    <Roomsearch
-                        style={{ marginTop: "140px" }} 
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            if (input === '') {
-                              Swal.fire({ title: '검색어를 입력해주세요.', timer: 1500 })
-                            } else {
-                              dispatch(__search(input))
-                            }
-                        }
-                    }>
-                      <div>
-                        <input 
-                          placeholder="검색어를 입력하세요." 
-                          onChange={ onChange }
-                          name="keyword"
-                        >
-                        </input>
-                        <SearchBtn 
-                          style={{ marginLeft: "3px" }}
-                          onClick={() => {dispatch(__search(input)).then(setSearchStatus(true))} }
-                        >
-                          <FaSearch style={{ paddingRight: "20px", fontSize: "18", padding: "10px" }} />
-                        </SearchBtn>
-                      </div>
-                    </Roomsearch>
+                <ChooseLock style={{ marginTop: "30px" }}>
+                  {lock === "ALL" ?
+                    <button onClick={(e) => {
+                      setResp(rooms); setLock("ALL")
+                      dispatch(__GetMainRoom(page.page))
+                      setInput({ keyword: "" })
+                      setSearchStatus(false)
+                    }}>전체방</button> :
+                    <div style={{ display: "flex" }} onClick={(e) => {
+                      setResp(rooms); setLock("ALL")
+                      dispatch(__GetMainRoom(page.page))
+                      setInput({ keyword: "" })
+                      setSearchStatus(false)
+                    }}>
+                      <span style={{ display: "flex", margin: "auto" }}>전체방</span>
+                    </div>
+                  }
+                  {lock === "unLock" ?
+                    <button
+                      onClick={(e) => {
+                        setResp(rooms?.filter((res) => (res.roomLock === false)));
+                        setLock("unLock")
+                        dispatch(__unLock(unLockPage));
+                        setInput({ keyword: "" })
+                      }}
+                    >공개방</button>
+                    :
+                    <div
+                      style={{ display: "flex" }}
+                      onClick={(e) => {
+                        setResp(rooms?.filter((res) => (res.roomLock === false)));
+                        setLock("unLock")
+                        dispatch(__unLock(unLockPage));
+                        setInput({ keyword: "" })
+                      }}
+                    >
+                      <span
+                        style={{ display: "flex", margin: "auto" }}
+                      >공개방</span>
+                    </div>
+                  }
+                  {lock === "Lock" ?
+                    <button
+                      onClick={(e) => {
+                        setResp(rooms?.filter((res) => (res.roomLock === true)));
+                        setLock("Lock")
+                        dispatch(__lock(lockPage));
+                        setInput({ keyword: "" })
+                      }}
+                    >비공개방</button> :
+                    <div
+                      style={{ display: "flex" }}
+                      onClick={(e) => {
+                        setResp(rooms?.filter((res) => (res.roomLock === true)));
+                        setLock("Lock")
+                        dispatch(__lock(lockPage));
+                        setInput({ keyword: "" })
+                      }}
+                    >
+                      <span
+                        style={{ display: "flex", margin: "auto" }}
+                      >비공개방</span>
+                    </div>
+                  }
+                </ChooseLock>
+              </div>
+              <Roomsearch
+                style={{ marginTop: "100px" }}
+
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (input === '') {
+                    Swal.fire({ title: '검색어를 입력해주세요.', timer: 1500, confirmButtonColor: "black" })
+                  } else {
+                    setLock("ALL");
+                    dispatch(__search(input));
+                    setInput({ keyword: "" });
+                  }
+                }
+                }>
+                <div>
+                  <input
+                    placeholder="검색어를 입력하세요."
+                    onChange={onChange}
+                    name="keyword"
+                    value={input?.keyword}
+                  >
+                  </input>
+                  <SearchBtn
+                    style={{ marginLeft: "3px" }}
+                    onClick={() => { dispatch(__search({ input, page })).then(setSearchStatus(true)) }}
+                  >
+                    <FaSearch style={{ paddingRight: "20px", fontSize: "18", padding: "10px" }} />
+                  </SearchBtn>
+                </div>
+              </Roomsearch>
             </div>
             <RoomList style={{ display: "flex", flexDirection: "row", paddingTop: "15px", padding: "10px", marginBottom: "5px" }}>
               <span style={{ marginRight: "145px" }}>번호</span>
@@ -215,90 +261,87 @@ console.log(clickLock)
               <span>공개</span>
             </RoomList>
             <MainBody>
-            {/* 전체방 + 검색 X */}
-              {lock === "ALL" && lock !== "Lock" && lock !== "unLock" && searchStatus === false ? (rooms?.map((room) => {
-               return (
-                <RoomsList
-                room = {room}
-                setRoomId = {setRoomId}
-                setRoomPw = {setRoomPw}
-                setPwModal ={setPwModal}
-              ></RoomsList>
-               )
-                 
-              })) : null } 
+              {/* 전체방 + 검색 X */}
+              {lock === "ALL" && lock !== "Lock" && lock !== "unLock" && searchStatus === false && rooms !== undefined ? (rooms?.map((room) => {
+                return (
+                  <RoomsList
+                    room={room}
+                    setRoomId={setRoomId}
+                    setRoomPw={setRoomPw}
+                    setPwModal={setPwModal}
+                  ></RoomsList>
+                )
+              })) : null}
 
               {/* 전체방 + 검색 O */}
               {lock === "ALL" && lock !== "Lock" && lock !== "unLock" && searchStatus === true ? (searchRoom?.map((room) => {
-               return (
-                <RoomsList
-                room = {room}
-                setRoomId = {setRoomId}
-                setRoomPw = {setRoomPw}
-                setPwModal ={setPwModal}
-              ></RoomsList>
-               )
-              })) : null } 
+                return (
+                  <RoomsList
+                    room={room}
+                    setRoomId={setRoomId}
+                    setRoomPw={setRoomPw}
+                    setPwModal={setPwModal}
+                  ></RoomsList>
+                )
+              })) : null}
 
               {/* 비공개방 */}
-              {lock === "Lock" && lock !== "unLock" && lock !== "ALL" && clickLock.length !== 0 ? (clickLock?.map((room) => {
-               return (
-                <RoomsList
-                room = {room}
-                setRoomId = {setRoomId}
-                setRoomPw = {setRoomPw}
-                setPwModal ={setPwModal}
-              ></RoomsList>
-               )
-              })) : null } 
+              {lock === "Lock" && lock !== "unLock" && lock !== "ALL" && clickLock?.length !== 0 ? (clickLock?.map((room) => {
+                return (
+                  <RoomsList
+                    room={room}
+                    setRoomId={setRoomId}
+                    setRoomPw={setRoomPw}
+                    setPwModal={setPwModal}
+                  ></RoomsList>
+                )
+              })) : null}
 
-            {/* 공개방 */}
-            {lock === "unLock" && lock !== "Lock" && lock !== "ALL" && clickUnLock.message !== "No-room" ? (clickUnLock?.map((room) => {
-               return (
-                <RoomsList
-                room = {room}
-                setRoomId = {setRoomId}
-                setRoomPw = {setRoomPw}
-                setPwModal ={setPwModal}
-              ></RoomsList>
-               )
-              })) : null }
+              {/* 공개방 */}
+              {lock === "unLock" && lock !== "Lock" && lock !== "ALL" && clickUnLock?.message !== "No-room" ? (clickUnLock?.map((room) => {
+                return (
+                  <RoomsList
+                    room={room}
+                    setRoomId={setRoomId}
+                    setRoomPw={setRoomPw}
+                    setPwModal={setPwModal}
+                  ></RoomsList>
+                )
+              })) : null}
             </MainBody>
-            
-            {lock === "ALL" && lock !== "Lock" && lock !== "unLock" ? //전체
-            <PaginationContainer>
-              <Pagination
-                activePage={page}
-                itemsCountPerPage={9}
-                totalItemsCount={450}
-                pageRangeDisplayed={5}
-                onChange={handlePageChange}
-                /> 
-            </PaginationContainer> : null }
+
+            {lock === "ALL" && lock !== "Lock" && lock !== "unLock" ? //전체 (검색 o)
+              <PaginationContainer>
+                <Pagination
+                  activePage={page.page} //현재 보고있는 페이지
+                  itemsCountPerPage={9}
+                  totalItemsCount={allRoomNum} //총 아이템 수
+                  pageRangeDisplayed={pageDisplay} // 표시할 페이지 수 
+                  onChange={handlePageChange}
+                />
+              </PaginationContainer> : null}
 
             {lock === "unLock" && lock !== "Lock" && lock !== "ALL" ?  // 공개
-            <PaginationContainer>
-              <Pagination
-                activePage={unLockPage}
-                itemsCountPerPage={9}
-                totalItemsCount={450}
-                pageRangeDisplayed={5}
-                onChange={unLockPageChange}
-                /> 
-            </PaginationContainer> : null }
+              <PaginationContainer>
+                <Pagination
+                  activePage={unLockPage}
+                  itemsCountPerPage={9}
+                  totalItemsCount={unlockRoomNum}
+                  pageRangeDisplayed={pageUnlockDisplay}
+                  onChange={unLockPageChange}
+                />
+              </PaginationContainer> : null}
 
             {lock === "Lock" && lock !== "unLock" && lock !== "ALL" ?  // 비공개
-            <PaginationContainer>
-              <Pagination
-                activePage={lockPage}
-                itemsCountPerPage={9}
-                totalItemsCount={450}
-                pageRangeDisplayed={5}
-                onChange={lockPageChange}
-                /> 
-            </PaginationContainer> : null }
-
-
+              <PaginationContainer>
+                <Pagination
+                  activePage={lockPage}
+                  itemsCountPerPage={9}
+                  totalItemsCount={lockRoomNum}
+                  pageRangeDisplayed={pageLockDisplay}
+                  onChange={lockPageChange}
+                />
+              </PaginationContainer> : null}
 
             <MakeRoom onClick={() => { setMakeRoomModal(true); }}>
               <div style={{ display: "flex" }}>방만들기
@@ -310,12 +353,20 @@ console.log(clickLock)
             {
               pwModal === true ? (
                 <>
-                  <PwModal onSubmit={(e) => pwSubmit(e)} type="button" onClick={() => {
+                  <PwModal onSubmit={(e) => {
+                    e.preventDefault();
+                    pwSubmit(e)
+                  }} type="button" onClick={() => {
+
                     setPwModal(!pwModal)
                   }}>
                     <PwModalBody onClick={(event) => { event.stopPropagation() }} >
                       <div>비밀번호를 입력해주세요</div>
                       <input onChange={(e) => { setCheckpw(e.target.value) }} ></input>
+                      <div>
+                        <button>입장하기</button>
+                        <button type="button" onClick={() => { setPwModal(!pwModal); }}>돌아가기</button>
+                      </div>
                     </PwModalBody>
                   </PwModal>
                 </>
@@ -335,22 +386,22 @@ console.log(clickLock)
                       <div style={{ display: "flex", margin: "0px auto 3px 112px" }}>게임방 이름
                         <span style={{ marginLeft: "552px" }}>방 공개여부</span>
                         {roomLock === false ?
-                          <LockBtn style={{ marginLeft: "16px" }} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }}></LockBtn> :
-                          <UnLockBtn style={{ marginLeft: "16px" }} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }}></UnLockBtn>}
+                          <LockBtn style={{ marginLeft: "16px", cursor: "pointer" }} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }}></LockBtn> :
+                          <UnLockBtn style={{ marginLeft: "16px", cursor: "pointer" }} onClick={(e) => { setRoomLock(!roomLock); setRoomPw(''); }}></UnLockBtn>}
                       </div>
-                      <input style={{ display: "flex", margin: "0px auto 40px auto" }} onChange={(e) => { setRoomTitle(e.target.value) }}></input>
+                      <input placeholder="제목을 입력해주세요.(15자 이하)" style={{ display: "flex", margin: "0px auto 40px auto" }} onChange={(e) => { setRoomTitle(e.target.value) }}></input>
                       <div>{roomLock === true ?
                         <>
                           <div style={{ display: "flex", margin: "auto auto 3px 112px" }}>비밀번호 입력창</div>
-                          <input style={{ display: "flex", margin: "auto auto 50px auto" }} onChange={(e) => { setRoomPw(e.target.value) }}></input>
+                          <input placeholder="비밀번호를 입력해주세요.(20글자 이하)" style={{ display: "flex", margin: "auto auto 50px auto" }} onChange={(e) => { setRoomPw(e.target.value) }}></input>
                         </> : ''}
                       </div>
                       <div style={{ "fontSize": "20px", "color": "gray", "display": "flex", margin: "0px auto auto auto" }}>
                         <span style={{ marginRight: "34px" }}>
-                          <button disabled={disable} onClick={() => { onsubmitHandle(); setDisable(true); }}>방 만들기</button>
+                          <button disabled={disable} onClick={() => { onsubmitHandle(); }}>방 만들기</button>
                         </span>
                         <span>
-                          <button type="button" onClick={() => { setMakeRoomModal(!makeroomModal); setRoomLock(false); }}>돌아가기</button>
+                          <button type="button" onClick={() => { setMakeRoomModal(!makeroomModal); setRoomLock(false); setDisable(false); }}>돌아가기</button>
                         </span>
                       </div>
                     </MakeRoomModalBody>
@@ -359,60 +410,16 @@ console.log(clickLock)
 
                 : ''
             }
-            {/* 게임 설명 모달 */}
-            {
-              HowTo === true ? (
-                <>
-                  <HowToModal>
-                    <div style={{ height: "800px", width: "1200px", padding: "20px" }}>
-                      <span style={{ display: "flex", flexDirection: "row", height: "100%", marginTop: "30px" }}>
-                        <HowToHover>
-                          <FaChevronLeft style={{ fontSize: "50px", display: "flex", margin: "auto auto auto 0px" }} onClick={() => HowToPage > 1 ? setHowTopage(HowToPage - 1) : ''} />
-                        </HowToHover>
-                        <p style={{ height: "96%", width: "100%", margin: "10px 10px 30px 10px", display: "flex", flexDirection: "column" }}>
-                          <div style={{
-                            height: "100%", backgroundPosition: "center", backgroundImage: HowToPage === 1 ? 'url(' + HowTo1 + ')' :
-                              HowToPage === 2 ? 'url(' + HowTo2 + ')' :
-                                HowToPage === 3 ? 'url(' + HowTo3 + ')' :
-                                  HowToPage === 4 ? 'url(' + HowTo4 + ')' :
-                                    HowToPage === 5 ? 'url(' + HowTo5 + ')' :
-                                      HowToPage === 6 ? 'url(' + HowTo6 + ')' : '', backgroundRepeat: "no-repeat", backgroundSize: "cover"
-                          }}></div>
-                          {HowToPage === 1 ? <div style={{ dispaly: "flex", margin: "auto", textAlign:"center", flexDirection:'column', fontSize:"20px" }}><span style={{marginTop:"35px"}}><span>TherGeniusGame</span>은 보이지 않는 상대의 카드를 유추해서 보다 높은 카드를 선택하여</span><span>승리하는 게임입니다. 이전 라운드의 승패여부와 상대방의 남은 카드의 홀짝, </span><span>배팅하는 코인의 갯수 등을 종합하여 카드를 유추합니다.</span></div> :
-                            HowToPage === 2 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign:"center", flexDirection:'column', fontSize:"19px" }}><span style={{marginTop:"55px"}}>두 플레이어의 카드는 홀수는 검은색, 짝수는 흰색인 0부터 9까지의 타일 10장으로 게임이 진행됩니다.</span><span>또한 코인으로 5대 5의 동점 상황에서 승자를 가리게됩니다.</span></div> :
-                              HowToPage === 3 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign:"center" }}><span style={{marginTop:"50px"}}>한 턴은 총 30초로 구성되어 있으며</span><span>우선 15초의 배팅 시간이 주어집니다.</span></div> :
-                                HowToPage === 4 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign:"center" }}><span style={{marginTop:"50px"}}>배팅을 한 이후에</span><span>다시 15초의 카드 선택 시간이 주어집니다.</span></div> :
-                                  HowToPage === 5 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign:"center" }}><span style={{marginTop:"50px"}}>두 사람이 차례를 마치면 한 라운드가 종료되고,</span><span>승자와 획득한 코인이 나타납니다.</span></div> :
-                                    HowToPage === 6 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign:"center" }}><span style={{marginTop:"37px"}}>총 10라운드가 진행되면 게임이 종료됩니다.</span><span>여기에서 "게임 결과" 버튼을 클릭하면</span><span>진행된 게임의 결과를 확인 할 수 있습니다.</span></div> : ''}
-                        </p>
-                        <HowToHover>
-                          <FaChevronRight style={{ fontSize: "50px", display: "flex", margin: "auto 0px auto auto" }} onClick={() => HowToPage < 6 ? setHowTopage(HowToPage + 1) : ''} />
-                        </HowToHover>
-                      </span>
-                      <PaginationHowTo
-                        total={6}
-                        limit={1}
-                        page={HowToPage}
-                        setPage={setHowTopage}
-                      />
-                      <HowToCloseBtn onClick={() => {
-                        setHowTo(!HowTo);
-                      }}>닫기</HowToCloseBtn>
-                    </div>
-                  </HowToModal>
-                </>)
-                : ''
-            }
           </div>
-        // </div>
-        :
-        <div style={{ paddingLeft: "270px", paddingRight: "270px" }}>
-          <div style={{ width: "1440px", height: "1024px", display: "flex", backgroundImage: 'url(' + MainBackground + ')', backgroundPosition: "center", backgroundSize: "cover" }}>
-            <div style={{ width: "250px", height: "350px", backgroundImage: 'url(' + Loadingimg + ')', backgroundPosition: "center", backgroundSize: "cover", margin: "auto", display: "flex", justifyContent: "center", alignItems: "center" }} />
+          :
+          <div style={{ paddingLeft: "270px", paddingRight: "270px" }}>
+            <div style={{ width: "1440px", height: "1024px", display: "flex", backgroundImage: 'url(' + MainBackground + ')', backgroundPosition: "center", backgroundSize: "cover" }}>
+              <div style={{ width: "250px", height: "350px", backgroundImage: 'url(' + Loadingimg + ')', backgroundPosition: "center", backgroundSize: "cover", margin: "auto", display: "flex", justifyContent: "center", alignItems: "center" }} />
+            </div>
           </div>
-          </div>
-          }
+        }
       </BGImg>
+      {/* 게임 설명 모달 */}
       {
         HowTo === true ? (
           <>
@@ -431,8 +438,8 @@ console.log(clickLock)
                               HowToPage === 5 ? 'url(' + HowTo5 + ')' :
                                 HowToPage === 6 ? 'url(' + HowTo6 + ')' : '', backgroundRepeat: "no-repeat", backgroundSize: "cover"
                     }}></div>
-                    {HowToPage === 1 ? <div style={{ dispaly: "flex", margin: "auto", textAlign: "center", flexDirection: 'column', fontSize: "20px" }}><span style={{ marginTop: "35px" }}><span>TherGeniusGame</span>은 보이지 않는 상대의 카드를 유추해서 보다 높은 카드를 선택하여</span><span>승리하는 게임입니다. 이전 라운드의 승패여부와 상대방의 남은 카드의 홀짝, </span><span>배팅하는 코인의 갯수 등을 종합하여 카드를 유추합니다.</span></div> :
-                      HowToPage === 2 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign: "center", flexDirection: 'column', fontSize: "18px" }}><span style={{ marginTop: "30px" }}>두 플레이어의 카드는 홀수는 검은색, 짝수는 흰색인 0부터 9까지의 타일 10장으로 게임이 진행됩니다.</span><span>또한 코인으로 5대 5의 동점 상황에서 승자를 가리게됩니다.</span><span style={{ color: "red" }}>Tip. 코인은 코인을 적게 가진 사람의 코인 수 / 남은 카드로 나뉩니다.</span><span style={{ color: "red" }}>앞서 코인을 적게 배팅했다면, 뒤로 갈 수록 배팅가능 갯수가 높아집니다.</span></div> :
+                    {HowToPage === 1 ? <div style={{ dispaly: "flex", margin: "auto", textAlign: "center", flexDirection: 'column', fontSize: "20px" }}><span style={{ marginTop: "35px" }}><span>TherGeniusGame</span>은 보이지 않는 상대의 카드를 유추해서 보다 높은 카드를 선택하여</span><span>승리하는 게임입니다. 이전 라운드의 승패여부와 상대방의 남은 카드의 홀짝, </span><span>배팅하는 코인의 개수 등을 종합하여 카드를 유추합니다.</span></div> :
+                      HowToPage === 2 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign: "center", flexDirection: 'column', fontSize: "18px" }}><span style={{ marginTop: "30px" }}>두 플레이어의 카드는 홀수는 검은색, 짝수는 흰색인 0부터 9까지의 타일 10장으로 게임이 진행됩니다.</span><span>또한 코인으로 5대 5의 동점 상황에서 승자를 가리게됩니다.</span><span style={{ color: "red" }}>Tip. 코인은 코인을 적게 가진 사람의 코인 수 / 남은 카드로 나뉩니다.</span><span style={{ color: "red" }}>앞서 코인을 적게 배팅했다면, 뒤로 갈 수록 배팅가능 개수가 높아집니다.</span></div> :
                         HowToPage === 3 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign: "center" }}><span style={{ marginTop: "50px" }}>한 턴은 총 30초로 구성되어 있으며</span><span>우선 15초의 배팅 시간이 주어집니다.</span></div> :
                           HowToPage === 4 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign: "center" }}><span style={{ marginTop: "50px" }}>배팅을 한 이후에</span><span>다시 15초의 카드 선택 시간이 주어집니다.</span></div> :
                             HowToPage === 5 ? <div style={{ dispaly: "flex", marginTop: "auto", textAlign: "center" }}><span style={{ marginTop: "50px" }}>두 사람이 차례를 마치면 한 라운드가 종료되고,</span><span>승자와 획득한 코인이 나타납니다.</span></div> :
@@ -455,12 +462,10 @@ console.log(clickLock)
               </div>
             </HowToModal>
           </>)
-
           : ''
       }
     </>
   );
-
 }
 
 export default Main;
@@ -472,11 +477,9 @@ const BGImg = styled.div`
   background-position: left top;
   background-size: cover;
   position: relative;
-  z-index: 1;
-  .rooms_search {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  z-index: 2;
+  input{
+    padding-left: 10px;
   }
 `
 
@@ -549,9 +552,26 @@ let MainBody = styled.div`
  }
 `
 
+let RoomSelect = styled.button`
+  display: flex;
+  flex-direction: row;
+  width: 1040px;
+  height: 45px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  margin: 5px 0;
+  padding-left:15px;
+  padding-top: 12px;
+  border: 0;
+  :hover {
+  background-color: #BAB7B7;
+  cursor: pointer;
+ }
+`
+
 let MakeRoom = styled.div`
   display:flex;
-  margin: 50px auto auto auto;
+  margin: 40px auto auto auto;
   box-sizing: border-box;
   width: 162px;
   height: 45px;
@@ -575,7 +595,8 @@ let MakeRoom = styled.div`
  }
 `
 
-let ChooseLock = styled.div`
+let ChoosLock = styled.div`
+  width: 320px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -679,7 +700,7 @@ const PwModalBody = styled.div`
   margin: auto;
     div {
       display:flex;
-      margin: 50px auto auto auto;
+      margin: auto;
       font-style: normal;
       font-weight: 700;
       font-size: 24px;
@@ -688,7 +709,7 @@ const PwModalBody = styled.div`
     input {
       font-size: 18px;
       display:flex;
-      margin: auto auto 50px auto;
+      margin: auto;
       width: 505px;
       height: 45px;
       left: 472px;
@@ -697,6 +718,23 @@ const PwModalBody = styled.div`
       border: 1px solid rgba(169, 169, 169, 0.25);
       box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
       border-radius: 8px;
+    }
+    button {
+      font-style: normal;
+      margin: 0 30px 10px 30px;
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 22px;
+      width: 100px;
+      height: 45px;
+      background: #F4F4F4;
+      border: 1px solid rgba(169, 169, 169, 0.25);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+        :hover {
+        background-color: #BAB7B7;
+        cursor: pointer;
+              }
     }
 `;
 
@@ -804,7 +842,7 @@ let RoomList = styled.div`
 
 let HowToBTN = styled.button`
   margin-right: 30px;
-  margin-top: 80px;
+  margin-top: 20px;
   font-style: normal;
   font-weight: 700;
   font-size: 22px;
@@ -831,7 +869,7 @@ let HowToModal = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 2;
+    z-index: 6;
     div {
       width: 864px;
       height: 233px;
@@ -876,3 +914,47 @@ let HowToHover = styled.span`
   }
 `
 
+
+let ChooseLock = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  margin-right: 140px;
+  button {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 22px;
+    margin-right: 20px;
+    background: black;
+    color: white;
+    width: 100px;
+    height: 45px;
+    border: 1px solid rgba(169, 169, 169, 0.25);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    :hover {
+    cursor: pointer;
+  }
+  }
+    div {
+      font-style: normal;
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 22px;
+      margin-right: 20px;
+      width: 100px;
+      height: 43px;
+      background: #FFFFFF;
+      border: 1px solid rgba(169, 169, 169, 0.25);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+      :hover {
+      background-color: #000000;
+      color: white;
+      cursor: pointer;
+    }
+  }
+`

@@ -1,21 +1,26 @@
 import styled from "styled-components";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { __login } from "../../redux/modules/loginSlice";
+import { __login, __kakaoCheck, __kakaoLogin } from "../../redux/modules/loginSlice";
 import Cards from "../../shared/image/Cards.png"
 import LoginScreen from "../../../src/shared/image/LoginScreen.png"
-// import kakaoLogin from "../../../src/shared/image/kakaoLogin.png"
+import kakaoLogin from "../../../src/shared/image/kakaoLogin.png"
+import Swal from 'sweetalert2'
 
-// const { Kakao } = window;
+const { Kakao } = window;
 
 const LogInForm = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [nickname, setNickname] = useState("");
 
     const success = useSelector((state) => state.login.isLogin)
     const login = useSelector((state) => state.login)
 
+    const modalState = useSelector((state) => state?.login.modal)
+    const [modal, setModal] = useState(false);
     const {
         register,
         formState: { errors },
@@ -31,32 +36,61 @@ const LogInForm = () => {
         )
     };
 
-    const token = localStorage.getItem("token");
-
-    if (token !== undefined && token !== null) {
-        navigate("/")
+    function kakaoLogin() {
+        Kakao.Auth.login({
+            success: function (response) {
+                Kakao.API.request({
+                    url: '/v2/user/me',
+                    success: function (response) {
+                        const email = response.kakao_account.email;
+                        const password = response.id;
+                        dispatch(__kakaoCheck({ email, password }));
+                    },
+                    fail: function (error) {
+                    },
+                })
+            },
+            fail: function (error) {
+            },
+        })
     }
 
-    // function kakaoLogin() {
-    //     Kakao.Auth.login({
-    //         success: function (response) {
-    //             Kakao.API.request({
-    //                 url: '/v2/user/me',
-    //                 success: function (response) {
-    //                     console.log(response)
-    //                     window.location.reload("/")
-    //                 },
-    //                 fail: function (error) {
-    //                     console.log(error)
-    //                 },
-    //             })
-    //         },
-    //         fail: function (error) {
-    //             console.log(error)
-    //         },
-    //     })
-    // }
+    function kakaoLoginTwo() {
+        if (nickname !== "" && nickPass.test(nickname) === true) {
+            Kakao.Auth.login({
+                success: function (response) {
+                    Kakao.API.request({
+                        url: '/v2/user/me',
+                        success: function (response) {
+                            const password = response.id;
+                            const email = response.kakao_account.email;
+                            dispatch(__kakaoLogin({ email, nickname, password }));
+                        },
+                        fail: function (error) {
+                        },
+                    })
+                },
+                fail: function (error) {
+                },
+            })
+        } else {
+            Swal.fire({ title: '닉네임을 확인해주세요.', timer: 2000, confirmButtonColor: "black" });
+        }
+    }
 
+    const nickPass = /^[a-zA-Zㄱ-ㅎ|ㅏ-ㅣ|가-힣]{2,10}$/
+
+    const token = localStorage.getItem("token");
+    useEffect(() => {
+        if (token !== null && token !== undefined) {
+            window.location.replace("/")
+        }
+
+        if (modalState === true) {
+            setModal(true);
+        }
+    }, [modalState])
+    
     return (
         <>
             <Body>
@@ -126,6 +160,7 @@ const LogInForm = () => {
                                 <LoginBtn>
                                     입장하기
                                 </LoginBtn>
+
                             </div>
                         </Form>
                         <MoveBtn>
@@ -146,9 +181,25 @@ const LogInForm = () => {
                                 회원가입
                             </ToSignUpBtn>
                         </MoveBtn>
+                        <KakaoLoginBtn onClick={() => { kakaoLogin(); }} />
                     </Box>
                 </BackGroundImg>
             </Body>
+            {modal === true ?
+                <div>
+                    <KakaoNickModal onSubmit={(e) => { e.preventDefault(); kakaoLoginTwo(); }} type="button" onClick={() => {
+                        setModal(!modal);
+                    }}>
+                        <KakaoNickModalbody onClick={(e) => { e.stopPropagation() }} >
+                            <div>사용하실 닉네임을 입력해주세요.</div>
+                            <input value={nickname} placeholder="특수문자 제외, 2~10자로 작성해주세요" onChange={(e) => { setNickname(e.target.value); }} ></input>
+                            <div>
+                                <Btns style={{ margin: "0 20px" }}>가입하기</Btns>
+                                <Btns style={{ margin: "0 20px" }} type="button" onClick={() => { setModal(!modal); window.location.replace("/login") }}>취소하기</Btns>
+                            </div>
+                        </KakaoNickModalbody>
+                    </KakaoNickModal>
+                </div> : ''}
         </>
     );
 };
@@ -333,17 +384,84 @@ const LoginBtn = styled.button`
     font-size: larger;
 `
 
-// const KakaoLoginBtn = styled.button`
-//     width: 300px;
-//     height: 45px;
-//     font-size:15px;
-//     display:block;
-//     cursor:pointer;
-//     margin-top: 40px;
-//     background-image: url(${kakaoLogin});
-//     background-repeat: no-repeat;
-//     border: none;
-//     border-radius: 8px;
-// `
+const KakaoLoginBtn = styled.button`
+    width: 380px;
+    height: 55px;
+    font-size:15px;
+    display:block;
+    cursor:pointer;
+    margin: 40px auto auto auto;
+    background-image: url(${kakaoLogin});
+    background-repeat: no-repeat;
+    background-size: cover;
+    border: none;
+    border-radius: 8px;
+`
 
 
+const KakaoNickModal = styled.form`
+  z-index: 2;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+
+const KakaoNickModalbody = styled.div`
+  display: flex;
+  font-size: 26px;
+  width: 864px;
+  height: 250px;
+  padding: 30px;
+  left: 293px;
+  top: 355px;
+  background: linear-gradient(259.36deg, #FBFBFB 2.14%, #F5F5F5 34.66%, #ECECEC 67.72%, #E3E3E3 103.54%);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  display:flex;
+  flex-direction: column;
+  margin: auto;
+    div {
+      display: flex;
+      margin: auto;
+    }
+    input {
+      text-align: center;
+      padding-left: 10px;
+      font-size: 18px;
+      display:flex;
+      margin: 40px auto 20px auto;
+      width: 505px;
+      height: 45px;
+      left: 472px;
+      top: 483px;
+      background: #F4F4F4;
+      border: 1px solid rgba(169, 169, 169, 0.25);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+    }
+`;
+
+const Btns = styled.button`
+  background-color: #fff;
+  border-color: #A9A9A9;
+  margin: 10px;
+  margin-right: 100px;
+  font-size: 15px;
+  width: 132px;
+  height: 45px;
+  border: 1px solid rgba(169, 169, 169, 0.25);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  cursor:pointer;
+  :hover {
+  background-color: #BAB7B7;
+  cursor: pointer;
+ }
+`

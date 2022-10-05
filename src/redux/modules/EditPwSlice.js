@@ -17,15 +17,14 @@ export const __SendDup = createAsyncThunk(
     try {
       const data = await axios.post(
         process.env.REACT_APP_ENDPOINT + `/findPw`, {email:payload},
-      ).then((res)=>{
-        if (res.statusText === "OK") {
-          Swal.fire({ title: '인증메일을 전송하였습니다.', timer: 1500 });
-        }
-      })
+      )
+      if (data.statusText === "OK") {
+            Swal.fire({ title: '인증메일을 전송하였습니다.', timer: 1500, confirmButtonColor: "black" });
+          }
       return data;
     } catch (e) {
       if(e.response.data === "No-registered-information"){
-        Swal.fire({ title: '존재하지 않는 계정입니다.', timer: 1500 });
+        Swal.fire({ title: '존재하지 않는 계정입니다.', timer: 1500, confirmButtonColor: "black" });
       }
       return api.rejectWithValue(e);
     }

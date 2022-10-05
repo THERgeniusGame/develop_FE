@@ -83,10 +83,9 @@ const SignUpForm = () => {
 
     useEffect(() => {
         if (checkNickname === true) {
-            setError("nickname", { message: "사용 가능한 닉네임입니다"});
+            setError("nickname", { message: "사용 가능한 닉네임입니다."});
         }
     }, [checkNickname]);
-
     //이메일 인증번호 확인
     const onNumConfirm = () => {
         const NumConfirm = getValues("emailConfirm") 
@@ -95,13 +94,13 @@ const SignUpForm = () => {
         )
             {setError(
                 "emailConfirm",
-                { message: "이메일 인증번호가 일치합니다" },
+                { message: "이메일 인증번호가 일치합니다." },
             )
             setEmailNum(true) }
         else {
             setError(
                 "emailConfirm",
-                { message: "이메일 인증번호가 일치하지 않습니다" },
+                { message: "이메일 인증번호가 일치하지 않습니다." },
                 { shouldFocus: true }
             );
         }
@@ -115,7 +114,7 @@ const SignUpForm = () => {
         ) {
             setError(
                 "emailConfirm",
-                { message: "이메일 인증번호를 입력해주세요" },
+                { message: "이메일 인증번호를 입력해주세요." },
                 { shouldFocus: true }
             );
         } else {
@@ -197,7 +196,7 @@ const SignUpForm = () => {
                                 </Dupbtn>
                             </div>
                             <Message>
-                                {errors.emailConfirm && (<p style={{ fontSize: "15px" }}>{errors.emailConfirm.message}</p>)}
+                                {errors.emailConfirm && (<p style={{ fontSize: "15px", color:errors.emailConfirm.message === "이메일 인증번호가 일치합니다." ? "blue" : 'red' }}>{errors.emailConfirm.message}</p>)}
                             </Message>
                         </EmailConfirm>
 

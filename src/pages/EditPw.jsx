@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import "../components/assets/fonts/font.css"
 import SignUp from "../shared/image/SignUp.png"
@@ -13,55 +12,56 @@ const EditPw = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const data = useSelector((state) => state.editpw.Dup);
-
     const [checkEmail, setCheckEmail] = useState("");
     const [checkEmailDup, setCheckEmailDup] = useState();
     const [password, setPassword] = useState();
     const [confirmPassword, setConfirmPassword] = useState();
     const [Dup, setDup] = useState(false);
-
+    const [loadingCornform, setLoadingCornform] = useState(false);
+    
     const emailPass = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/;
     const regPass = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{8,16}$/;
-
+console.log(emailPass.test(checkEmail))
     const onclickGiveMail = () => {
+        setLoadingCornform(true);
         if (emailPass.test(checkEmail) === true) {
-            dispatch(__SendDup(checkEmail))
+            dispatch(__SendDup(checkEmail));
         } else {
-            Swal.fire({ title: '이메일 형식을 확인해주세요.', timer: 1500 });
+            Swal.fire({ title: '이메일 형식을 확인해주세요.', timer: 1500, confirmButtonColor: "black" });
         }
     }
 
     const onclickCheckDup = () => {
         if (checkEmailDup !== undefined && checkEmailDup !== "") {
             if (data?.data === +checkEmailDup) {
-                Swal.fire({ title: '이메일 인증에 성공했습니다.', timer: 1500 });
+                Swal.fire({ title: '이메일 인증에 성공했습니다.', timer: 1500, confirmButtonColor: "black" });
                 setDup(true);
             } else {
-                Swal.fire({ title: '인증번호를 확인해주세요.', timer: 1500 });
+                Swal.fire({ title: '인증번호를 확인해주세요.', timer: 1500, confirmButtonColor: "black" });
             }
         } else {
-            Swal.fire({ title: '인증번호를 입력해주세요.', timer: 1500 });
+            Swal.fire({ title: '인증번호를 입력해주세요.', timer: 1500, confirmButtonColor: "black" });
         }
     }
 
     const onclickSubmit = (e) => {
         if (emailPass.test(checkEmail) !== true) {
-            Swal.fire({ title: '이메일 형식을 확인해주세요.', timer: 1500 });
+            Swal.fire({ title: '이메일 형식을 확인해주세요.', timer: 1500, confirmButtonColor: "black" });
         } else {
             if (data?.data !== +checkEmailDup) {
-                Swal.fire({ title: '인증번호를 확인해주세요.', timer: 1500 });
+                Swal.fire({ title: '인증번호를 확인해주세요.', timer: 1500, confirmButtonColor: "black" });
             } else {
                 if (Dup === false) {
-                    Swal.fire({ title: '이메일을 인증해주세요.', timer: 1500 });
+                    Swal.fire({ title: '이메일을 인증해주세요.', timer: 1500, confirmButtonColor: "black" });
                 } else {
                     if (regPass.test(password) !== true) {
-                        Swal.fire({ title: '비밀번호 형식을 확인해주세요.', timer: 1500 });
+                        Swal.fire({ title: '비밀번호 형식을 확인해주세요.', timer: 1500, confirmButtonColor: "black" });
                     } else {
                         if (password !== confirmPassword) {
-                            Swal.fire({ title: '비밀번호가 서로 일치하지 않습니다.', timer: 1500 });
+                            Swal.fire({ title: '비밀번호가 서로 일치하지 않습니다.', timer: 1500, confirmButtonColor: "black" });
                         } else {
                             dispatch(__EditPw({email:checkEmail, emailConFirm:checkEmailDup, password, confirmPw:confirmPassword}))
-                            Swal.fire({ title: '비밀번호를 변경했습니다.', timer: 1500 });
+                            Swal.fire({ title: '비밀번호를 변경했습니다.', timer: 1500, confirmButtonColor: "black" });
                             navigate("/login")
                         }
                     }
@@ -69,6 +69,12 @@ const EditPw = () => {
             }
         }
     }
+
+    useEffect(() => {
+        if (data?.statusText === "OK") {
+            setLoadingCornform(false);
+        }
+    }, [data]);
 
     return (
         <>
@@ -98,6 +104,7 @@ const EditPw = () => {
                                         </Dupbtn>
                                     </div>
                                     <Message style={{color:emailPass.test(checkEmail) ? "black" : ""}}>
+                                        {loadingCornform === true ? <span style={{color:"red"}}>인증 메일을 전송중입니다...</span> : ''}
                                         {emailPass.test(checkEmail) ? "" : checkEmail !== undefined && checkEmail !== "" ? "이메일을 정확히 입력해주세요." : ''}
                                     </Message>
                                 </Email>
@@ -110,7 +117,6 @@ const EditPw = () => {
                                     </div>
                                     <div className="emailConfirm_container">
                                         <EmailConfirmInput
-                                            type="number"
                                             value={checkEmailDup}
                                             onChange={(e) => { setCheckEmailDup(e.target.value); }}
                                         />
@@ -123,7 +129,7 @@ const EditPw = () => {
                                         </Dupbtn>
                                     </div>
                                     <Message style={{color:Dup === true ? "black" : "red"}}>
-                                    {Dup === false ? checkEmailDup !== undefined && checkEmailDup !== "" ? "인증번호를 인증해주세요." : '' : "이메일 인증을 완료했습니다."}
+                                    {Dup === false ? checkEmailDup !== undefined && checkEmailDup !== "" ? <span>인증번호를 인증해주세요.</span> : '' : <span style={{color:"blue"}}>이메일 인증을 완료했습니다.</span>}
                                     </Message>
                                 </EmailConfirm>
                                 <PassWord

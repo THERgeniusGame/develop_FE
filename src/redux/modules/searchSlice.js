@@ -8,25 +8,24 @@ const initialState = {
 
 const token = localStorage.getItem("token");
 
+
 export const __search = createAsyncThunk(
     "SEARCH", 
     async (payload, thunkAPI) => {
-        console.log(payload)
-        const keyword = payload.keyword;
-        console.log(keyword)
+        const keyword = payload.input.keyword;
+        const page = payload.page.page;
         try {
             const res = await axios.get(
-                process.env.REACT_APP_ENDPOINT + `/room/search?keyword=${keyword}&page=${1}`,
+                process.env.REACT_APP_ENDPOINT + `/room/search?keyword=${keyword}&page=${page}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 }
+                
             )
-            console.log(res.data.result)
-            return res.data.result
+            return res.data
         } catch (err) {
-            console.log(err)
             return err
         }
     });
@@ -41,14 +40,13 @@ export const searchSlice = createSlice({
         builder
  
         .addCase(__search.fulfilled, (state, action) => {
-            console.log(action)
             state.data = action.payload
         })
         .addCase(__search.rejected, (state, action) => {
-            console.log(action)
-            console.log(state)
             state.data = action.payload;
         })
+
+
     },
 });
 

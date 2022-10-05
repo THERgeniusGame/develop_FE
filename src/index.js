@@ -10,6 +10,7 @@ import { Helmet } from 'react-helmet'
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
+  
   <div className="index">
     <Helmet>
       <title>Ther Genius Game</title>

@@ -11,7 +11,9 @@ const MypageModal = ({ setModal }) => {
     Swal.fire({
       icon: "success",
       title: "로그아웃 되었습니다!",
-    })
+      timer: 3000,
+      confirmButtonColor: "black"
+    } ,);
     navigate('/login')
   }
 
@@ -28,8 +30,7 @@ const MypageModal = ({ setModal }) => {
             className="report"
             style={{ margin: "10px 0" }}
             onClick={()=>{
-              // navigate("/report");
-              Swal.fire({ title: '준비중인 기능입니다.', timer: 2000 });
+              navigate("/report");
               setModal(!Modal);
               }}>신고하기</div>
           <div className="logout"

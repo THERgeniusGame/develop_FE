@@ -1,58 +1,71 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Main from "../shared/image/Main.png";
 import { useNavigate } from "react-router-dom";
 import MypageModal from "./MypageModal";
 
+import { useDispatch, useSelector } from "react-redux";
+
+import { __getMyRank } from "../redux/modules/myPageSlice";
 
 import Swal from 'sweetalert2'
 
 const Header = () => {
-  const navigate = useNavigate()
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const mynickname = useSelector((state)=>state?.getMyPage?.myRank?.nickname)
   const [modal, setModal] = useState(false);
 
   const token = localStorage.getItem("token");
 
-  if (token === undefined || token === null) {
-    Swal.fire({ title: '로그인이 필요합니다.', timer: 2000 });
+  if (token === null || token === undefined) {
+    Swal.fire({ title: '로그인이 필요합니다.', timer: 2000, confirmButtonColor: "black" });
     navigate("/login")
-  } 
+  }
+
+  useEffect(() => {
+    dispatch(__getMyRank());
+  }, []);
 
   return (
-   <>
+    <>
       <HeaderBox>
-        <div className="logo">
+        <div className="logo" style={{ marginTop: "11px" }}>
           <Logo
-            onClick={() => {navigate("/")}} />
+            onClick={() => { navigate("/") }} />
         </div>
-        <div className="mypage">
+        <div className="mypage" style={{display:"flex", flexDirection:"row"}}>
+          <BGM controls loop autoplay>
+            {/* <source src="https://drive.google.com/uc?export=download&id=1k1pPMFdFnJSjJ85UZLiby9MqMtK2Y66p" type="audio/mpeg" />
+            <source src="https://drive.google.com/uc?export=download&id=18pgZegsCPQzSu9_rYjqiBrQu1kM05fJC" type="audio/mpeg" /> */}
+            <source src="https://drive.google.com/uc?export=download&id=134TZJDaFvGfuZ_vCx_jpnOzK92XShrmw" type="audio/mpeg" />
+            {/* <source src="https://drive.google.com/uc?export=download&id=1HjqP_Qjh_okTKwfEWXdVwcXfWNz8rEc6" type="audio/mpeg" />
+            <source src="https://drive.google.com/uc?export=download&id=1F7cWcGtazXlX9Tl099hoJzE_Ro4X0X7M" type="audio/mpeg" /> */}
+          </BGM>
           <Profile
-            onClick={(e) => { 
+            onClick={(e) => {
               e.preventDefault()
-              setModal(!modal) 
+              setModal(!modal)
             }}
           >
-            지니어스
+            {mynickname} ▼
           </Profile>
         </div>
-       
-        {modal == true ?
-          <MypageModal 
-            setModal = {setModal}
+        {modal === true ?
+          <MypageModal
+            setModal={setModal}
           />
           : null
         }
-
       </HeaderBox>
-   </>
+    </>
   );
 };
 
 export default Header;
 
-const Modal = styled.div`
-  
-`
 const HeaderBox = styled.div`
   height: 56px;
   display: flex;
@@ -61,11 +74,9 @@ const HeaderBox = styled.div`
   justify-content: space-between;
   position: relative;
   z-index: 4;
+
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  
-  div {
-    margin-top: 8px;
-  }
+
   .logo {
     margin-left: 250px;
   }
@@ -83,6 +94,19 @@ const Logo = styled.div`
   cursor: pointer;
 `
 const Profile = styled.div`
-  margin-left: auto;
+  margin: 3px auto auto auto;
   cursor: pointer;
+  width: 100px;
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+  :hover {
+  background-color: #BAB7B7;
+  cursor: pointer;
+ }
+`
+
+const BGM = styled.audio`
+ height: 47px;
+ margin: 0 10px;
 `
