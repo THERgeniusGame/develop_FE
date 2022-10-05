@@ -423,7 +423,7 @@ function Room() {
                             {mynickname === ownerNickname ?
                                 //호스트 구역
                                 <div>
-                                    <div style={{ width: "975px", margin: "auto auto 80px auto", display: "flex", flexDirection: "row" }}>
+                                    <div style={{ width: "975px", margin: "auto auto 80px auto", display: "flex", flexDirection: "row", justifyContent:"space-between" }}>
                                         <div style={{ width: '380px', overflow: "hidden", fontSize: "24px", paddingTop: "15px" }}>{title}</div>
 
                                         {unableBTN === false ?
@@ -1126,9 +1126,8 @@ let Able = styled.div`
     }
 `
 
-let Unable = styled.span`
+let Unable = styled.div`
     float:right;
-    margin-left: 5px;
     button {
         width: 120px;
         height: 45px;
