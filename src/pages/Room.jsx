@@ -137,7 +137,7 @@ function Room() {
 
         socket.on("login_user", login => {
             setReady(false);
-            setList(prev => prev.concat({ text: "음악설정은 게임시작 전에만 가능합니다." }));
+            // setList(prev => prev.concat({ text: "음악설정은 게임시작 전에만 가능합니다." }));
             socket.emit("chat", { nickname: login.mynickname, msg: "님이 입장하셨습니다." });
             setMyUserId(login.userId);
             setMyNickname(login.nickname); //나의 닉네임
@@ -407,6 +407,14 @@ function Room() {
     });
     return (
         <>
+            <BGM controls loop autoplay>
+                <source src="https://drive.google.com/uc?export=download&id=1hKtNpVkNySh7M3flLQdxb1iBoi0713Ig" type="audio/mpeg" />
+                {/* <source src="https://drive.google.com/uc?export=download&id=1k1pPMFdFnJSjJ85UZLiby9MqMtK2Y66p" type="audio/mpeg" /> */}
+                {/* <source src="https://drive.google.com/uc?export=download&id=18pgZegsCPQzSu9_rYjqiBrQu1kM05fJC" type="audio/mpeg" /> */}
+                {/* <source src="https://drive.google.com/uc?export=download&id=134TZJDaFvGfuZ_vCx_jpnOzK92XShrmw" type="audio/mpeg" /> */}
+                {/* <source src="https://drive.google.com/uc?export=download&id=1HjqP_Qjh_okTKwfEWXdVwcXfWNz8rEc6" type="audio/mpeg" /> */}
+                {/* <source src="https://drive.google.com/uc?export=download&id=1F7cWcGtazXlX9Tl099hoJzE_Ro4X0X7M" type="audio/mpeg" /> */}
+            </BGM>
             {gamestart === false ?
                 //대기방
                 <div style={{ width: "1440px", height: "1024px", backgroundImage: 'url(' + RoomBackground + ')', backgroundPosition: "center", backgroundSize: "auto", fontSize: "18px", margin: "0px auto" }}>
@@ -417,14 +425,7 @@ function Room() {
                                 <div>
                                     <div style={{ width: "975px", margin: "auto auto 80px auto", display: "flex", flexDirection: "row" }}>
                                         <div style={{ width: '380px', overflow: "hidden", fontSize: "24px", paddingTop: "15px" }}>{title}</div>
-                                        <BGM controls loop autoplay>
-                                            <source src="https://drive.google.com/uc?export=download&id=1hKtNpVkNySh7M3flLQdxb1iBoi0713Ig" type="audio/mpeg" />
-                                            {/* <source src="https://drive.google.com/uc?export=download&id=1k1pPMFdFnJSjJ85UZLiby9MqMtK2Y66p" type="audio/mpeg" /> */}
-                                            {/* <source src="https://drive.google.com/uc?export=download&id=18pgZegsCPQzSu9_rYjqiBrQu1kM05fJC" type="audio/mpeg" /> */}
-                                            {/* <source src="https://drive.google.com/uc?export=download&id=134TZJDaFvGfuZ_vCx_jpnOzK92XShrmw" type="audio/mpeg" /> */}
-                                            {/* <source src="https://drive.google.com/uc?export=download&id=1HjqP_Qjh_okTKwfEWXdVwcXfWNz8rEc6" type="audio/mpeg" /> */}
-                                            {/* <source src="https://drive.google.com/uc?export=download&id=1F7cWcGtazXlX9Tl099hoJzE_Ro4X0X7M" type="audio/mpeg" /> */}
-                                        </BGM>
+
                                         {unableBTN === false ?
                                             <Able>
                                                 <button style={{ marginRight: "20px", fontSize: "18px", fontWeight: "bold", color: "red" }} onClick={() => { setGuestNickname(""); socket.emit("kick", { socketId: guestsoketId }); Swal.fire({ title: '상대를 추방했습니다.', timer: 1500, confirmButtonColor: "black" }) }}>추방하기</button>
@@ -464,14 +465,6 @@ function Room() {
                                 <div>
                                     <div style={{ width: "975px", margin: "auto auto 80px auto", display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
                                         <div style={{ width: '380px', overflow: "hidden", fontSize: "24px", paddingTop: "15px" }}>{title}</div>
-                                        <BGM style={{marginLeft:"100px"}} controls loop autoplay>
-                                            <source src="https://drive.google.com/uc?export=download&id=1hKtNpVkNySh7M3flLQdxb1iBoi0713Ig" type="audio/mpeg" />
-                                            {/* <source src="https://drive.google.com/uc?export=download&id=1k1pPMFdFnJSjJ85UZLiby9MqMtK2Y66p" type="audio/mpeg" /> */}
-                                            {/* <source src="https://drive.google.com/uc?export=download&id=18pgZegsCPQzSu9_rYjqiBrQu1kM05fJC" type="audio/mpeg" /> */}
-                                            {/* <source src="https://drive.google.com/uc?export=download&id=134TZJDaFvGfuZ_vCx_jpnOzK92XShrmw" type="audio/mpeg" /> */}
-                                            {/* <source src="https://drive.google.com/uc?export=download&id=1HjqP_Qjh_okTKwfEWXdVwcXfWNz8rEc6" type="audio/mpeg" /> */}
-                                            {/* <source src="https://drive.google.com/uc?export=download&id=1F7cWcGtazXlX9Tl099hoJzE_Ro4X0X7M" type="audio/mpeg" /> */}
-                                        </BGM>
                                         {unableBTN === false ?
                                             <Able>
                                                 <button onClick={() => { if (unableBTN === false) { socket.emit("ready", { ready: !ready }); } else { Swal.fire({ title: "이미 게임이 시작되었습니다!", timer: 1500, confirmButtonColor: "black" }); } }} style={{ marginRight: "20px", fontSize: "18px", fontWeight: "bold" }}>준비하기</button>
@@ -1544,6 +1537,7 @@ let ReportModal = styled.div`
 `;
 
 const BGM = styled.audio`
+ position: fixed;
  height: 47px;
  width: 170px;
  margin: 5px 10px 0 10px;

@@ -21,7 +21,7 @@ const EditPw = () => {
     
     const emailPass = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/;
     const regPass = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{8,16}$/;
-
+console.log(emailPass.test(checkEmail))
     const onclickGiveMail = () => {
         setLoadingCornform(true);
         if (emailPass.test(checkEmail) === true) {
