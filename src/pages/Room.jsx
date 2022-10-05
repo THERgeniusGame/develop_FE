@@ -663,7 +663,7 @@ function Room() {
                                     <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{timer > 0 ? <span>남은 턴 시간 {timer}초</span> : <span>시간 종료</span>}</div>
                                     <div style={{ display: "flex", margin: "auto", fontSize: "18px" }}>배팅은 최대 {Math.floor(limitCoin)}개 까지 가능합니다.</div>
                                     <div style={{ color: "red", margin: "auto" }}>배팅 후에는 수정할 수 없습니다. 신중히 배팅 해주세요!</div>
-                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => e.target.value > 0 ? setBatting(e.target.value) : Swal.fire({ title: "배팅은 1개 이상만 가능 합니다.", timer: 1500, confirmButtonColor: "black" })}></input><span style={{ marginTop: "10px" }}>개</span>
+                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} onChange={e => setBatting(e.target.value)}></input><span style={{ marginTop: "10px" }}>개</span>
                                         <button style={{ marginLeft: "10px", marginTop: "3px" }}>배팅하기</button></div>
                                 </BattingMid> : ''}
                             {middleView === false && turn === true && cardPick === true && gameEnd === false ?
@@ -868,7 +868,7 @@ function Room() {
                                     <div style={{ fontSize: "18px", color: "red", display: "flex", margin: "auto" }}>{timer > 0 ? <span>남은 턴 시간 {timer}초</span> : <span>시간 종료</span>}</div>
                                     <div style={{ display: "flex", margin: "auto", fontSize: "18px" }}>배팅은 최대 {Math.floor(limitCoin)}개 까지 가능합니다.</div>
                                     <div style={{ color: "red", margin: "auto" }}>배팅 후에는 수정할 수 없습니다. 신중히 배팅 해주세요!</div>
-                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} type={"number"} onChange={e => e.target.value > 0 ? setBatting(e.target.value) : Swal.fire({ title: "배팅은 1개 이상만 가능 합니다.", timer: 1500, confirmButtonColor: "black" })}></input><span style={{ marginTop: "10px" }}>개</span>
+                                    <div style={{ display: "flex", margin: "auto", fontSize: "25px" }}><input value={batting} onChange={e => setBatting(e.target.value)}></input><span style={{ marginTop: "10px" }}>개</span>
                                         <button style={{ marginLeft: "10px", marginTop: "3px" }}>배팅하기</button></div>
                                 </BattingMid> : ''}
                             {middleView === false && turn === true && cardPick === true && gameEnd === false ?
