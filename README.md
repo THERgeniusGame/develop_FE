@@ -50,7 +50,7 @@
 https://www.youtube.com/watch?v=ESSO1rTWOhY
 
 # 🎀프로젝트 아키텍처
-![프론트 아키텍처](https://user-images.githubusercontent.com/105829258/192965465-107c5763-b1e6-4c02-a01e-cc95e731fa37.png)
+![아키텍처](https://user-images.githubusercontent.com/105829258/194686797-3ce0afe7-18e8-4ef0-80e6-34476e5d6a7c.png)
 
 # 🪄Code Convention
 - 서비스 url : lowercase - ex) /main/room
@@ -141,6 +141,9 @@ https://www.figma.com/file/0XBiaSNcr9NcTTKjBKfv1x/THERgeniusGame?node-id=0%3A1
 ![신고](https://user-images.githubusercontent.com/105829258/192964650-164c1eb1-1834-44df-85ad-1bb7f8f28006.png)
 ### 토큰 플로우차트
 ![Untitled](https://user-images.githubusercontent.com/105829258/192964730-ce75bff1-3a8b-4a63-8ef0-2daf8a8cc864.png)
+
+# 🎮게임로직 링크
+https://www.notion.so/be4f0e09c6094dbf9dd337a214b0dbf3
 
 ## 👪 &nbsp; 팀원
 
