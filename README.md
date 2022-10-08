@@ -120,7 +120,7 @@ ex) css 추가 수정
 https://www.figma.com/file/0XBiaSNcr9NcTTKjBKfv1x/THERgeniusGame?node-id=0%3A1
 
 # 🌌플로우차트
-###헤더 플로우차트
+### 헤더 플로우차트
 ![헤더](https://user-images.githubusercontent.com/105829258/193449047-b20e18ec-1708-498f-8e08-4f4bf4f871e7.png)
 ### 회원가입 페이지 플로우차트
 ![회원가입](https://user-images.githubusercontent.com/105829258/192963976-3424756a-1ca5-4736-bba5-4849a9c3e913.png)
