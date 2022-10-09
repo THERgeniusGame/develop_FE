@@ -46,7 +46,7 @@
 ## 📆 프로젝트 기간
 - 2022/08/26 ~ 2022/10/07
 
-## 👓 프로젝트 발표영상 링크 
+## 👓 프로젝트 발표영상 
 https://www.youtube.com/watch?v=ESSO1rTWOhY
 
 # 🎀프로젝트 아키텍처
@@ -119,6 +119,17 @@ ex) css 추가 수정
 </center>
 <br>
 
+# 🤔기술스택 선정이유
+- socket.io
+    - 프로젝트의 시작은 1대1 카드 게임이었습니다. 게임을 선택하고 로직을 구상하며 당연하게 든 생각은 실시간으로 데이터가 움직여야 한다는 것이었습니다. 한 명의 행동이 다른 사람에게 전달되어 보여져야 했기 때문입니다. 그렇기 때문에 실시간 통신을 가능하게 해주는 socket을 적용하게 되었습니다.
+- Redux-Toolkit
+    - 처음에는 프로젝트의 규모가 크지 않기 때문에 "전역상태관리가 필요한가?"라는 대화를 하였습니다.
+    하지만, 프로젝트의 확장성 및 많은 state를 사용하는 게임의 특성 때문에 일어날 수 있는 props drilling이나, 자식 props를 부모에게 전달 할 때 일어날 수 있는 오류를 방지하기 위해 전역상태관리 라이브러리를 도입하기로 했습니다. 그중에서 리액트 전역상태관리 라이브러리 중 대표적인 redux와 recoil을 놓고 고민하였는데, redux의 단방향 바인딩과 하나의 store에서 데이터를 관리하는게 데이터 흐림이 더 직관적으로 보여서 효율적으로 사용될 것이라 판단하였습니다. 뿐만 아니라 디버깅도 devtools가 잘되어있고, 사용 경험과 참고 자료 또한 많이 가지고 있는 리덕스를 사용하기로 했습니다. 또, 코드의 가독성을 높혀주어 데이터를 추적하는데 도움을 주는 redux-toolkit을 채택하였습니다.
+- react-hook-form
+    - state만을 사용해서 로그인/회원가입을 구현할 때, 불필요한 렌더링이 일어나 속도 저하가 발생하고 코드 가독성이 저하되기 때문에 그런 부분들을 방지할 수 있는 라이브러리를 도입하기로 했습니다. 해당 라이브러리가 리렌더링 수가 적은편이고, 로딩 속도가 빠르며 적은 코드로 좋은 퍼포먼스를 낼 수 있기 때문에 선택하였습니다.
+- Styled-Components
+    - 스타일링을 할 때에 코드의 재 사용성을 높혀주는 styled-components를 도입하기로 했습니다. 또 한 해당 라이브러리는 component의 props를 전달받아 조건부 스타일링이 가능하고, 기존에 component에 스타일을 추가하는 확장 스타일링도 가능하기 때문에 코드의 효율을 높혀 줄 것이라 판단하였습니다.
+
 # 🛰️와이어 프레임
 https://www.figma.com/file/0XBiaSNcr9NcTTKjBKfv1x/THERgeniusGame?node-id=0%3A1
 
@@ -142,7 +153,7 @@ https://www.figma.com/file/0XBiaSNcr9NcTTKjBKfv1x/THERgeniusGame?node-id=0%3A1
 ### 토큰 플로우차트
 ![Untitled](https://user-images.githubusercontent.com/105829258/192964730-ce75bff1-3a8b-4a63-8ef0-2daf8a8cc864.png)
 
-# 🎮게임로직 링크
+# 🎮게임로직
 https://www.notion.so/be4f0e09c6094dbf9dd337a214b0dbf3
 
 ## 👪 &nbsp; 팀원
