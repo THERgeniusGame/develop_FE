@@ -23,7 +23,10 @@ const MypageModal = ({ setModal }) => {
       <Modal>
         <div>
           <div className="page"
-            onClick={() => { navigate('/mypage') }}
+            onClick={() => { 
+              navigate('/mypage')
+              // Swal.fire({ title: '이벤트가 종료되었습니다.', timer: 1500, confirmButtonColor: "black" });
+             }}
           >마이페이지(랭킹)</div>
           <hr />
           <div
