@@ -149,13 +149,13 @@ function Main() {
           <div style={{ width: "1040px", margin: "0px auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", width: "1040px", margin: "0px auto" }}>
               <div style={{ dispaly: "flex", flexWrap: "wrap" }}>
-                {/* <div>
+                {<div>
                   <HowToBTN onClick={() => setHowTo(true)}>플레이 방법</HowToBTN>
-                  <a rel="noopener noreferrer"
-                    target='_blank'
-                    href="https://docs.google.com/forms/d/e/1FAIpQLSeH2i8vTglp-0rKPPf50c43A_TFD5FPMZapDV7AU8nUh2mFoA/viewform">
-                    <HowToBTN style={{ width: "250px" }}>치킨먹으러 가기!</HowToBTN></a>
-                </div> */}
+//                   <a rel="noopener noreferrer"
+//                     target='_blank'
+//                     href="https://docs.google.com/forms/d/e/1FAIpQLSeH2i8vTglp-0rKPPf50c43A_TFD5FPMZapDV7AU8nUh2mFoA/viewform">
+//                     <HowToBTN style={{ width: "250px" }}>치킨먹으러 가기!</HowToBTN></a>
+                </div>}
                 <ChooseLock style={{ marginTop: "30px" }}>
                   {lock === "ALL" ?
                     <button onClick={(e) => {
